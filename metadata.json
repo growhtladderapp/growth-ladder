@@ -1,0 +1,7 @@
+{
+  "name": "Growth Ladder",
+  "description": "Tu entrenador personal de IA. Rutinas personalizadas, guía de ejercicios y seguimiento de progreso para alcanzar tu máximo potencial.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
