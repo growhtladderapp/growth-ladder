@@ -13,6 +13,13 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
   const [loading, setLoading] = useState<string | null>(null);
   const { toast } = useToast();
 
+  const getRedirectUrl = () => {
+    let url = window.location.origin;
+    // Fix specific issue where users access the site with trailing punctuation (e.g. from a link)
+    // which causes the redirect URL to be malformed (e.g. ends with ").")
+    return url.replace(/[).]+$/, '');
+  };
+
   const [email, setEmail] = useState('');
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -30,7 +37,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
         const { error } = await supabase.auth.signInWithOAuth({
           provider: provider as any,
           options: {
-            redirectTo: window.location.origin,
+            redirectTo: getRedirectUrl(),
             queryParams: {
               access_type: 'offline',
               prompt: 'consent',
@@ -53,13 +60,19 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: getRedirectUrl(),
         },
       });
       if (error) throw error;
       setMessage('¡Enlace mágico enviado! Revisa tu correo.');
     } catch (error: any) {
-      toast(error.message, 'error');
+      let errorMessage = error.message;
+      if (errorMessage.includes('rate limit')) {
+        errorMessage = 'Has excedido el límite de intentos. Por favor espera unos minutos antes de intentar de nuevo.';
+      } else if (errorMessage.includes('Signups not allowed')) {
+        errorMessage = 'El registro de usuarios está deshabilitado temporalmente.';
+      }
+      toast(errorMessage, 'error');
     } finally {
       setLoading(null);
     }
