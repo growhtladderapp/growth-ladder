@@ -21,6 +21,10 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
   };
 
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false); // Toggle between Login and Signup
+  const [showPassword, setShowPassword] = useState(false);
+
   const [phone, setPhone] = useState('');
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [showPhoneInput, setShowPhoneInput] = useState(false);
@@ -49,31 +53,74 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
     }
   };
 
-  const handleEmailLogin = async (e: React.FormEvent) => {
+  const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading('email');
     setMessage(null);
+
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: getRedirectUrl(),
-        },
-      });
-      if (error) throw error;
-      setMessage('¡Enlace mágico enviado! Revisa tu correo.');
+      if (isSignUp) {
+        // Sign Up Flow
+        const { error, data } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: getRedirectUrl(),
+          },
+        });
+
+        if (error) throw error;
+
+        if (data.user && data.session) {
+          // User registered and auto-logged in (Supabase default if confirm email is off)
+          toast('¡Bienvenido! Tu cuenta ha sido creada.', 'success');
+        } else {
+          // User registered but needs to confirm email
+          setMessage('¡Cuenta creada! Revisa tu correo para verificar tu cuenta.');
+        }
+
+      } else {
+        // Sign In Flow (Email + Password)
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) throw error;
+        // Login is handled by onAuthStateChange in App.tsx
+      }
     } catch (error: any) {
       let errorMessage = error.message;
-      if (errorMessage.includes('rate limit')) {
-        errorMessage = 'Has excedido el límite de intentos. Por favor espera unos minutos antes de intentar de nuevo.';
-      } else if (errorMessage.includes('Signups not allowed')) {
-        errorMessage = 'El registro de usuarios está deshabilitado temporalmente.';
+      if (errorMessage.includes('Invalid login credentials')) {
+        errorMessage = 'Correo o contraseña incorrectos.';
+      } else if (errorMessage.includes('User already registered')) {
+        errorMessage = 'Ya existe una cuenta con este correo.';
+      } else if (errorMessage.includes('rate limit')) {
+        errorMessage = 'Demasiados intentos. Espera unos minutos.';
       }
       toast(errorMessage, 'error');
     } finally {
       setLoading(null);
     }
   };
+
+  const handleMagicLink = async () => {
+    // Legacy / Alternative: Send Magic Link instead of password
+    setLoading('magic');
+    setMessage(null);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: getRedirectUrl() }
+      });
+      if (error) throw error;
+      setMessage('¡Enlace mágico enviado! Revisa tu correo.');
+    } catch (error: any) {
+      toast(error.message, 'error');
+    } finally {
+      setLoading(null);
+    }
+  }
 
   const handlePhoneLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,12 +132,9 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
       });
       if (error) throw error;
       setMessage('¡Código enviado! Revisa tu SMS.');
-      // Here you would typically transition to a "Verify OTP" view.
-      // But for magic link style (if enabled for phone) or straightforward OTP flow:
       toast('SMS enviado. Por favor verifica tu código.', 'success');
     } catch (error: any) {
       let errorMessage = error.message;
-      // Add specific error handling for phone if needed
       toast(errorMessage, 'error');
     } finally {
       setLoading(null);
@@ -103,9 +147,9 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
       <div className="absolute top-[-10%] left-[-10%] w-[120%] h-[50%] bg-brand-500/10 blur-[120px] rounded-full"></div>
 
       {/* Top Section */}
-      <div className="relative z-10 flex flex-col items-center mt-20 animate-in fade-in slide-in-from-top-10 duration-1000">
+      <div className="relative z-10 flex flex-col items-center mt-10 animate-in fade-in slide-in-from-top-10 duration-1000">
         <div className="mb-6 p-1 bg-white/5 rounded-3xl border border-white/10 shadow-2xl backdrop-blur-sm">
-          <Logo className="w-24 h-24" />
+          <Logo className="w-20 h-20" />
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-white italic tracking-tighter uppercase text-center leading-none">
           Growth <span className="text-brand-500">Ladder</span>
@@ -113,80 +157,125 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
         <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em] mt-3">Elite Performance System<br /><span className="text-[8px] opacity-70">created by trainingwithhabits</span></p>
       </div>
 
-      {/* Middle Text */}
-      <div className="relative z-10 text-center px-4 max-w-xs animate-in fade-in duration-1000 delay-300">
-        <h2 className="text-xl font-bold text-white mb-2 italic">Escala sin límites</h2>
-        <p className="text-slate-400 text-xs leading-relaxed">Únete a la comunidad de atletas de alto rendimiento potenciados por Inteligencia Artificial.</p>
-      </div>
-
       {/* Buttons Section */}
       <div className="relative z-10 w-full max-w-sm space-y-3 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
 
-        {/* Google Login */}
-        <button
-          onClick={() => handleSocialLogin('google')}
-          disabled={!!loading}
-          className="w-full bg-white text-black h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all active:scale-[0.98] disabled:opacity-50 shadow-xl"
-        >
-          {loading === 'google' ? (
-            <Loader2 className="animate-spin" size={20} />
-          ) : (
-            <>
-              <img src="/google-logo.jpg" alt="Google" className="w-6 h-6 object-contain" />
-              <span>Continuar con Google</span>
-            </>
-          )}
-        </button>
+        {!showEmailInput && !showPhoneInput && (
+          <>
+            {/* Social Login Buttons */}
+            <button
+              onClick={() => handleSocialLogin('google')}
+              disabled={!!loading}
+              className="w-full bg-white text-black h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all active:scale-[0.98] disabled:opacity-50 shadow-xl"
+            >
+              {loading === 'google' ? (
+                <Loader2 className="animate-spin" size={20} />
+              ) : (
+                <>
+                  <img src="/google-logo.jpg" alt="Google" className="w-6 h-6 object-contain" />
+                  <span>Continuar con Google</span>
+                </>
+              )}
+            </button>
 
-        {/* Apple Login */}
-        <button
-          onClick={() => handleSocialLogin('apple')}
-          disabled={!!loading}
-          className="w-full bg-black border border-white/10 text-white h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all active:scale-[0.98] disabled:opacity-50"
-        >
-          {loading === 'apple' ? (
-            <Loader2 className="animate-spin" size={20} />
-          ) : (
-            <>
-              <img src="/apple-logo.jpg" alt="Apple" className="w-6 h-6 object-contain invert" />
-              <span>Continuar con Apple</span>
-            </>
-          )}
-        </button>
+            <button
+              onClick={() => handleSocialLogin('apple')}
+              disabled={!!loading}
+              className="w-full bg-black border border-white/10 text-white h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all active:scale-[0.98] disabled:opacity-50"
+            >
+              {loading === 'apple' ? (
+                <Loader2 className="animate-spin" size={20} />
+              ) : (
+                <>
+                  <img src="/apple-logo.jpg" alt="Apple" className="w-6 h-6 object-contain invert" />
+                  <span>Continuar con Apple</span>
+                </>
+              )}
+            </button>
 
-        {/* Separator - Minimalist */}
-        <div className="flex items-center gap-4 py-4">
-          <div className="flex-1 h-[1px] bg-white/5"></div>
-          <span className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">o bien</span>
-          <div className="flex-1 h-[1px] bg-white/5"></div>
-        </div>
+            {/* Separator */}
+            <div className="flex items-center gap-4 py-4">
+              <div className="flex-1 h-[1px] bg-white/5"></div>
+              <span className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">o bien</span>
+              <div className="flex-1 h-[1px] bg-white/5"></div>
+            </div>
+          </>
+        )}
 
-        {/* Email Login - Minimalist */}
+        {/* Email Login Form */}
         {showEmailInput ? (
-          <form onSubmit={handleEmailLogin} className="w-full space-y-2 animate-in fade-in slide-in-from-bottom-2">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@email.com"
-              className="w-full bg-white/5 border border-white/10 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-brand-500 transition-colors"
-              required
-            />
+          <form onSubmit={handleEmailAuth} className="w-full space-y-3 animate-in fade-in slide-in-from-bottom-2">
+
+            <div className="space-y-1">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Correo electrónico"
+                className="w-full bg-white/5 border border-white/10 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-brand-500 transition-colors"
+                required
+              />
+            </div>
+
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Contraseña"
+                className="w-full bg-white/5 border border-white/10 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-brand-500 transition-colors"
+                required
+                minLength={6}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+              >
+                {/* Simple text or icon would go here, omitting import to keep simple or assume lucide */}
+                <span className="text-[10px] font-bold uppercase">{showPassword ? 'Ocultar' : 'Ver'}</span>
+              </button>
+            </div>
+
             <button
               type="submit"
               disabled={!!loading}
-              className="w-full bg-brand-600 hover:bg-brand-500 text-white h-12 rounded-xl flex items-center justify-center gap-2 font-bold transition-all disabled:opacity-50"
+              className="w-full bg-brand-600 hover:bg-brand-500 text-white h-12 rounded-xl flex items-center justify-center gap-2 font-bold transition-all disabled:opacity-50 shadow-lg shadow-brand-900/20"
             >
-              {loading === 'email' ? <Loader2 className="animate-spin" size={20} /> : 'Enviar enlace de acceso'}
+              {loading === 'email' ? <Loader2 className="animate-spin" size={20} /> : (isSignUp ? 'Crear Cuenta' : 'Iniciar Sesión')}
             </button>
+
+            {/* Toggle Sign Up / Login */}
+            <div className="flex items-center justify-between text-xs mt-2 px-1">
+              <button
+                type="button"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="text-slate-400 hover:text-brand-500 transition-colors"
+              >
+                {isSignUp ? '¿Ya tienes cuenta? Entra aquí' : '¿No tienes cuenta? Regístrate'}
+              </button>
+
+              {!isSignUp && (
+                <button
+                  type="button"
+                  onClick={handleMagicLink}
+                  className="text-slate-500 hover:text-slate-300"
+                  disabled={!email || loading === 'magic'}
+                >
+                  {loading === 'magic' ? 'Enviando...' : 'Olvidé mi contraseña'}
+                </button>
+              )}
+            </div>
+
             <button
               type="button"
-              onClick={() => setShowEmailInput(false)}
-              className="w-full text-xs text-slate-500 hover:text-slate-300 py-1"
+              onClick={() => { setShowEmailInput(false); setMessage(null); }}
+              className="w-full text-xs text-slate-500 hover:text-slate-300 py-3 mt-2"
             >
-              Cancelar
+              Volver atrás
             </button>
-            {message && !showPhoneInput && <p className="text-emerald-400 text-xs text-center font-medium mt-2">{message}</p>}
+
+            {message && <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl"><p className="text-emerald-400 text-xs text-center font-medium">{message}</p></div>}
           </form>
         ) : (
           <button
@@ -195,11 +284,11 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
             className={`w-full bg-white/5 border border-white/5 text-slate-300 h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all hover:bg-white/10 ${showPhoneInput ? 'hidden' : ''}`}
           >
             <Mail size={20} />
-            <span className="text-sm">Usar correo electrónico</span>
+            <span className="text-sm">Usar correo y contraseña</span>
           </button>
         )}
 
-        {/* Phone Login - Minimalist */}
+        {/* Phone Login - Only show if not in email mode */}
         {showPhoneInput ? (
           <form onSubmit={handlePhoneLogin} className="w-full space-y-2 animate-in fade-in slide-in-from-bottom-2">
             <input
@@ -227,14 +316,17 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
             {message && !showEmailInput && <p className="text-emerald-400 text-xs text-center font-medium mt-2">{message}</p>}
           </form>
         ) : (
-          <button
-            onClick={() => { setShowPhoneInput(true); setShowEmailInput(false); }}
-            disabled={!!loading || showEmailInput}
-            className={`w-full bg-white/5 border border-white/5 text-slate-300 h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all hover:bg-white/10 ${showEmailInput ? 'hidden' : ''}`}
-          >
-            <Phone size={20} />
-            <span className="text-sm">Usar número de teléfono</span>
-          </button>
+          /* Show phone button only if email input is NOT shown */
+          !showEmailInput && (
+            <button
+              onClick={() => { setShowPhoneInput(true); setShowEmailInput(false); }}
+              disabled={!!loading}
+              className={`w-full bg-white/5 border border-white/5 text-slate-300 h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all hover:bg-white/10`}
+            >
+              <Phone size={20} />
+              <span className="text-sm">Usar número de teléfono</span>
+            </button>
+          )
         )}
 
         <p className="text-center text-[9px] text-slate-600 mt-6 px-8 leading-normal font-medium">
@@ -243,8 +335,11 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
       </div>
 
       {/* Security Badge */}
-      <div className="relative z-10 flex items-center gap-2 text-slate-700 font-black uppercase text-[8px] tracking-[0.2em] animate-in fade-in duration-1000 delay-700">
-        <ShieldCheck size={12} /> Cifrado de grado militar activo
+      <div className="relative z-10 flex flex-col items-center gap-2 animate-in fade-in duration-1000 delay-700">
+        <div className="flex items-center gap-2 text-slate-700 font-black uppercase text-[8px] tracking-[0.2em]">
+          <ShieldCheck size={12} /> Cifrado de grado militar activo
+        </div>
+        <p className="text-[8px] text-slate-600 font-mono">v1.2 - Phone Auth Active</p>
       </div>
     </div>
   );
