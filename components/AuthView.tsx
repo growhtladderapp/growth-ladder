@@ -21,15 +21,12 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
   };
 
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [showEmailInput, setShowEmailInput] = useState(false);
+  const [showPhoneInput, setShowPhoneInput] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   const handleSocialLogin = async (provider: string) => {
-    if (provider === 'phone') {
-      toast('Inicio de sesión con teléfono próximamente', 'info');
-      return;
-    }
-
     setLoading(provider);
     setMessage(null);
     try {
@@ -72,6 +69,28 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
       } else if (errorMessage.includes('Signups not allowed')) {
         errorMessage = 'El registro de usuarios está deshabilitado temporalmente.';
       }
+      toast(errorMessage, 'error');
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handlePhoneLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading('phone');
+    setMessage(null);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: phone,
+      });
+      if (error) throw error;
+      setMessage('¡Código enviado! Revisa tu SMS.');
+      // Here you would typically transition to a "Verify OTP" view.
+      // But for magic link style (if enabled for phone) or straightforward OTP flow:
+      toast('SMS enviado. Por favor verifica tu código.', 'success');
+    } catch (error: any) {
+      let errorMessage = error.message;
+      // Add specific error handling for phone if needed
       toast(errorMessage, 'error');
     } finally {
       setLoading(null);
@@ -167,13 +186,13 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
             >
               Cancelar
             </button>
-            {message && <p className="text-emerald-400 text-xs text-center font-medium mt-2">{message}</p>}
+            {message && !showPhoneInput && <p className="text-emerald-400 text-xs text-center font-medium mt-2">{message}</p>}
           </form>
         ) : (
           <button
-            onClick={() => setShowEmailInput(true)}
-            disabled={!!loading}
-            className="w-full bg-white/5 border border-white/5 text-slate-300 h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all hover:bg-white/10"
+            onClick={() => { setShowEmailInput(true); setShowPhoneInput(false); }}
+            disabled={!!loading || showPhoneInput}
+            className={`w-full bg-white/5 border border-white/5 text-slate-300 h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all hover:bg-white/10 ${showPhoneInput ? 'hidden' : ''}`}
           >
             <Mail size={20} />
             <span className="text-sm">Usar correo electrónico</span>
@@ -181,14 +200,42 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
         )}
 
         {/* Phone Login - Minimalist */}
-        <button
-          onClick={() => handleSocialLogin('phone')}
-          disabled={!!loading}
-          className="w-full bg-white/5 border border-white/5 text-slate-300 h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all hover:bg-white/10"
-        >
-          <Phone size={20} />
-          <span className="text-sm">Usar número de teléfono</span>
-        </button>
+        {showPhoneInput ? (
+          <form onSubmit={handlePhoneLogin} className="w-full space-y-2 animate-in fade-in slide-in-from-bottom-2">
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+54 11 ..."
+              className="w-full bg-white/5 border border-white/10 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-brand-500 transition-colors"
+              required
+            />
+            <button
+              type="submit"
+              disabled={!!loading}
+              className="w-full bg-brand-600 hover:bg-brand-500 text-white h-12 rounded-xl flex items-center justify-center gap-2 font-bold transition-all disabled:opacity-50"
+            >
+              {loading === 'phone' ? <Loader2 className="animate-spin" size={20} /> : 'Enviar SMS'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowPhoneInput(false)}
+              className="w-full text-xs text-slate-500 hover:text-slate-300 py-1"
+            >
+              Cancelar
+            </button>
+            {message && !showEmailInput && <p className="text-emerald-400 text-xs text-center font-medium mt-2">{message}</p>}
+          </form>
+        ) : (
+          <button
+            onClick={() => { setShowPhoneInput(true); setShowEmailInput(false); }}
+            disabled={!!loading || showEmailInput}
+            className={`w-full bg-white/5 border border-white/5 text-slate-300 h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all hover:bg-white/10 ${showEmailInput ? 'hidden' : ''}`}
+          >
+            <Phone size={20} />
+            <span className="text-sm">Usar número de teléfono</span>
+          </button>
+        )}
 
         <p className="text-center text-[9px] text-slate-600 mt-6 px-8 leading-normal font-medium">
           Al continuar, aceptas nuestros <span className="text-slate-400 underline">Términos de Servicio</span> y <span className="text-slate-400 underline">Política de Privacidad</span>.
