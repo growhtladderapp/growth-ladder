@@ -76,7 +76,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
           toast('¡Bienvenido! Tu cuenta ha sido creada.', 'success');
         } else {
           // User registered but needs to confirm email
-          setMessage('¡Cuenta creada! Revisa tu correo para verificar tu cuenta.');
+          setMessage('¡Solicitud enviada! Si no recibes el correo en unos minutos, revisa tu carpeta de Spam. Si ya tienes cuenta, intenta Iniciar Sesión.');
         }
 
       } else {

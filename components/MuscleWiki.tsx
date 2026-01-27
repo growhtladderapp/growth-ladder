@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { getMuscleGuide, getSportGuide } from '../services/geminiService';
 import { MuscleGroup, MuscleGuide, SportGuide, UserProfile, WeeklyGoalOption } from '../types';
-import { ChevronLeft, Dumbbell, ArrowRight, PlayCircle, AlertTriangle, Medal, Search, Layers, ScanLine, Box, Info, Aperture, X } from 'lucide-react';
+import { ChevronLeft, Dumbbell, ArrowRight, PlayCircle, AlertTriangle, Medal, Search, Layers, ScanLine, Box, Info, Aperture, X, Home, Building2 } from 'lucide-react';
 
 type Category = 'MUSCLE' | 'SPORT';
 
@@ -17,7 +17,24 @@ const SPORTS_DATA: Record<string, string[]> = {
   "Populares": [
     "Fútbol", "Baloncesto", "Tenis", "Running", "CrossFit", "Natación", "Voleibol", "Pádel", "Gimnasio", "Yoga"
   ],
-  // ... (keep sports data unchanged, just showing context for replacement)
+  "Equipos": [
+    "Rugby", "Fútbol Americano", "Balonmano", "Hockey", "Waterpolo", "Béisbol", "Cricket"
+  ],
+  "Deportes de Combate": [
+    "Boxeo", "MMA", "Muay Thai", "Judo", "Karate", "Jiu-Jitsu", "Taekwondo", "Lucha Libre", "Esgrima"
+  ],
+  "Raqueta": [
+    "Tenis", "Pádel", "Bádminton", "Squash", "Ping Pong", "Frontón"
+  ],
+  "Individuales": [
+    "Golf", "Gimnasia", "Ciclismo", "Escalada", "Atletismo", "Triatlón", "Halterofilia", "Powerlifting", "Calistenia"
+  ],
+  "Acuáticos": [
+    "Natación", "Surf", "Kitesurf", "Remo", "Piragüismo", "Buceo", "Snorkel"
+  ],
+  "Invierno": [
+    "Esquí", "Snowboard", "Patinaje sobre Hielo", "Hockey sobre Hielo", "Curling"
+  ],
   "Motor y Extremos": [
     "Fórmula 1", "Motociclismo", "Rally", "Karting", "Motocross", "BMX", "Skateboarding", "Patinaje en Línea", "Paracaidismo", "Puenting"
   ]
@@ -27,6 +44,8 @@ const ALL_CATEGORIES = Object.keys(SPORTS_DATA);
 
 export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWorkout, userProfile, currentGoal }) => {
   const [activeTab, setActiveTab] = useState<Category>('MUSCLE');
+  // New Environment State
+  const [environment, setEnvironment] = useState<'home' | 'gym'>('gym');
 
   // Selection State
   const [selectedMuscle, setSelectedMuscle] = useState<MuscleGroup | null>(null);
@@ -82,7 +101,8 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
     setLoading(true);
     setMuscleGuide(null);
     try {
-      const data = await getMuscleGuide(m, userProfile, currentGoal);
+      // Pass environment context
+      const data = await getMuscleGuide(m, userProfile, currentGoal, environment);
       setMuscleGuide(data);
     } catch (e) {
       console.error(e);
@@ -96,7 +116,8 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
     setLoading(true);
     setSportGuide(null);
     try {
-      const data = await getSportGuide(sportName, userProfile, currentGoal);
+      // Pass environment context (optional for sports but good consistency)
+      const data = await getSportGuide(sportName, userProfile, currentGoal, environment);
       setSportGuide(data);
     } catch (e) {
       console.error(e);
@@ -111,7 +132,6 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
     setMuscleGuide(null);
     setSportGuide(null);
   };
-
   const SPORT_IMAGES: Record<string, string> = {
     // Populares
     "fútbol": "https://images.unsplash.com/photo-1579952363873-27f3bde9be51?q=80&w=1000&auto=format&fit=crop",
@@ -121,14 +141,14 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
     "crossfit": "https://images.unsplash.com/photo-1517963879433-6ad2b056d712?q=80&w=1000&auto=format&fit=crop",
     "natación": "https://images.unsplash.com/photo-1600965962102-9d260a304c63?q=80&w=1000&auto=format&fit=crop",
     "voleibol": "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?q=80&w=1000&auto=format&fit=crop",
-    "pádel": "https://images.unsplash.com/photo-1632517594958-86d49cb075d1?q=80&w=1000&auto=format&fit=crop", // Abstract racket/court
+    "pádel": "https://images.unsplash.com/photo-1632517594958-86d49cb075d1?q=80&w=1000&auto=format&fit=crop",
     "gimnasio": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1000&auto=format&fit=crop",
     "yoga": "https://images.unsplash.com/photo-1544367563-12123d8965cd?q=80&w=1000&auto=format&fit=crop",
 
     // Equipos
     "rugby": "https://images.unsplash.com/photo-1531053326607-9d349096d887?q=80&w=1000&auto=format&fit=crop",
     "fútbol americano": "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?q=80&w=1000&auto=format&fit=crop",
-    "balonmano": "https://images.unsplash.com/photo-1517486430290-35657bd05532?q=80&w=1000&auto=format&fit=crop", // Generic court action
+    "balonmano": "https://images.unsplash.com/photo-1517486430290-35657bd05532?q=80&w=1000&auto=format&fit=crop",
     "hockey": "https://images.unsplash.com/photo-1580748141549-7174bcd862bf?q=80&w=1000&auto=format&fit=crop",
     "waterpolo": "https://images.unsplash.com/photo-1553603227-2358e579bd51?q=80&w=1000&auto=format&fit=crop",
 
@@ -142,7 +162,7 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
 
     // Raqueta
     "bádminton": "https://images.unsplash.com/photo-1626224583764-8478ab2e0585?q=80&w=1000&auto=format&fit=crop",
-    "squash": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?q=80&w=1000&auto=format&fit=crop", // Abstract court
+    "squash": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?q=80&w=1000&auto=format&fit=crop",
     "ping pong": "https://images.unsplash.com/photo-1534158914592-0629928be94c?q=80&w=1000&auto=format&fit=crop",
 
     // Individuales
@@ -164,40 +184,29 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
 
   const getImage = (key: string, type: Category, categoryContext?: string) => {
     if (type === 'MUSCLE') {
-      // Updated Logic: Use high-contrast, anatomy-focused images to simulate "3D Tech" look
       switch (key) {
-        case MuscleGroup.CHEST: return '/chest-cover.jpg'; // Manual Upload
-        case MuscleGroup.BACK: return '/back-cover.jpg'; // Manual Upload
+        case MuscleGroup.CHEST: return '/chest-cover.jpg';
+        case MuscleGroup.BACK: return '/back-cover.jpg';
         case MuscleGroup.ARMS: return 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=1000&auto=format&fit=crop';
-        case MuscleGroup.LEGS: return '/legs-cover.jpg'; // Manual Upload
-        case MuscleGroup.ABS: return '/abs-cover.jpg'; // Manual Upload
+        case MuscleGroup.LEGS: return '/legs-cover.jpg';
+        case MuscleGroup.ABS: return '/abs-cover.jpg';
         case MuscleGroup.SHOULDERS: return 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=1000&auto=format&fit=crop';
         default: return 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1000&auto=format&fit=crop';
       }
     } else {
-      // Dynamic Sports Images
       const k = key.toLowerCase();
-
-      // 1. Direct specific match from our high-quality map
-      if (SPORT_IMAGES[k]) {
-        return SPORT_IMAGES[k];
-      }
-
-      // 2. Keyword matching fallback
+      if (SPORT_IMAGES[k]) return SPORT_IMAGES[k];
       if (k.includes('fútbol') || k.includes('soccer')) return SPORT_IMAGES['fútbol'];
       if (k.includes('basket') || k.includes('baloncesto')) return SPORT_IMAGES['baloncesto'];
       if (k.includes('nadar') || k.includes('agua')) return SPORT_IMAGES['natación'];
       if (k.includes('fight') || k.includes('lucha')) return SPORT_IMAGES['mma'];
 
-      // 3. Category Context Fallbacks
       const cat = categoryContext || "";
       if (cat.includes('Acuáticos')) return 'https://images.unsplash.com/photo-1534093607318-f025419f49ff?q=80&w=1000&auto=format&fit=crop';
       if (cat.includes('Invierno')) return 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?q=80&w=1000&auto=format&fit=crop';
       if (cat.includes('Combate')) return 'https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?q=80&w=1000&auto=format&fit=crop';
       if (cat.includes('Raqueta')) return 'https://images.unsplash.com/photo-1622163642998-1ea14b60c57e?q=80&w=1000&auto=format&fit=crop';
       if (cat.includes('Motor')) return 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=1000&auto=format&fit=crop';
-
-      // 4. Generic Fallback
       return 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1000&auto=format&fit=crop';
     }
   };
@@ -206,12 +215,11 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
     return `https://www.youtube.com/results?search_query=tecnica+correcta+${exerciseName.replace(/ /g, '+')}`;
   };
 
-  // --- DETAIL VIEW ---
   const renderDetailView = () => {
     const isMuscle = activeTab === 'MUSCLE';
     const guide = isMuscle ? muscleGuide : sportGuide;
     const title = isMuscle ? selectedMuscle : selectedSport;
-    const imgUrl = getImage(title as string, activeTab, isMuscle ? undefined : "Populares"); // context fallback
+    const imgUrl = getImage(title as string, activeTab, isMuscle ? undefined : "Populares");
 
     if (!guide && !loading) return <div className="text-center text-slate-500 mt-10">Error al cargar datos.</div>;
 
@@ -224,20 +232,15 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
           <ChevronLeft size={20} /> Volver a la lista
         </button>
 
-        {/* 3D SCANNER VISUAL HEADER */}
         <div className="relative h-64 rounded-2xl overflow-hidden mb-6 shadow-2xl border border-slate-700 bg-black group">
           <img
             src={imgUrl}
             alt={title as string}
             className="absolute inset-0 w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 transition-all duration-700"
           />
-          {/* Holographic Overlay Effect */}
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-
-          {/* Tech Scanlines */}
           <div className="absolute inset-0 bg-[linear-gradient(rgba(18,255,110,0.03)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none"></div>
 
-          {/* HUD Elements */}
           <div className="absolute top-4 right-4 animate-pulse">
             <Aperture className={`${accentColor} opacity-50`} size={32} />
           </div>
@@ -245,7 +248,6 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
             Análisis Biomecánico
           </div>
 
-          {/* Main Title Overlay */}
           <div className="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black via-black/80 to-transparent">
             <div className="flex items-center gap-2 mb-1">
               {isMuscle ? <Box size={16} className={accentColor} /> : <Medal size={16} className={accentColor} />}
@@ -266,8 +268,6 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
           </div>
         ) : (
           <div className="space-y-6 overflow-y-auto pr-1">
-
-            {/* TECHNICAL ANALYSIS CARD */}
             <div className={`bg-slate-900/80 p-5 rounded-xl border-l-4 ${borderAccent} shadow-lg backdrop-blur-sm relative overflow-hidden`}>
               <div className="absolute -right-4 -top-4 opacity-10">
                 <ScanLine size={100} />
@@ -289,8 +289,6 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
             <div className="space-y-4">
               {guide?.exercises?.map((ex, idx) => (
                 <div key={idx} className={`bg-brand-card rounded-xl overflow-hidden border border-slate-700 shadow-lg group ${hoverBorderAccent} transition-colors`}>
-
-                  {/* Card Header as HUD */}
                   <div className="bg-slate-900/50 p-3 border-b border-slate-700 flex justify-between items-center">
                     <span className="text-white font-bold text-sm tracking-wide">{ex.name}</span>
                     <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide border ${ex.difficulty === 'Principiante' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
@@ -302,7 +300,6 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
                   </div>
 
                   <div className="p-4 relative">
-                    {/* Visual Connection Line */}
                     <div className="absolute left-6 top-4 bottom-4 w-0.5 bg-slate-700"></div>
 
                     {ex.gifUrl && (
@@ -355,18 +352,31 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
     );
   };
 
-  // If detail view is active
-  if (selectedMuscle || selectedSport) {
-    return renderDetailView();
-  }
-
   // --- MAIN LIST VIEW ---
   return (
     <div className="space-y-6 pb-20 animate-fade-in">
-      <header>
-        <h1 className="text-2xl font-bold text-white mb-2">Guía de Entrenamiento</h1>
-        <p className="text-slate-400 text-sm">Selecciona una categoría para ver guías especializadas.</p>
+      <header className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white mb-2">Guía de Entrenamiento</h1>
+          <p className="text-slate-400 text-sm">Selecciona una categoría para ver guías especializadas.</p>
+        </div>
       </header>
+
+      {/* ENVIRONMENT TOGGLE */}
+      <div className="bg-slate-800/50 p-1 rounded-xl border border-slate-700 flex relative">
+        <button
+          onClick={() => setEnvironment('gym')}
+          className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${environment === 'gym' ? `${bgAccent} text-white shadow` : 'text-slate-400 hover:text-white'}`}
+        >
+          <Building2 size={16} /> Entrenar en Gimnasio
+        </button>
+        <button
+          onClick={() => setEnvironment('home')}
+          className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${environment === 'home' ? `${bgAccent} text-white shadow` : 'text-slate-400 hover:text-white'}`}
+        >
+          <Home size={16} /> Entrenar en Casa
+        </button>
+      </div>
 
       {/* Search Input */}
       <div className="relative">

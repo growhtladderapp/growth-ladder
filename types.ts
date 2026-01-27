@@ -106,6 +106,11 @@ export interface UserGoal {
 export interface UserProfile extends UserBiometrics, UserGoal {
   name?: string;
   profilePicture?: string; // New field for custom logo/avatar
+  gender?: 'Masculino' | 'Femenino' | 'Otro';
+  level?: number;
+  xp?: number;
+  goalsCompleted?: number;
+  createdAt?: string; // ISO Date
 }
 
 export interface FoodAnalysis {

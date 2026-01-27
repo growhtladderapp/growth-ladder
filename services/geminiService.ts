@@ -144,7 +144,7 @@ export const generatePersonalizedRoutine = async (goal: UserGoal, biometrics: Us
   }
 };
 
-export const getMuscleGuide = async (muscle: MuscleGroup, userProfile?: UserProfile | null, currentGoal?: WeeklyGoalOption): Promise<MuscleGuide> => {
+export const getMuscleGuide = async (muscle: MuscleGroup, userProfile?: UserProfile | null, currentGoal?: WeeklyGoalOption, environment: 'home' | 'gym' = 'gym'): Promise<MuscleGuide> => {
   try {
     const goalContext = currentGoal
       ? `META USUARIO: ${currentGoal.title} (${currentGoal.type}). ENFOQUE: ${currentGoal.description}.`
@@ -153,12 +153,19 @@ export const getMuscleGuide = async (muscle: MuscleGroup, userProfile?: UserProf
       ? `ATLETA: Nivel ${userProfile.experience}, Objetivo: ${userProfile.focus}.`
       : "";
 
+    const envContext = environment === 'home'
+      ? "ENTORNO: CASA (Equipamiento limitado: peso corporal, mancuernas, bandas elásticas)."
+      : "ENTORNO: GIMNASIO (Acceso total a máquinas, barras, poleas y peso libre).";
+
     const prompt = `
       Eres un experto en biomecánica. Crea una GUÍA TÉCNICA para: ${muscle}.
       ${goalContext}
       ${profileContext}
+      ${envContext}
 
-      ADAPTA LOS EJERCICIOS A LA META DEL USUARIO:
+      ADAPTA LOS EJERCICIOS A LA META Y AL ENTORNO DEL USUARIO:
+      - Si es CASA: Prioriza ejercicios con peso corporal o equipamiento mínimo efectivo.
+      - Si es GIMNASIO: Aprovecha máquinas y equipamiento compuesto.
       - Si es "Quema Calórica/Cardio": Enfócate en altas repeticiones, superseries o ejercicios compuestos.
       - Si es "Fuerza/Músculo": Enfócate en aislamiento y control.
       - Si es "Runner/Distancia": Enfócate en estabilidad y resistencia muscular.
@@ -166,7 +173,7 @@ export const getMuscleGuide = async (muscle: MuscleGroup, userProfile?: UserProf
       RETORNA JSON:
       {
         "muscle": "${muscle}",
-        "introduction": "Breve análisis biomecánico adaptado a la meta del usuario.",
+        "introduction": "Breve análisis biomecánico adaptado a la meta y entorno (${environment}).",
         "exercises": [
           { 
             "name": "Nombre Ejercicio",
@@ -201,22 +208,27 @@ export const getMuscleGuide = async (muscle: MuscleGroup, userProfile?: UserProf
   }
 };
 
-export const getSportGuide = async (sport: string, userProfile?: UserProfile | null, currentGoal?: WeeklyGoalOption): Promise<SportGuide> => {
+export const getSportGuide = async (sport: string, userProfile?: UserProfile | null, currentGoal?: WeeklyGoalOption, environment: 'home' | 'gym' = 'gym'): Promise<SportGuide> => {
   try {
     const goalContext = currentGoal
       ? `META USUARIO: ${currentGoal.title}.`
       : "";
 
+    const envContext = environment === 'home'
+      ? "ENTORNO: CASA (Equipamiento limitado)."
+      : "ENTORNO: GIMNASIO (Full equipment).";
+
     const prompt = `
       Crea una guía de acondicionamiento físico para el deporte: ${sport}.
       ${goalContext}
-      Adaptado para mejorar el rendimiento en este deporte específico alineado con la meta del usuario.
+      ${envContext}
+      Adaptado para mejorar el rendimiento en este deporte específico alineado con la meta y entorno del usuario.
       
       RETORNA JSON:
       {
         "sport": "${sport}",
         "focus": "Enfoque principal",
-        "introduction": "Intro estratégica.",
+        "introduction": "Intro estratégica adaptada a ${environment}.",
         "exercises": [ (mismo formato que muscle guide) ]
       }
     `;

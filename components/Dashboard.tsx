@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useRef } from 'react';
-import { DailyLogEntry, ViewState, WeeklyGoalOption, GoalType, DurationType } from '../types';
+import { DailyLogEntry, ViewState, WeeklyGoalOption, GoalType, DurationType, UserProfile } from '../types';
 import { useToast } from '../components/ToastContext';
 import { TrendingUp, Activity, Flame, Edit2, Target, Check, Lock, Watch, Calendar, ChevronRight, CheckCircle2, Trash2, Heart, Smartphone, Bluetooth, Footprints, MapPin, Crown, Sparkles, Archive, Save, LineChart, Briefcase, Loader2, Lightbulb, ChevronDown, Zap, Sun, Map, Flag, CalendarCheck, Route, Bell, X, Menu, Settings, User, LogOut, HelpCircle, Users, Trophy, Palette, MoreHorizontal, Plus } from 'lucide-react';
 import { Logo } from './Logo';
@@ -18,6 +18,7 @@ interface DashboardProps {
   onSelectGoal: (id: number) => void;
   customTargets: Record<number, number>;
   onUpdateTarget: (id: number, target: number) => void;
+  userProfile: UserProfile | null;
 }
 
 const PRESET_COLORS = [
@@ -124,7 +125,7 @@ const SwipeableLogItem: React.FC<SwipeableItemProps> = ({ dayData, onDelete, onS
   );
 };
 
-export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, onDeleteDate, onChangeThemeColor, setView, uiText, selectedGoalId, onSelectGoal, customTargets, onUpdateTarget }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, onDeleteDate, onChangeThemeColor, setView, uiText, selectedGoalId, onSelectGoal, customTargets, onUpdateTarget, userProfile }) => {
   const [goalDuration, setGoalDuration] = useState<DurationType>('WEEK');
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -293,12 +294,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
             </div>
 
             <div className="mb-8 p-4 bg-zinc-900 rounded-2xl border border-white/5 flex items-center gap-4 cursor-pointer active:scale-95 transition-transform" onClick={() => handleSidebarClick(ViewState.LOG)}>
-              <div className={`w-12 h-12 rounded-xl ${bgAccent} flex items-center justify-center text-white shadow-lg shrink-0`}>
-                <User size={24} />
+              <div className={`w-12 h-12 rounded-xl overflow-hidden ${bgAccent} flex items-center justify-center text-white shadow-lg shrink-0`}>
+                {userProfile?.profilePicture ? (
+                  <img src={userProfile.profilePicture} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <User size={24} />
+                )}
               </div>
               <div>
-                <p className="text-white font-bold text-sm">Atleta Élite</p>
-                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Ver mi cuenta</p>
+                <p className="text-white font-bold text-sm truncate max-w-[150px]">{userProfile?.name || 'Atleta'}</p>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest flex items-center gap-1">
+                  <Crown size={10} className="text-brand-500" /> Nivel {userProfile?.level || 1}
+                </p>
               </div>
             </div>
 
@@ -431,9 +438,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="p-2 -ml-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 active:scale-90 transition-all"
+            className="p-1 -ml-2 rounded-full text-slate-300 hover:text-white active:scale-95 transition-all relative"
           >
-            <Menu size={28} strokeWidth={2.5} />
+            {userProfile?.profilePicture ? (
+              <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-brand-500 shadow-md">
+                <img src={userProfile.profilePicture} alt="Menu" className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <div className="p-2 hover:bg-white/5 rounded-xl">
+                <Menu size={28} strokeWidth={2.5} />
+              </div>
+            )}
           </button>
           <div>
             <h1 className="text-xl font-bold text-white tracking-tight uppercase italic leading-none">Growth Ladder</h1>

@@ -175,14 +175,50 @@ export default function App() {
   const handleSetGoal = (id: number) => {
     setSelectedGoalId(id);
     localStorage.setItem('gl_selected_goal_id', id.toString());
+
+    // Sync to Supabase
+    if (userId && userId !== 'offline-guest-user') {
+      savePreferences({ selectedGoalId: id });
+    }
   };
 
   const handleUpdateGoalTarget = (id: number, target: number) => {
     setGoalTargets(prev => {
       const next = { ...prev, [id]: target };
       localStorage.setItem('gl_goal_targets', JSON.stringify(next));
+
+      // Sync to Supabase
+      if (userId && userId !== 'offline-guest-user') {
+        savePreferences({ goalTargets: next });
+      }
       return next;
     });
+  };
+
+  const savePreferences = async (newPrefs: any) => {
+    try {
+      // We need to merge with existing preferences. Ideally fetch first or just upsert with merge if JSONB
+      // Supabase doesn't auto-merge JSONB on simple update unless we use a function or specialized query.
+      // Easiest: Read current profile prefs from state if we had them or just fetch-update.
+      // However, to be efficient, let's assume we can push the partial update if we had a dedicated column.
+      // With JSONB 'preferences', we should fetch current or keep a local 'preferences' state.
+
+      // Quick fix: userProfile could store full preferences object? 
+      // Currently userProfile interface is limited.
+      // Let's do a direct Supabase raw query or fetch-update.
+      const { data: current, error: fetchErr } = await supabase
+        .from('profiles')
+        .select('preferences')
+        .eq('id', userId)
+        .single();
+
+      if (!fetchErr && current) {
+        const merged = { ...current.preferences, ...newPrefs };
+        await supabase.from('profiles').update({ preferences: merged }).eq('id', userId);
+      }
+    } catch (e) {
+      console.error("Error syncing preferences", e);
+    }
   };
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -301,30 +337,7 @@ export default function App() {
 
   const fetchUserData = async (uid: string) => {
     try {
-      // Fetch Profile
-      // ... (existing profile fetch) ...
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', uid)
-        .single();
-
-      if (profile) {
-        // Map DB profile to App profile
-        const mappedProfile: UserProfile = {
-          age: profile.age,
-          weight: profile.weight,
-          height: profile.height,
-          experience: profile.experience_level as any,
-          focus: profile.primary_goal as any,
-          daysAvailable: profile.days_available,
-          name: profile.full_name,
-          profilePicture: profile.avatar_url
-        };
-        setUserProfile(mappedProfile);
-      }
-
-      // Fetch Logs
+      // Fetch Logs First (Needed for Level Calculation)
       const { data: dbLogs, error: logsError } = await supabase
         .from('daily_logs')
         .select('*')
@@ -343,6 +356,55 @@ export default function App() {
           waterPercent: log.water_percent
         }));
         setLogs(mappedLogs);
+      }
+
+      // Fetch Profile
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', uid)
+        .single();
+
+      if (profile) {
+        // Load Preferences (Goals)
+        if (profile.preferences) {
+          const prefs = profile.preferences;
+          if (prefs.selectedGoalId) {
+            setSelectedGoalId(prefs.selectedGoalId);
+            localStorage.setItem('gl_selected_goal_id', prefs.selectedGoalId.toString());
+          }
+          if (prefs.goalTargets) {
+            setGoalTargets(prefs.goalTargets);
+            localStorage.setItem('gl_goal_targets', JSON.stringify(prefs.goalTargets));
+          }
+        }
+
+        // Calculate Gamification Metrics
+        const createdAt = profile.created_at || new Date().toISOString();
+        const daysMember = Math.max(1, Math.floor((new Date().getTime() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24)));
+        const totalLogs = dbLogs ? dbLogs.length : 0;
+        const goalsCompleted = profile.goals_completed || 0;
+
+        // Formula: 10 XP/day + 50 XP/log + 500 XP/goal
+        const calculatedXP = (daysMember * 10) + (totalLogs * 50) + (goalsCompleted * 500);
+        const calculatedLevel = Math.floor(calculatedXP / 1000) + 1;
+
+        const mappedProfile: UserProfile = {
+          age: profile.age,
+          weight: profile.weight,
+          height: profile.height,
+          experience: profile.experience_level as any,
+          focus: profile.primary_goal as any,
+          daysAvailable: profile.days_available,
+          name: profile.full_name,
+          profilePicture: profile.avatar_url,
+          gender: profile.gender,
+          createdAt: createdAt,
+          level: calculatedLevel,
+          xp: calculatedXP,
+          goalsCompleted: goalsCompleted
+        };
+        setUserProfile(mappedProfile);
       }
 
       // Fetch Calendar Events
@@ -484,6 +546,7 @@ export default function App() {
       primary_goal: updatedProfile.focus,
       days_available: updatedProfile.daysAvailable,
       avatar_url: updatedProfile.profilePicture,
+      gender: updatedProfile.gender
     };
 
     // Use upsert instead of update to handle both new and existing profiles
@@ -620,6 +683,7 @@ export default function App() {
               onSelectGoal={handleSetGoal}
               customTargets={goalTargets}
               onUpdateTarget={handleUpdateGoalTarget}
+              userProfile={userProfile}
             />
           )}
           {view === ViewState.WORKOUT && (
@@ -644,6 +708,7 @@ export default function App() {
               currentLangName={currentLangName}
               uiText={uiText}
               onLogout={handleLogout}
+              userId={userId} // Passing ID for avatar upload
             />
           )}
           {view === ViewState.COMMUNITY && (
