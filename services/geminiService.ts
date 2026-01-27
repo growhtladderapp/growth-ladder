@@ -41,7 +41,7 @@ export const translateUI = async (targetLanguage: string, currentKeys: Record<st
 
 export const createCoachSession = (userProfile: UserProfile | null) => {
   const profileContext = userProfile
-    ? `CONTEXTO FISIOLÓGICO DEL ATLETA: Edad ${userProfile.age}, Masa Corporal ${userProfile.weight}kg, Estatura ${userProfile.height}cm, Nivel de Experiencia: ${userProfile.experience}, Objetivo Primario: ${userProfile.focus}.`
+    ? `CONTEXTO FISIOLÓGICO DEL ATLETA: Género: ${userProfile.gender || 'No especificado'}, Edad ${userProfile.age}, Masa Corporal ${userProfile.weight}kg, Estatura ${userProfile.height}cm, Nivel de Experiencia: ${userProfile.experience}, Objetivo Primario: ${userProfile.focus}.`
     : "Perfil fisiológico del atleta no definido.";
 
   return ai.chats.create({
