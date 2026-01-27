@@ -154,7 +154,7 @@ export const getMuscleGuide = async (muscle: MuscleGroup, userProfile?: UserProf
       : "";
 
     const envContext = environment === 'home'
-      ? "ENTORNO: CASA (Equipamiento limitado: peso corporal, mancuernas, bandas elásticas)."
+      ? "ENTORNO: CASA (SIN EQUIPAMIENTO: SOLO PESO CORPORAL / CALISTENIA). No asumir que tiene bandas ni mancuernas."
       : "ENTORNO: GIMNASIO (Acceso total a máquinas, barras, poleas y peso libre).";
 
     const prompt = `
@@ -164,7 +164,7 @@ export const getMuscleGuide = async (muscle: MuscleGroup, userProfile?: UserProf
       ${envContext}
 
       ADAPTA LOS EJERCICIOS A LA META Y AL ENTORNO DEL USUARIO:
-      - Si es CASA: Prioriza ejercicios con peso corporal o equipamiento mínimo efectivo.
+      - Si es CASA: Usa EXCLUSIVAMENTE ejercicios con peso corporal. Prohibido incluir ejercicios que requieran mancuernas, barras, bandas elásticas o máquinas. Solo calistenia pura y uso de muebles básicos (silla, pared).
       - Si es GIMNASIO: Aprovecha máquinas y equipamiento compuesto.
       - Si es "Quema Calórica/Cardio": Enfócate en altas repeticiones, superseries o ejercicios compuestos.
       - Si es "Fuerza/Músculo": Enfócate en aislamiento y control.
@@ -215,7 +215,7 @@ export const getSportGuide = async (sport: string, userProfile?: UserProfile | n
       : "";
 
     const envContext = environment === 'home'
-      ? "ENTORNO: CASA (Equipamiento limitado)."
+      ? "ENTORNO: CASA (SIN EQUIPAMIENTO: SOLO PESO CORPORAL). No asumir equipamiento deportivo."
       : "ENTORNO: GIMNASIO (Full equipment).";
 
     const prompt = `

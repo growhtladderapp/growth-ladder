@@ -297,6 +297,11 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
                       }`}>
                       {ex.difficulty}
                     </span>
+                    {environment === 'home' && (
+                      <span className="ml-2 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide border bg-cyan-500/10 text-cyan-400 border-cyan-500/20 flex items-center gap-1">
+                        Sin Equipo
+                      </span>
+                    )}
                   </div>
 
                   <div className="p-4 relative">

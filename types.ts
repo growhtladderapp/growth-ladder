@@ -44,6 +44,10 @@ export interface DailyLogEntry {
   bodyFat?: number;
   muscleMass?: number;
   waterPercent?: number;
+  // Nutrition Macros
+  protein?: number;
+  carbs?: number;
+  fat?: number;
 }
 
 export interface CalendarEvent {

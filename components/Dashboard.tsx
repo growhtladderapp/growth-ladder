@@ -549,6 +549,74 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
         </div>
       </div>
 
+
+      {/* MACRO NUTRIENTS BAR */}
+      <div className={`rounded-2xl p-5 border mb-6 ${isPro ? 'bg-zinc-900 border-zinc-800' : 'bg-brand-card border-slate-800'}`}>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-sm font-bold text-white uppercase tracking-wide flex items-center gap-2">
+            <span className="w-1.5 h-4 bg-brand-500 rounded-full"></span>
+            Macronutrientes
+          </h3>
+          <span className="text-[10px] text-slate-500 font-mono">HOY</span>
+        </div>
+
+        {(() => {
+          // Calculate macros from today's logs
+          const todayStr = new Date().toDateString();
+          const todaysLogs = logs.filter(log => new Date(log.date).toDateString() === todayStr);
+
+          const protein = todaysLogs.reduce((acc, curr) => acc + (curr.protein || 0), 0);
+          const carbs = todaysLogs.reduce((acc, curr) => acc + (curr.carbs || 0), 0);
+          const fat = todaysLogs.reduce((acc, curr) => acc + (curr.fat || 0), 0);
+
+          const totalMacros = protein + carbs + fat;
+          const pP = totalMacros > 0 ? (protein / totalMacros) * 100 : 0;
+          const pC = totalMacros > 0 ? (carbs / totalMacros) * 100 : 0;
+          const pF = totalMacros > 0 ? (fat / totalMacros) * 100 : 0;
+
+          return (
+            <>
+              {/* Stacked Bar */}
+              <div className="h-4 bg-slate-800 rounded-full flex overflow-hidden mb-3 border border-slate-700/50">
+                {totalMacros > 0 ? (
+                  <>
+                    <div style={{ width: `${pP}%` }} className="bg-emerald-500 h-full transition-all duration-1000 relative group/bar">
+                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover/bar:opacity-100 transition-opacity"></div>
+                    </div>
+                    <div style={{ width: `${pC}%` }} className="bg-orange-500 h-full transition-all duration-1000 relative group/bar">
+                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover/bar:opacity-100 transition-opacity"></div>
+                    </div>
+                    <div style={{ width: `${pF}%` }} className="bg-yellow-500 h-full transition-all duration-1000 relative group/bar">
+                      <div className="absolute inset-0 bg-white/20 opacity-0 group-hover/bar:opacity-100 transition-opacity"></div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="w-full h-full bg-slate-800/50 flex items-center justify-center text-[9px] text-slate-600 font-medium uppercase tracking-wider">
+                    Sin registros hoy
+                  </div>
+                )}
+              </div>
+
+              {/* Legend / Values */}
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="bg-emerald-500/10 rounded-lg p-2 border border-emerald-500/20">
+                  <p className="text-[9px] text-emerald-400 font-bold uppercase mb-0.5">Proteínas</p>
+                  <p className="text-lg font-black text-white leading-none">{protein.toFixed(0)}<span className="text-[10px] text-slate-500 ml-0.5">g</span></p>
+                </div>
+                <div className="bg-orange-500/10 rounded-lg p-2 border border-orange-500/20">
+                  <p className="text-[9px] text-orange-400 font-bold uppercase mb-0.5">Carbs</p>
+                  <p className="text-lg font-black text-white leading-none">{carbs.toFixed(0)}<span className="text-[10px] text-slate-500 ml-0.5">g</span></p>
+                </div>
+                <div className="bg-yellow-500/10 rounded-lg p-2 border border-yellow-500/20">
+                  <p className="text-[9px] text-yellow-400 font-bold uppercase mb-0.5">Grasas</p>
+                  <p className="text-lg font-black text-white leading-none">{fat.toFixed(0)}<span className="text-[10px] text-slate-500 ml-0.5">g</span></p>
+                </div>
+              </div>
+            </>
+          );
+        })()}
+      </div>
+
       <div className="space-y-3 pt-2">
         {goalDuration === 'WEEK' && !isPro && (
           <div className="bg-brand-500/10 border border-brand-500/20 p-3 rounded-lg flex gap-3 items-start animate-fade-in">
@@ -647,6 +715,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
           ))}
         </div>
       </div>
-    </div>
+    </div >
   );
 };
