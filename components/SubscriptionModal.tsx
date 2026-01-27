@@ -58,7 +58,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
                   onClick={() => setSelectedPlan('monthly')}
                   className={`w-full p-4 rounded-2xl border transition-all text-left relative overflow-hidden group ${selectedPlan === 'monthly' ? 'border-zinc-500 bg-zinc-800/40' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}
                 >
-                  <div className="absolute top-0 right-0 bg-white text-black text-[8px] font-black px-2 py-1 uppercase tracking-tighter rounded-bl-lg">1 Mes Gratis</div>
+                  <div className="absolute top-0 right-0 bg-white text-black text-[8px] font-black px-2 py-1 uppercase tracking-tighter rounded-bl-lg">3 Días Gratis</div>
                   <div className="flex justify-between items-center mb-1 mt-1">
                     <div>
                       <h3 className="text-sm font-bold text-white">Plan Mensual</h3>
@@ -119,7 +119,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
 
               <div className="bg-white/5 rounded-2xl p-5 border border-white/5 mb-6">
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-slate-400 text-sm font-bold">{selectedPlan === 'annual' ? 'Suscripción Anual' : 'Plan Mensual (1 Mes Gratis)'}</span>
+                  <span className="text-slate-400 text-sm font-bold">{selectedPlan === 'annual' ? 'Suscripción Anual' : 'Plan Mensual (3 Días Gratis)'}</span>
                   <span className="text-white font-black">{selectedPlan === 'monthly' ? '$0.00' : '$29.90'}</span>
                 </div>
                 {selectedPlan === 'monthly' && (
