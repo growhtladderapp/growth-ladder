@@ -2,7 +2,13 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { DailyLogEntry, ViewState, WeeklyGoalOption, GoalType, DurationType, UserProfile } from '../types';
 import { useToast } from '../components/ToastContext';
+import { Utensils } from 'lucide-react';
+// ... existing imports ...
 import { TrendingUp, Activity, Flame, Edit2, Target, Check, Lock, Watch, Calendar, ChevronRight, CheckCircle2, Trash2, Heart, Smartphone, Bluetooth, Footprints, MapPin, Crown, Sparkles, Archive, Save, LineChart, Briefcase, Loader2, Lightbulb, ChevronDown, Zap, Sun, Map, Flag, CalendarCheck, Route, Bell, X, Menu, Settings, User, LogOut, HelpCircle, Users, Trophy, Palette, MoreHorizontal, Plus } from 'lucide-react';
+
+// ... 
+
+
 import { Logo } from './Logo';
 import { GOAL_OPTIONS } from '../App'; // Import shared constants
 
@@ -264,6 +270,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
   };
 
   const sidebarLinks = [
+    { icon: Utensils, label: "Chef IA", view: ViewState.RECIPES },
     { icon: User, label: uiText.perfil, view: ViewState.LOG },
     { icon: Trophy, label: uiText.logros, view: ViewState.ACHIEVEMENTS },
     { icon: Users, label: uiText.comunidad, view: ViewState.COMMUNITY },
@@ -612,6 +619,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
                   <p className="text-lg font-black text-white leading-none">{fat.toFixed(0)}<span className="text-[10px] text-slate-500 ml-0.5">g</span></p>
                 </div>
               </div>
+
+              {/* Chef IA Promo Button */}
+              <button
+                onClick={() => setView(ViewState.RECIPES)}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-orange-600 to-red-600 text-white font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform mt-3"
+              >
+                <Utensils size={18} /> ¿Qué comemos hoy, Chef?
+              </button>
             </>
           );
         })()}

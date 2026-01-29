@@ -49,7 +49,21 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
                   <Crown className="text-brand-500" size={32} />
                 </div>
                 <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter italic">Desbloquea el <span className="text-brand-500">Máximo Nivel</span></h2>
-                <p className="text-slate-400 text-xs mt-2">Elige tu plan y comienza tu transformación.</p>
+                <p className="text-slate-400 text-xs mt-2 mb-6">Elige tu plan y comienza tu transformación.</p>
+
+                {/* Beneficios Comunes */}
+                <ul className="space-y-2 mb-6 bg-white/5 p-4 rounded-xl border border-white/5">
+                  {[
+                    'Coach IA Ilimitado',
+                    'Chef IA: Recetas Saludables',
+                    'Metas de Élite y Estadísticas',
+                    'Modo Recuperación Activa'
+                  ].map(f => (
+                    <li key={f} className="flex items-center gap-2 text-[10px] text-slate-300 font-bold uppercase tracking-wider">
+                      <Zap size={10} className="text-brand-500" /> {f}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               <div className="space-y-4">
@@ -91,14 +105,6 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
                       <p className="text-[8px] text-brand-500 font-bold uppercase">Pago Único Anual</p>
                     </div>
                   </div>
-
-                  <ul className="space-y-1 mt-3 pt-3 border-t border-white/5">
-                    {['Todo lo del mensual', 'Coach IA Ilimitado', 'Acceso anticipado a funciones'].map(f => (
-                      <li key={f} className="flex items-center gap-2 text-[9px] text-slate-300 font-bold uppercase tracking-wider">
-                        <Zap size={10} className="text-brand-500" /> {f}
-                      </li>
-                    ))}
-                  </ul>
                 </button>
               </div>
 

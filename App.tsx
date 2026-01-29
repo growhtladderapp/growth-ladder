@@ -13,6 +13,9 @@ import { SettingsView } from './components/SettingsView';
 import { SupportChat } from './components/SupportChat';
 import { CommunityView } from './components/CommunityView';
 import { AuthView } from './components/AuthView';
+import { ChefChat } from './components/ChefChat';
+
+import { LandingPage } from './components/LandingPage';
 import { SubscriptionModal } from './components/SubscriptionModal';
 import { translateUI } from './services/geminiService';
 import { supabase, DatabaseLogEntry } from './services/supabase';
@@ -27,7 +30,7 @@ const DEFAULT_UI_TEXT = {
   ajustes: "Ajustes",
   logros: "Logros",
   ayuda: "Ayuda",
-  comunidad: "Comunidad",
+  comunidad: "Personal Trainers",
   cerrar_sesion: "Cerrar Sesión",
   pro: "PRO",
   atleta: "Atleta",
@@ -154,6 +157,7 @@ export default function App() {
   });
   const [showPaywall, setShowPaywall] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -628,7 +632,10 @@ export default function App() {
   }
 
   if (!isAuthenticated) {
-    return <AuthView onLogin={handleLogin} uiText={uiText} />;
+    if (showLanding) {
+      return <LandingPage onGetStarted={() => setShowLanding(false)} onLogin={() => setShowLanding(false)} />;
+    }
+    return <AuthView onLogin={handleLogin} uiText={uiText} onBack={() => setShowLanding(true)} />;
   }
 
   return (
@@ -731,6 +738,7 @@ export default function App() {
           {view === ViewState.CHAT && <AICoachChat userProfile={userProfile} isPro={isPro} />}
           {view === ViewState.SUPPORT && <SupportChat setView={setView} isPro={isPro} />}
           {view === ViewState.SCANNER && <FoodScanner onSave={handleSaveLog} isPro={isPro} />}
+          {view === ViewState.RECIPES && <ChefChat userProfile={userProfile} />}
         </main>
 
         <Navigation currentView={view} setView={setView} isPro={isPro} uiText={uiText} />

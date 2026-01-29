@@ -1,192 +1,183 @@
 
-import React, { useState, useEffect } from 'react';
-import { Users, Zap, Trophy, ChevronLeft, MessageSquare, Heart, Award, Flame, Target, Sparkles, TrendingUp, Globe } from 'lucide-react';
+import React, { useState } from 'react';
+import { Users, ChevronLeft, Star, MapPin, Instagram, CheckCircle2, MessageCircle, ArrowRight, Filter } from 'lucide-react';
 import { ViewState } from '../types';
 
 interface CommunityViewProps {
-  setView: (view: ViewState) => void;
-  isPro: boolean;
-  uiText: Record<string, string>;
+   setView: (view: ViewState) => void;
+   isPro: boolean;
+   uiText: Record<string, string>;
 }
 
-const GLOBAL_FEED = [
-  { id: 1, user: "Atleta #882", action: "completó rutina", detail: "Tren Superior Pro", time: "hace 2m", points: 150 },
-  { id: 2, user: "Maria G.", action: "alcanzó meta", detail: "5km Running", time: "hace 5m", points: 200 },
-  { id: 3, user: "Carlos K.", action: "nuevo récord", detail: "Quema de 800kcal", time: "hace 12m", points: 350 },
-  { id: 4, user: "Atleta #102", action: "completó desafío", detail: "7 días seguidos", time: "hace 20m", points: 500 },
-];
-
-const LEADERBOARD = [
-  { rank: 1, name: "Killer Instinct", level: 42, points: "12,400", avatar: "KI" },
-  { rank: 2, name: "Iron Maiden", level: 39, points: "11,850", avatar: "IM" },
-  { rank: 3, name: "Zenith Flow", level: 38, points: "11,200", avatar: "ZF" },
-  { rank: 4, name: "Atleta #009", level: 35, points: "9,800", avatar: "A9" },
+// Mock Data for Personal Trainers
+const TRAINERS = [
+   {
+      id: 1,
+      name: "Alex Rivera",
+      specialty: "Hipertrofia & Fuerza",
+      rating: 4.9,
+      reviews: 128,
+      location: "Madrid, ES",
+      image: "https://images.unsplash.com/photo-1567013127542-490d757e51fc?q=80&w=1000&auto=format&fit=crop",
+      price: "45€ / mes",
+      isVerified: true,
+      tags: ["Culturismo", "Powerlifting"],
+      bio: "Transformando cuerpos desde 2015. Enfoque científico y resultados garantizados si sigues el plan."
+   },
+   {
+      id: 2,
+      name: "Sarah Connors",
+      specialty: "Yoga & Movilidad",
+      rating: 5.0,
+      reviews: 84,
+      location: "Online",
+      image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1000&auto=format&fit=crop",
+      price: "30€ / mes",
+      isVerified: true,
+      tags: ["Flexibilidad", "Mindfulness"],
+      bio: "Ayudo a atletas rígidos a moverse como el agua. Recuperación activa y prevención de lesiones."
+   },
+   {
+      id: 3,
+      name: "Marcus 'Titan' Jones",
+      specialty: "CrossFit & Rendimiento",
+      rating: 4.8,
+      reviews: 215,
+      location: "Miami, USA",
+      image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1000&auto=format&fit=crop",
+      price: "60€ / mes",
+      isVerified: true,
+      tags: ["HIIT", "Resistencia"],
+      bio: "Ex-militar. Te llevaré al límite para que descubras de qué eres capaz realmente."
+   },
+   {
+      id: 4,
+      name: "Elena V.",
+      specialty: "Pérdida de Peso",
+      rating: 4.7,
+      reviews: 56,
+      location: "Barcelona, ES",
+      image: "https://images.unsplash.com/photo-1611672585731-fa10603fb9e0?q=80&w=1000&auto=format&fit=crop",
+      price: "40€ / mes",
+      isVerified: false,
+      tags: ["Nutrición", "Cardio"],
+      bio: "Nutricionista y entrenadora. El cambio empieza en la cocina y termina en la pista."
+   }
 ];
 
 export const CommunityView: React.FC<CommunityViewProps> = ({ setView, isPro, uiText }) => {
-  const [activeTab, setActiveTab] = useState<'FEED' | 'CHALLENGES' | 'RANKING'>('FEED');
-  const [communityProgress, setCommunityProgress] = useState(68);
+   const [filter, setFilter] = useState('Todos');
 
-  const accentColor = isPro ? 'text-emerald-500' : 'text-brand-500';
-  const bgAccent = isPro ? 'bg-emerald-600' : 'bg-brand-600';
-  const cardClass = isPro ? 'bg-zinc-900 border-zinc-800' : 'bg-brand-card border-slate-700';
+   const accentColor = isPro ? 'text-emerald-500' : 'text-brand-500';
+   const bgAccent = isPro ? 'bg-emerald-600' : 'bg-brand-600';
+   const borderAccent = isPro ? 'border-emerald-500' : 'border-brand-500';
 
-  return (
-    <div className="pb-24 pt-4 animate-fade-in space-y-6">
-      <button 
-        onClick={() => setView(ViewState.DASHBOARD)} 
-        className="flex items-center gap-2 text-slate-400 font-bold uppercase text-xs tracking-widest hover:text-white transition-colors"
-      >
-        <ChevronLeft size={16}/> Volver
-      </button>
+   return (
+      <div className="pb-24 pt-4 animate-fade-in space-y-6">
+         {/* Header */}
+         <div className="flex justify-between items-center">
+            <button
+               onClick={() => setView(ViewState.DASHBOARD)}
+               className="flex items-center gap-2 text-slate-400 font-bold uppercase text-xs tracking-widest hover:text-white transition-colors"
+            >
+               <ChevronLeft size={16} /> Volver
+            </button>
+            <div className="bg-slate-800 p-2 rounded-full border border-slate-700">
+               <Filter size={16} className="text-slate-400" />
+            </div>
+         </div>
 
-      <header>
-         <h1 className="text-3xl font-black text-white uppercase italic tracking-tighter flex items-center gap-3">
-            <Users className={accentColor} size={28} /> {uiText.comunidad}
-         </h1>
-         <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Sincronización global de atletas de élite</p>
-      </header>
+         <header className="px-1">
+            <h1 className="text-3xl font-black text-white uppercase italic tracking-tighter flex items-center gap-3">
+               Explora Trainers
+            </h1>
+            <p className="text-slate-400 text-xs mt-1 leading-relaxed">
+               Conecta con entrenadores de élite para llevar tu rendimiento al siguiente nivel. Planes personalizados y seguimiento 1 a 1.
+            </p>
+         </header>
 
-      {/* Tabs */}
-      <div className="flex bg-slate-800/50 p-1 rounded-xl border border-slate-700">
-         {(['FEED', 'CHALLENGES', 'RANKING'] as const).map(tab => (
-           <button 
-             key={tab}
-             onClick={() => setActiveTab(tab)}
-             className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === tab ? `${bgAccent} text-white shadow-lg` : 'text-slate-500 hover:text-slate-300'}`}
-           >
-             {tab === 'FEED' ? 'Muro' : tab === 'CHALLENGES' ? 'Desafíos' : 'Ranking'}
-           </button>
-         ))}
+         {/* Featured Banner (Fake Ad/Highlight) */}
+         <div className={`relative rounded-2xl overflow-hidden p-6 border ${borderAccent} shadow-2xl`}>
+            <div className="absolute inset-0">
+               <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=1000&auto=format&fit=crop" className="w-full h-full object-cover opacity-40 mix-blend-overlay" />
+               <div className={`absolute inset-0 bg-gradient-to-r ${isPro ? 'from-emerald-900/90 to-black/60' : 'from-brand-900/90 to-black/60'}`}></div>
+            </div>
+            <div className="relative z-10">
+               <span className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest bg-white text-black mb-3 inline-block`}>Destacado</span>
+               <h2 className="text-2xl font-bold text-white mb-1">Coach IA Pro</h2>
+               <p className="text-slate-200 text-xs mb-4 max-w-[200px]">¿Prefieres la tecnología? Prueba nuestro sistema de entrenamiento inteligente.</p>
+               <button onClick={() => setView(ViewState.CHAT)} className={`px-4 py-2 rounded-lg font-bold text-xs ${bgAccent} text-white shadow-lg active:scale-95 transition-transform`}>
+                  Probar Ahora
+               </button>
+            </div>
+         </div>
+
+         {/* Trainers Feed */}
+         <div className="space-y-4">
+            <h3 className="text-white font-bold text-sm uppercase tracking-widest px-1 flex items-center gap-2">
+               <Star size={14} className="text-yellow-500" fill="currentColor" /> Trainers Recomendados
+            </h3>
+
+            {TRAINERS.map(trainer => (
+               <div key={trainer.id} className="bg-zinc-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg group hover:border-slate-600 transition-all">
+
+                  {/* Card Header with Image */}
+                  <div className="relative h-32 overflow-hidden">
+                     <img src={trainer.image} alt={trainer.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                     <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/20 to-transparent"></div>
+
+                     {/* Rating Badge */}
+                     <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg flex items-center gap-1 border border-white/10">
+                        <Star size={12} className="text-yellow-500" fill="currentColor" />
+                        <span className="text-white font-bold text-xs">{trainer.rating}</span>
+                        <span className="text-[10px] text-slate-400">({trainer.reviews})</span>
+                     </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4 -mt-6 relative z-10">
+                     <div className="flex justify-between items-start mb-2">
+                        <div>
+                           <h3 className="text-lg font-bold text-white flex items-center gap-1">
+                              {trainer.name}
+                              {trainer.isVerified && <CheckCircle2 size={16} className="text-blue-500" fill="currentColor" stroke="black" />}
+                           </h3>
+                           <p className={`text-xs font-bold ${accentColor} uppercase tracking-wide`}>{trainer.specialty}</p>
+                        </div>
+                        <div className="text-right">
+                           <p className="text-white font-black text-lg leading-none">{trainer.price}</p>
+                        </div>
+                     </div>
+
+                     <p className="text-slate-400 text-xs leading-relaxed mb-4 line-clamp-2">
+                        {trainer.bio}
+                     </p>
+
+                     {/* Tags */}
+                     <div className="flex flex-wrap gap-2 mb-4">
+                        {trainer.tags.map(tag => (
+                           <span key={tag} className="px-2 py-1 rounded text-[10px] bg-slate-800 text-slate-300 border border-slate-700">
+                              {tag}
+                           </span>
+                        ))}
+                        <span className="px-2 py-1 rounded text-[10px] bg-slate-800 text-slate-500 border border-slate-700 flex items-center gap-1">
+                           <MapPin size={8} /> {trainer.location}
+                        </span>
+                     </div>
+
+                     {/* Actions */}
+                     <div className="grid grid-cols-2 gap-3">
+                        <button className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-slate-700 text-white text-xs font-bold hover:bg-slate-800 transition-colors">
+                           <MessageCircle size={16} /> Contactar
+                        </button>
+                        <button className={`flex items-center justify-center gap-2 py-2.5 rounded-xl ${bgAccent} text-white text-xs font-bold shadow-lg hover:brightness-110 active:scale-95 transition-all`}>
+                           Contratar <ArrowRight size={16} />
+                        </button>
+                     </div>
+                  </div>
+               </div>
+            ))}
+         </div>
       </div>
-
-      {activeTab === 'FEED' && (
-        <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2">
-           <div className={`${cardClass} p-4 rounded-2xl border flex items-center gap-3 bg-gradient-to-r from-brand-500/5 to-transparent`}>
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Atletas activos ahora: <span className="text-white">1,204</span></p>
-           </div>
-           
-           <div className="space-y-3">
-              {GLOBAL_FEED.map(post => (
-                <div key={post.id} className={`${cardClass} p-4 rounded-2xl border shadow-lg group hover:border-brand-500/30 transition-all`}>
-                   <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center gap-3">
-                         <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-400">
-                            {post.user.substring(0, 2).toUpperCase()}
-                         </div>
-                         <div>
-                            <p className="text-white font-bold text-xs">{post.user}</p>
-                            <p className="text-[9px] text-slate-500 uppercase font-black">{post.time}</p>
-                         </div>
-                      </div>
-                      <div className="flex items-center gap-1 text-brand-500 font-mono text-[10px] font-bold">
-                         <TrendingUp size={12} /> +{post.points}
-                      </div>
-                   </div>
-                   <p className="text-sm text-slate-300 mb-4">
-                      <span className="text-brand-500 font-bold">{post.action}</span>: {post.detail}
-                   </p>
-                   <div className="flex gap-4 border-t border-white/5 pt-3">
-                      <button className="flex items-center gap-1.5 text-slate-500 hover:text-red-500 transition-colors">
-                         <Flame size={14} /> <span className="text-[10px] font-bold">RESPETO</span>
-                      </button>
-                      <button className="flex items-center gap-1.5 text-slate-500 hover:text-brand-500 transition-colors">
-                         <MessageSquare size={14} /> <span className="text-[10px] font-bold">COMENTAR</span>
-                      </button>
-                   </div>
-                </div>
-              ))}
-           </div>
-        </div>
-      )}
-
-      {activeTab === 'CHALLENGES' && (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
-           <div className={`${cardClass} p-6 rounded-2xl border shadow-2xl relative overflow-hidden`}>
-              <div className="absolute -right-8 -top-8 opacity-10">
-                 <Globe size={120} className={accentColor} />
-              </div>
-              <div className="relative z-10">
-                 <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="text-yellow-500" size={16} />
-                    <span className="text-[10px] font-black text-yellow-500 uppercase tracking-widest">Meta de la Comunidad</span>
-                 </div>
-                 <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter mb-1">CUMBRE DE ACERO</h2>
-                 <p className="text-xs text-slate-400 mb-6">Meta global: 1,000,000 kcal quemadas colectivamente esta semana.</p>
-                 
-                 <div className="space-y-2">
-                    <div className="flex justify-between items-end">
-                       <span className="text-[10px] font-bold text-slate-500 uppercase">Progreso Global</span>
-                       <span className="text-xl font-black text-white">{communityProgress}%</span>
-                    </div>
-                    <div className="w-full h-3 bg-black rounded-full overflow-hidden border border-white/5">
-                       <div className={`h-full ${bgAccent} transition-all duration-1000`} style={{ width: `${communityProgress}%` }}></div>
-                    </div>
-                 </div>
-                 <p className="text-[9px] text-slate-600 font-bold uppercase mt-4 text-center">Faltan 320,000 kcal • Finaliza en 2 días</p>
-              </div>
-           </div>
-
-           <div className="space-y-3">
-              <h3 className="text-white font-black text-xs uppercase tracking-widest px-1">Tus Desafíos Activos</h3>
-              <div className={`${cardClass} p-4 rounded-xl border flex items-center justify-between`}>
-                 <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-orange-500/10 text-orange-500"><Flame size={20} /></div>
-                    <div>
-                       <p className="text-white font-bold text-sm">Escalador Diario</p>
-                       <p className="text-[10px] text-slate-500">3/7 días completados</p>
-                    </div>
-                 </div>
-                 <div className="w-10 h-10 rounded-full border-2 border-slate-800 flex items-center justify-center">
-                    <span className="text-[10px] font-bold text-slate-500">42%</span>
-                 </div>
-              </div>
-           </div>
-        </div>
-      )}
-
-      {activeTab === 'RANKING' && (
-        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-           <div className="bg-zinc-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
-              <div className="p-4 bg-black/40 border-b border-white/5 flex items-center gap-3">
-                 <Trophy className="text-yellow-500" size={20} />
-                 <h3 className="text-white font-bold text-xs uppercase tracking-widest">Salón de la Fama Semanal</h3>
-              </div>
-              <div className="divide-y divide-white/5">
-                 {LEADERBOARD.map((item) => (
-                   <div key={item.rank} className="p-4 flex items-center justify-between hover:bg-white/5 transition-colors">
-                      <div className="flex items-center gap-4">
-                         <span className={`w-5 font-black text-sm ${item.rank === 1 ? 'text-yellow-500' : item.rank === 2 ? 'text-slate-400' : item.rank === 3 ? 'text-orange-500' : 'text-slate-600'}`}>{item.rank}</span>
-                         <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-[10px] font-bold text-white border border-white/5">
-                            {item.avatar}
-                         </div>
-                         <div>
-                            <p className="text-white font-bold text-sm">{item.name}</p>
-                            <p className="text-[9px] text-slate-500 font-bold uppercase">Nivel {item.level} • Atleta Pro</p>
-                         </div>
-                      </div>
-                      <div className="text-right">
-                         <p className={`text-sm font-black ${accentColor}`}>{item.points}</p>
-                         <p className="text-[8px] text-slate-600 font-bold uppercase">PTS</p>
-                      </div>
-                   </div>
-                 ))}
-              </div>
-           </div>
-           
-           <div className="p-4 bg-brand-500/10 border border-brand-500/20 rounded-xl flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                 <Award className="text-brand-500" size={20} />
-                 <div>
-                    <p className="text-white font-bold text-xs">Tu Posición Actual</p>
-                    <p className="text-[10px] text-slate-500 uppercase">#1,402 en el mundo</p>
-                 </div>
-              </div>
-              <button className="text-[9px] font-black text-brand-500 uppercase tracking-widest border border-brand-500/30 px-3 py-1 rounded-full">Ver Más</button>
-           </div>
-        </div>
-      )}
-    </div>
-  );
+   );
 };

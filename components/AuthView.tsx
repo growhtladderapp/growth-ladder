@@ -7,9 +7,10 @@ import { useToast } from '../components/ToastContext';
 interface AuthViewProps {
   onLogin: () => void;
   uiText: Record<string, string>;
+  onBack?: () => void;
 }
 
-export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
+export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) => {
   const [loading, setLoading] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -145,6 +146,15 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText }) => {
     <div className="fixed inset-0 z-[300] bg-brand-dark flex flex-col items-center justify-between p-8 pb-12 overflow-hidden">
       {/* Background Ambient Glow */}
       <div className="absolute top-[-10%] left-[-10%] w-[120%] h-[50%] bg-brand-500/10 blur-[120px] rounded-full"></div>
+
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="absolute top-6 left-6 z-50 text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-xs font-bold uppercase tracking-widest"
+        >
+          <ChevronRight className="rotate-180" size={16} /> Volver
+        </button>
+      )}
 
       {/* Top Section */}
       <div className="relative z-10 flex flex-col items-center mt-10 animate-in fade-in slide-in-from-top-10 duration-1000">

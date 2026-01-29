@@ -81,19 +81,26 @@ export const analyzeFoodImage = async (base64Image: string): Promise<FoodAnalysi
   }
 };
 
-export const generatePersonalizedRoutine = async (goal: UserGoal, biometrics: UserBiometrics, muscleFocus: MuscleGroup | MuscleGroup[]): Promise<Routine> => {
+export const generatePersonalizedRoutine = async (goal: UserGoal, biometrics: UserBiometrics, muscleFocus: MuscleGroup | MuscleGroup[], environment: 'home' | 'gym' = 'gym'): Promise<Routine> => {
   try {
     const focusLabel = Array.isArray(muscleFocus) ? muscleFocus.join(", ") : muscleFocus;
+
+    const envContext = environment === 'home'
+      ? "ENTORNO: CASA. REGLA ESTRICTA: NO USAR NINGÚN EQUIPAMIENTO. Solo ejercicios con peso corporal (calistenia), suelo, pared o una silla estable. PROHIBIDO: Mancuernas, barras, máquinas, bandas elásticas."
+      : "ENTORNO: GIMNASIO. Acceso total a equipamiento comercial.";
+
     const prompt = `
       Actúa como un entrenador de ÉLITE OLÍMPICA. Crea una rutina de entrenamiento de ALTO RENDIMIENTO.
       ATLETA: Nivel ${goal.experience}, Meta: ${goal.focus}.
       ENFOQUE HOY: ${focusLabel}.
       BIOMETRÍA: Peso ${biometrics.weight}kg, Altura ${biometrics.height}cm, Edad ${biometrics.age}.
+      ${envContext}
       
       REGLAS:
-      1. Los ejercicios deben ser biomecánicamente eficientes.
+      1. Los ejercicios deben ser biomecánicamente eficientes para el entorno dado.
       2. Incluye notas técnicas sobre cadencia o respiración.
       3. Estima una duración realista.
+      4. Si es CASA, sé creativo con ejercicios de peso corporal pero mantén la intensidad alta.
     `;
 
     const response = await ai.models.generateContent({

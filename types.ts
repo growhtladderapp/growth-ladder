@@ -10,7 +10,8 @@ export enum ViewState {
   ACHIEVEMENTS = 'ACHIEVEMENTS',
   SETTINGS = 'SETTINGS',
   SUPPORT = 'SUPPORT',
-  COMMUNITY = 'COMMUNITY'
+  COMMUNITY = 'COMMUNITY',
+  RECIPES = 'RECIPES'
 }
 
 export enum MuscleGroup {

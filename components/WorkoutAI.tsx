@@ -27,6 +27,7 @@ export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile
 
   const [muscle, setMuscle] = useState<MuscleGroup>(MuscleGroup.UPPER);
   const [isRecovery, setIsRecovery] = useState(false);
+  const [environment, setEnvironment] = useState<'home' | 'gym'>('gym');
 
   const [isEditing, setIsEditing] = useState(false);
   const [regAge, setRegAge] = useState('');
@@ -34,6 +35,7 @@ export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile
   const [regHeight, setRegHeight] = useState('');
   const [regExp, setRegExp] = useState<UserProfile['experience']>('Beginner');
   const [regFocus, setRegFocus] = useState<UserProfile['focus']>('Muscle Gain');
+  const [regGender, setRegGender] = useState<UserProfile['gender']>('Masculino');
   const [regAvatar, setRegAvatar] = useState<string | undefined>(undefined);
 
   // Auto-generation trigger if initialMuscles provided
@@ -64,6 +66,7 @@ export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile
       setRegHeight(userProfile.height.toString());
       setRegExp(userProfile.experience);
       setRegFocus(userProfile.focus);
+      setRegGender(userProfile.gender || 'Masculino');
       setRegAvatar(userProfile.profilePicture);
     } else {
       setIsEditing(true);
@@ -93,6 +96,7 @@ export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile
       height: parseFloat(regHeight),
       experience: regExp,
       focus: regFocus,
+      gender: regGender,
       daysAvailable: 3,
       profilePicture: regAvatar
     });
@@ -117,7 +121,8 @@ export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile
           weight: userProfile!.weight,
           height: userProfile!.height
         },
-        customMuscles
+        customMuscles,
+        environment
       );
 
       setRoutine(result);
@@ -151,7 +156,8 @@ export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile
           weight: userProfile.weight,
           height: userProfile.height
         },
-        effectiveMuscle
+        effectiveMuscle,
+        environment
       );
 
       setRoutine(result);
@@ -305,6 +311,20 @@ export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile
                 ))}
               </div>
             </div>
+            <div>
+              <label className="text-[10px] text-slate-500 font-bold uppercase mb-2 block">Género</label>
+              <div className="grid grid-cols-3 gap-2">
+                {['Masculino', 'Femenino', 'Otro'].map((g) => (
+                  <button
+                    key={g}
+                    onClick={() => setRegGender(g as any)}
+                    className={`py-2 rounded-lg text-[10px] font-bold uppercase border ${regGender === g ? `${bgAccent} text-white border-transparent` : 'bg-transparent text-slate-400 border-slate-700'}`}
+                  >
+                    {g}
+                  </button>
+                ))}
+              </div>
+            </div>
             <button onClick={handleRegisterProfile} className={`w-full py-4 rounded-xl font-bold uppercase tracking-wider mt-4 flex items-center justify-center gap-2 ${bgAccent} text-white shadow-lg transition-all active:scale-95`}>
               <Save size={18} /> Guardar Perfil
             </button>
@@ -356,8 +376,24 @@ export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile
               </button>
             ))}
           </div>
+
+          <div className="flex gap-2 mt-4">
+            <button
+              onClick={() => setEnvironment('gym')}
+              className={`flex-1 py-3 rounded-xl border font-black uppercase text-xs flex items-center justify-center gap-2 transition-all ${environment === 'gym' ? `${bgAccent} text-white border-transparent` : 'bg-black border-slate-800 text-slate-500'}`}
+            >
+              <Dumbbell size={16} /> Gimnasio
+            </button>
+            <button
+              onClick={() => setEnvironment('home')}
+              className={`flex-1 py-3 rounded-xl border font-black uppercase text-xs flex items-center justify-center gap-2 transition-all ${environment === 'home' ? `${bgAccent} text-white border-transparent` : 'bg-black border-slate-800 text-slate-500'}`}
+            >
+              <Target size={16} /> En Casa
+            </button>
+          </div>
+
           {isPro && (
-            <div onClick={() => setIsRecovery(!isRecovery)} className={`mt-6 p-4 rounded-xl border flex items-center justify-between cursor-pointer ${isRecovery ? 'bg-emerald-900/20 border-emerald-500' : 'bg-black border-slate-800'}`}>
+            <div onClick={() => setIsRecovery(!isRecovery)} className={`mt-4 p-4 rounded-xl border flex items-center justify-between cursor-pointer ${isRecovery ? 'bg-emerald-900/20 border-emerald-500' : 'bg-black border-slate-800'}`}>
               <div className="flex items-center gap-3">
                 <BatteryCharging size={20} className={isRecovery ? 'text-emerald-500' : 'text-slate-600'} />
                 <p className={`text-sm font-bold ${isRecovery ? 'text-emerald-400' : 'text-slate-300'}`}>Modo Recuperación</p>
