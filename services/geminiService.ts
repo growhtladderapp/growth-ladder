@@ -252,9 +252,17 @@ export const getSportGuide = async (sport: string, userProfile?: UserProfile | n
       RETORNA JSON:
       {
         "sport": "${sport}",
-        "focus": "Enfoque principal",
+        "focus": "Enfoque principal (e.g. Resistencia, Explosividad)",
         "introduction": "Intro estratégica adaptada a ${environment}.",
-        "exercises": [ (mismo formato que muscle guide) ]
+        "exercises": [
+          { 
+            "name": "Nombre Ejercicio",
+            "difficulty": "Principiante/Intermedio/Avanzado",
+            "instructions": ["Paso 1", "Paso 2"],
+            "commonError": "Error común a evitar",
+            "gifUrl": "URL opcional" 
+          }
+        ]
       }
     `;
 
