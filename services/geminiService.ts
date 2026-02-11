@@ -48,11 +48,18 @@ export const createCoachSession = (userProfile: UserProfile | null) => {
     model: "gemini-3-pro-preview",
     config: {
       systemInstruction: `
-        Eres el 'Director de Rendimiento de Growth Ladder', un experto en ciencias del deporte, biomecánica y nutrición clínica de nivel olímpico.
-        - Completamente profesional, clínico y analítico.
-        - Basado en evidencia científica.
-        - Directo, serio y enfocado en la optimización del rendimiento humano.
+        Eres el 'Coach IA de Growth Ladder', un EXPERTO EN GIMNASIO, DEPORTES Y ALTO RENDIMIENTO.
+        
+        TUS CAPACIDADES:
+        1. 🏋️‍♂️ **Rutinas de Entrenamiento**: Puedes crear rutinas detalladas para CUALQUIER objetivo (fuerza, hipertrofia, resistencia, pérdida de peso, etc.) y CUALQUIER entorno (casa, gym, parque).
+        2. 🩹 **Consejos sobre Lesiones (IMPORTANTE)**: Si el usuario menciona dolor o lesión, PUEDES dar consejos generales de recuperación (hielo, descanso, movilidad suave) PERO DEBES INCLUIR SIEMPRE ESTE DISCLAIMER: "⚠️ **Importante**: No soy médico. Mi consejo es solo una guía general. Por favor, visita a un especialista médico o fisioterapeuta para un diagnóstico y tratamiento adecuado."
+        3. 🥗 **Nutrición Deportiva**: Consejos sobre suplementación y alimentación para el rendimiento.
+
+        PERSONALIDAD:
+        - Motivador, profesional, técnico pero accesible.
+        - Usa emojis deportivos.
         - ${profileContext}
+        
         Responde siempre en el idioma que el usuario utilice.
       `,
     },
@@ -73,6 +80,17 @@ export const analyzeFoodImage = async (base64Image: string): Promise<FoodAnalysi
       },
       config: {
         responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            foodName: { type: Type.STRING },
+            calories: { type: Type.NUMBER },
+            protein: { type: Type.NUMBER },
+            carbs: { type: Type.NUMBER },
+            fat: { type: Type.NUMBER },
+            confidence: { type: Type.STRING }
+          }
+        }
       }
     });
     return JSON.parse(cleanJson(response.text)) as FoodAnalysis;

@@ -19,7 +19,7 @@ interface Message {
 
 export const ChefChat: React.FC<ChefChatProps> = ({ userProfile }) => {
     const [messages, setMessages] = useState<Message[]>([
-        { role: 'model', text: '¡Hola! Soy tu Chef Estrella Michelin y Nutricionista Personal. ¿Qué tienes en la nevera o qué te apetece comer hoy? Puedo crear recetas de alto rendimiento para ti.' }
+        { role: 'model', text: '¡Hola! Soy tu Chef y Nutricionista. ¿En qué te ayudo?\n\n1. 🍽️ **Recetas Fitness**\n2. 🍎 **Calorías y Macros**' }
     ]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -52,6 +52,12 @@ export const ChefChat: React.FC<ChefChatProps> = ({ userProfile }) => {
         Tu misión es crear recetas y planes de alimentación DELICIOSOS pero perfectamente optimizados para el rendimiento físico.
         
         ${profileContext}
+
+        INSTRUCCIONES DE COMPORTAMIENTO (PRIORIDAD ALTA):
+        1. SI el usuario saluda ("hola", "buenas", etc.): Responde textualmente: "¡Hola! Soy tu Chef Estrella Michelin y Nutricionista. ¿En qué puedo ayudarte hoy?\n\n1. 🍽️ **Pedir una receta fitness** (Dime qué ingredientes tienes o qué te apetece).\n2. 🍎 **Consultar calorías/macros** (Pregúntame por cualquier alimento)."
+        2. SI pide una receta: Proporciona una receta creativa, fitness y deliciosa.
+        3. SI pregunta por calorías/macros de un ALIMENTO: Responde con la información nutricional precisa y breve.
+        4. SI pregunta sobre CUALQUIER OTRA COSA (ej: ejercicios, rutinas, clima, noticias, "creame una rutina", etc.): Responde textualmente: "👨‍🍳 Lo siento, solo puedo ayudarte con **Recetas Fitness** o **Información Nutricional de Alimentos**. Para rutinas de entrenamiento, por favor consulta con mi colega, el Coach IA."
         
         ESTILO DE RESPUESTA:
         - Pasión por la comida (usa términos culinarios: "sellar", "emulsionar", "al dente").
@@ -64,10 +70,13 @@ export const ChefChat: React.FC<ChefChatProps> = ({ userProfile }) => {
 
             const response = await ai.models.generateContent({
                 model: "gemini-3-flash-preview",
-                contents: prompt
+                contents: [{
+                    role: "user",
+                    parts: [{ text: prompt }]
+                }]
             });
 
-            const text = response.text() || "El chef está probando la salsa... inténtalo de nuevo en un segundo.";
+            const text = response.text || "El chef está probando la salsa... inténtalo de nuevo en un segundo.";
             setMessages(prev => [...prev, { role: 'model', text }]);
 
         } catch (error) {
@@ -94,9 +103,11 @@ export const ChefChat: React.FC<ChefChatProps> = ({ userProfile }) => {
                 {messages.map((msg, idx) => (
                     <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[85%] rounded-2xl p-4 shadow-sm ${msg.role === 'user' ? 'bg-orange-600 text-white rounded-tr-sm' : 'bg-slate-800 text-slate-200 rounded-tl-sm border border-slate-700'}`}>
-                            <ReactMarkdown className="prose prose-invert text-sm prose-p:leading-relaxed prose-headings:text-orange-400 prose-strong:text-white">
-                                {msg.text}
-                            </ReactMarkdown>
+                            <div className="prose prose-invert text-sm prose-p:leading-relaxed prose-headings:text-orange-400 prose-strong:text-white">
+                                <ReactMarkdown>
+                                    {msg.text}
+                                </ReactMarkdown>
+                            </div>
                         </div>
                     </div>
                 ))}

@@ -366,13 +366,14 @@ export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile
               <button
                 key={m.id}
                 onClick={() => setMuscle(m.id)}
-                className={`w-full p-4 rounded-xl border flex items-center gap-4 transition-all ${muscle === m.id ? `${bgAccent} text-white border-transparent shadow-lg scale-[1.02]` : 'bg-black/50 border-slate-800 text-slate-400'}`}
+                className={`w-full p-4 rounded-xl border-2 flex items-center gap-4 transition-all duration-200 active:scale-95 ${muscle === m.id ? `${bgAccent} text-white border-white/20 shadow-xl scale-[1.02] ring-2 ring-white/10` : 'bg-black/50 border-slate-800 text-slate-400 hover:bg-slate-800/50 hover:border-slate-700'}`}
               >
-                <span className="text-3xl">{m.icon}</span>
+                <span className="text-3xl filter drop-shadow-md">{m.icon}</span>
                 <div className="text-left">
-                  <p className="text-sm font-black uppercase">{m.label}</p>
-                  <p className="text-[10px] opacity-70">{m.desc}</p>
+                  <p className={`text-sm font-black uppercase ${muscle === m.id ? 'text-white' : 'text-slate-300'}`}>{m.label}</p>
+                  <p className={`text-[10px] ${muscle === m.id ? 'text-white/80' : 'opacity-70'}`}>{m.desc}</p>
                 </div>
+                {muscle === m.id && <CheckCircle2 className="ml-auto text-white animate-in zoom-in spin-in-45 duration-300" size={20} />}
               </button>
             ))}
           </div>
@@ -380,13 +381,16 @@ export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile
           <div className="flex gap-2 mt-4">
             <button
               onClick={() => setEnvironment('gym')}
-              className={`flex-1 py-3 rounded-xl border font-black uppercase text-xs flex items-center justify-center gap-2 transition-all ${environment === 'gym' ? `${bgAccent} text-white border-transparent` : 'bg-black border-slate-800 text-slate-500'}`}
+              className={`flex-1 py-3 rounded-xl border-2 font-black uppercase text-xs flex items-center justify-center gap-2 transition-all ${environment === 'gym' ? `${bgAccent} text-white border-white/20 shadow-lg` : 'bg-black border-slate-800 text-slate-500 hover:bg-slate-900'}`}
             >
               <Dumbbell size={16} /> Gimnasio
             </button>
             <button
-              onClick={() => setEnvironment('home')}
-              className={`flex-1 py-3 rounded-xl border font-black uppercase text-xs flex items-center justify-center gap-2 transition-all ${environment === 'home' ? `${bgAccent} text-white border-transparent` : 'bg-black border-slate-800 text-slate-500'}`}
+              onClick={() => {
+                setEnvironment('home');
+                toast("Modo 'En Casa' activado: Peso Corporal.", 'success');
+              }}
+              className={`flex-1 py-3 rounded-xl border-2 font-black uppercase text-xs flex items-center justify-center gap-2 transition-all ${environment === 'home' ? `${bgAccent} text-white border-white/20 shadow-lg` : 'bg-black border-slate-800 text-slate-500 hover:bg-slate-900'}`}
             >
               <Target size={16} /> En Casa
             </button>
@@ -400,8 +404,12 @@ export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile
               </div>
             </div>
           )}
-          <button onClick={handleGenerate} className={`w-full py-5 rounded-xl font-black uppercase tracking-widest text-lg mt-6 flex items-center justify-center gap-3 ${bgAccent} text-white shadow-xl transition-all active:scale-95`}>
-            <Sparkles size={22} /> Comenzar Rutina
+          <button
+            onClick={handleGenerate}
+            className={`w-full py-5 rounded-xl font-black uppercase tracking-widest text-lg mt-6 flex items-center justify-center gap-3 ${bgAccent} text-white shadow-xl transition-all active:scale-95 hover:brightness-110 relative overflow-hidden group`}
+          >
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 skew-y-12"></div>
+            <Sparkles size={22} className="animate-pulse" /> Comenzar Rutina
           </button>
         </div>
       </div>

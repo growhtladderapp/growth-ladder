@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-export const Logo: React.FC<{ className?: string }> = ({ className = "w-10 h-10" }) => {
+export const Logo: React.FC<{ className?: string }> = ({ className = "w-11 h-11" }) => {
   return (
     <img
       src="/logo-new.png"

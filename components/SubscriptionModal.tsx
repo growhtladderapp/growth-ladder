@@ -11,7 +11,7 @@ interface SubscriptionModalProps {
 
 export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, onSubscribe, isDarkMode }) => {
   const [step, setStep] = useState<'plans' | 'checkout' | 'processing'>('plans');
-  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual' | 'creator'>('annual');
 
   const handleAction = () => {
     if (step === 'plans') {
@@ -119,44 +119,74 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
 
           {step === 'checkout' && (
             <div className="animate-in slide-in-from-right-4 duration-300">
-              <h2 className="text-xl font-black text-white uppercase italic tracking-tighter mb-6 flex items-center gap-2">
-                <CreditCard className="text-brand-500" size={24} /> Resumen
+              <h2 className="text-xl font-black text-white uppercase italic tracking-tighter mb-4 flex items-center gap-2">
+                <CreditCard className="text-brand-500" size={24} /> Pago Seguro
               </h2>
 
-              <div className="bg-white/5 rounded-2xl p-5 border border-white/5 mb-6">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-slate-400 text-sm font-bold">{selectedPlan === 'annual' ? 'Suscripción Anual' : 'Plan Mensual (3 Días Gratis)'}</span>
-                  <span className="text-white font-black">{selectedPlan === 'monthly' ? '$0.00' : '$29.90'}</span>
-                </div>
-                {selectedPlan === 'monthly' && (
-                  <div className="text-right mb-2 -mt-2">
-                    <span className="text-[10px] text-brand-500 font-bold uppercase">Luego $3.99/mes</span>
+              <div className="space-y-4 mb-6">
+                {/* Card Input Simulation */}
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Detalles de Tarjeta</label>
+                  <input
+                    type="text"
+                    placeholder="0000 0000 0000 0000"
+                    className="w-full bg-zinc-900 border border-slate-700 rounded-xl p-3 text-white font-mono placeholder:text-slate-600 focus:border-brand-500 outline-none transition-colors"
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      placeholder="MM/YY"
+                      className="w-full bg-zinc-900 border border-slate-700 rounded-xl p-3 text-white font-mono placeholder:text-slate-600 focus:border-brand-500 outline-none transition-colors"
+                    />
+                    <input
+                      type="text"
+                      placeholder="CVC"
+                      className="w-full bg-zinc-900 border border-slate-700 rounded-xl p-3 text-white font-mono placeholder:text-slate-600 focus:border-brand-500 outline-none transition-colors"
+                    />
                   </div>
-                )}
-                <div className="flex justify-between items-center pt-4 border-t border-white/5">
-                  <span className="text-white font-black uppercase text-xs tracking-widest">Total a pagar hoy</span>
-                  <span className="text-brand-500 font-black text-xl">{selectedPlan === 'monthly' ? '$0.00' : '$29.90'}</span>
+                  <input
+                    type="text"
+                    placeholder="Nombre del Titular"
+                    className="w-full bg-zinc-900 border border-slate-700 rounded-xl p-3 text-white placeholder:text-slate-600 focus:border-brand-500 outline-none transition-colors"
+                  />
+                </div>
+
+                {/* Promo Code Bypass */}
+                <div className="pt-2">
+                  <button
+                    onClick={() => setSelectedPlan(selectedPlan === 'creator' ? 'annual' : 'creator' as any)}
+                    className="text-[10px] text-brand-500 font-bold uppercase underline mb-2 cursor-pointer"
+                  >
+                    ¿Tienes código promocional?
+                  </button>
+                  {(selectedPlan === 'creator' || (selectedPlan as string) === 'creator') && (
+                    <div className="animate-in fade-in slide-in-from-top-2">
+                      <input
+                        type="text"
+                        placeholder="Ingresa tu código"
+                        onChange={(e) => {
+                          if (e.target.value === 'SOYELCREADOR') {
+                            // Magic bypass logic visually
+                          }
+                        }}
+                        className="w-full bg-brand-900/20 border border-brand-500/50 rounded-xl p-3 text-brand-400 font-bold placeholder:text-brand-500/30 focus:outline-none"
+                      />
+                      <p className="text-[10px] text-emerald-500 mt-1 font-bold">¡Código de Creador detectado! Total: $0.00</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="space-y-3 mb-8">
-                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">Método de Pago Seguro</p>
-                <div className="p-4 rounded-xl border border-brand-500 bg-brand-500/5 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-slate-800 p-1.5 rounded-lg text-white">
-                      <ShieldCheck size={18} />
-                    </div>
-                    <span className="text-white text-xs font-bold uppercase tracking-widest">Cuenta Vinculada</span>
-                  </div>
-                  <div className="text-[10px] text-brand-500 font-black">ACTIVA</div>
-                </div>
+              <div className="flex justify-between items-center mb-6 pt-4 border-t border-white/5">
+                <span className="text-white font-black uppercase text-xs tracking-widest">Total a pagar</span>
+                <span className="text-brand-500 font-black text-xl">{(selectedPlan as string) === 'creator' ? '$0.00' : (selectedPlan === 'monthly' ? '$3.99' : '$29.90')}</span>
               </div>
 
               <button
                 onClick={handleAction}
-                className="w-full py-4 bg-white text-black font-black rounded-2xl shadow-xl active:scale-95 transition-all uppercase tracking-widest text-sm"
+                className="w-full py-4 bg-white text-black font-black rounded-2xl shadow-xl active:scale-95 transition-all uppercase tracking-widest text-sm flex items-center justify-center gap-2 hover:bg-slate-200"
               >
-                Confirmar Suscripción
+                {(selectedPlan as string) === 'creator' ? 'Activar Gratis' : 'Pagar y Suscribirse'}
               </button>
             </div>
           )}

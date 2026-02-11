@@ -300,14 +300,57 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Notification Permission
+  // Motivational Notifications Logic
+  const MOTIVATIONAL_QUOTES = [
+    "No te detengas cuando estés cansado, detente cuando hayas terminado.",
+    "La disciplina es hacer lo que tienes que hacer, incluso cuando no quieres.",
+    "Tu única competencia es quien eras ayer.",
+    "El dolor de hoy es la fuerza de mañana.",
+    "No cuentes los días, haz que los días cuenten.",
+    "El éxito es la suma de pequeños esfuerzos repetidos día tras día.",
+    "Si fuera fácil, todo el mundo lo haría.",
+    "Asegúrate de que tu peor enemigo no viva entre tus dos orejas.",
+    "Cree que puedes y estarás a medio camino.",
+    "El cuerpo logra lo que la mente cree."
+  ];
+
   useEffect(() => {
+    // Check permission immediately
     if ('Notification' in window && Notification.permission !== 'granted') {
       Notification.requestPermission();
     }
+
+    const checkMotivation = () => {
+      const lastNotification = localStorage.getItem('gl_last_motivation_time');
+      const now = new Date().getTime();
+      const HOURS_INTERVAL = 4 * 60 * 60 * 1000; // 4 hours
+
+      if (!lastNotification || now - parseInt(lastNotification) > HOURS_INTERVAL) {
+        if (Notification.permission === 'granted') {
+          const randomIndex = Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length);
+          const quote = MOTIVATIONAL_QUOTES[randomIndex];
+
+          new Notification("Growth Ladder: Motivación", {
+            body: quote,
+            icon: '/logo-new.png',
+            tag: 'motivation'
+          });
+
+          localStorage.setItem('gl_last_motivation_time', now.toString());
+        }
+      }
+    };
+
+    // Initial check
+    checkMotivation();
+
+    // Loop check every 15 minutes
+    const interval = setInterval(checkMotivation, 15 * 60 * 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
-  // Notification Checker Loop
+  // Notification for Calendar Events
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
@@ -324,7 +367,7 @@ export default function App() {
           if (Notification.permission === 'granted') {
             new Notification("Growth Ladder: Hora de Entrenar", {
               body: `${event.title} - ¡Vamos a darle con todo!`,
-              icon: '/vite.svg' // Fallback icon
+              icon: '/logo-new.png'
             });
 
             // Mark as notified locally to avoid double alert (cloud sync optional for this flag)
