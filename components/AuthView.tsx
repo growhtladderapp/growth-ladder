@@ -29,6 +29,8 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
   const [phone, setPhone] = useState('');
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [showPhoneInput, setShowPhoneInput] = useState(false);
+  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [otpToken, setOtpToken] = useState('');
   const [message, setMessage] = useState<string | null>(null);
 
   const handleSocialLogin = async (provider: string) => {
@@ -132,11 +134,33 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
         phone: phone,
       });
       if (error) throw error;
-      setMessage('¡Código enviado! Revisa tu SMS.');
+      setMessage('¡Código enviado! Ingresa el código recibido.');
+      setShowPhoneInput(false);
+      setShowOtpInput(true);
       toast('SMS enviado. Por favor verifica tu código.', 'success');
     } catch (error: any) {
       let errorMessage = error.message;
       toast(errorMessage, 'error');
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleOtpVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading('otp');
+    setMessage(null);
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        phone: phone,
+        token: otpToken,
+        type: 'sms',
+      });
+      if (error) throw error;
+      toast('¡Verificación exitosa!', 'success');
+      // Login is handled by onAuthStateChange in App.tsx
+    } catch (error: any) {
+      toast(error.message, 'error');
     } finally {
       setLoading(null);
     }
@@ -158,7 +182,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
 
       {/* Top Section */}
       <div className="relative z-10 flex flex-col items-center mt-10 animate-in fade-in slide-in-from-top-10 duration-1000">
-        <div className="mb-6 p-1 bg-white/5 rounded-3xl border border-white/10 shadow-2xl backdrop-blur-sm">
+        <div className="mb-6 p-1 bg-white/5 rounded-3xl border border-white/10 shadow-2xl backdrop-blur-sm scale-110">
           <Logo className="w-20 h-20" />
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-white italic tracking-tighter uppercase text-center leading-none">
@@ -170,7 +194,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
       {/* Buttons Section */}
       <div className="relative z-10 w-full max-w-sm space-y-3 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-500">
 
-        {!showEmailInput && !showPhoneInput && (
+        {!showEmailInput && !showPhoneInput && !showOtpInput && (
           <>
             {/* Social Login Buttons */}
             <button
@@ -215,7 +239,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
         {/* Email Login Form */}
         {showEmailInput ? (
           <form onSubmit={handleEmailAuth} className="w-full space-y-3 animate-in fade-in slide-in-from-bottom-2">
-
             <div className="space-y-1">
               <input
                 type="email"
@@ -242,7 +265,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
               >
-                {/* Simple text or icon would go here, omitting import to keep simple or assume lucide */}
                 <span className="text-[10px] font-bold uppercase">{showPassword ? 'Ocultar' : 'Ver'}</span>
               </button>
             </div>
@@ -288,14 +310,16 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
             {message && <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl"><p className="text-emerald-400 text-xs text-center font-medium">{message}</p></div>}
           </form>
         ) : (
-          <button
-            onClick={() => { setShowEmailInput(true); setShowPhoneInput(false); }}
-            disabled={!!loading || showPhoneInput}
-            className={`w-full bg-white/5 border border-white/5 text-slate-300 h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all hover:bg-white/10 ${showPhoneInput ? 'hidden' : ''}`}
-          >
-            <Mail size={20} />
-            <span className="text-sm">Usar correo y contraseña</span>
-          </button>
+          !showPhoneInput && !showOtpInput && (
+            <button
+              onClick={() => { setShowEmailInput(true); setShowPhoneInput(false); }}
+              disabled={!!loading}
+              className={`w-full bg-white/5 border border-white/5 text-slate-300 h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all hover:bg-white/10`}
+            >
+              <Mail size={20} />
+              <span className="text-sm">Usar correo y contraseña</span>
+            </button>
+          )
         )}
 
         {/* Phone Login - Only show if not in email mode */}
@@ -305,7 +329,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              placeholder="+54 11 ..."
+              placeholder="+54 9 11 ..."
               className="w-full bg-white/5 border border-white/10 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-brand-500 transition-colors"
               required
             />
@@ -326,16 +350,50 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
             {message && !showEmailInput && <p className="text-emerald-400 text-xs text-center font-medium mt-2">{message}</p>}
           </form>
         ) : (
-          /* Show phone button only if email input is NOT shown */
-          !showEmailInput && (
-            <button
-              onClick={() => { setShowPhoneInput(true); setShowEmailInput(false); }}
-              disabled={!!loading}
-              className={`w-full bg-white/5 border border-white/5 text-slate-300 h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all hover:bg-white/10`}
-            >
-              <Phone size={20} />
-              <span className="text-sm">Usar número de teléfono</span>
-            </button>
+          /* OTP Input Form */
+          showOtpInput ? (
+            <form onSubmit={handleOtpVerify} className="w-full space-y-2 animate-in fade-in slide-in-from-bottom-2">
+              <div className="text-center mb-2">
+                <p className="text-xs text-slate-400">Ingresa el código enviado a</p>
+                <p className="text-sm text-white font-bold">{phone}</p>
+              </div>
+              <input
+                type="text"
+                value={otpToken}
+                onChange={(e) => setOtpToken(e.target.value)}
+                placeholder="123456"
+                className="w-full bg-white/5 border border-white/10 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-brand-500 transition-colors text-center tracking-widest text-lg"
+                required
+                maxLength={6}
+              />
+              <button
+                type="submit"
+                disabled={!!loading}
+                className="w-full bg-brand-600 hover:bg-brand-500 text-white h-12 rounded-xl flex items-center justify-center gap-2 font-bold transition-all disabled:opacity-50"
+              >
+                {loading === 'otp' ? <Loader2 className="animate-spin" size={20} /> : 'Verificar Código'}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowOtpInput(false); setShowPhoneInput(true); setMessage(null); }}
+                className="w-full text-xs text-slate-500 hover:text-slate-300 py-1"
+              >
+                Volver / Reenviar
+              </button>
+              {message && <p className="text-emerald-400 text-xs text-center font-medium mt-2">{message}</p>}
+            </form>
+          ) : (
+            /* Show phone button only if email input is NOT shown */
+            !showEmailInput && (
+              <button
+                onClick={() => { setShowPhoneInput(true); setShowEmailInput(false); }}
+                disabled={!!loading}
+                className={`w-full bg-white/5 border border-white/5 text-slate-300 h-14 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all hover:bg-white/10`}
+              >
+                <Phone size={20} />
+                <span className="text-sm">Usar número de teléfono</span>
+              </button>
+            )
           )
         )}
 
@@ -349,7 +407,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
         <div className="flex items-center gap-2 text-slate-700 font-black uppercase text-[8px] tracking-[0.2em]">
           <ShieldCheck size={12} /> Cifrado de grado militar activo
         </div>
-        <p className="text-[8px] text-slate-600 font-mono">v1.2 - Phone Auth Active</p>
+        <p className="text-[8px] text-slate-600 font-mono">v1.3 - Phone Auth & Mobile Zoom</p>
       </div>
     </div>
   );

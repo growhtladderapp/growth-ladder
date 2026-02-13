@@ -5,9 +5,10 @@ import { Trophy, Zap, Activity, Users, ArrowRight, ShieldCheck, Star } from 'luc
 interface LandingPageProps {
     onGetStarted: () => void;
     onLogin: () => void;
+    onPrivacy: () => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin, onPrivacy }) => {
     return (
         <div className="min-h-screen bg-brand-dark text-white font-sans selection:bg-brand-500/30 selection:text-brand-200 overflow-x-hidden">
 
@@ -93,9 +94,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin 
                     &copy; {new Date().getFullYear()} Growth Ladder. Todos los derechos reservados.
                 </p>
                 <div className="flex justify-center gap-6 text-[10px] uppercase font-bold text-slate-600 tracking-widest">
-                    <a href="#" className="hover:text-white transition-colors">Privacidad</a>
+                    <button onClick={onPrivacy} className="hover:text-white transition-colors">Privacidad</button>
                     <a href="#" className="hover:text-white transition-colors">Términos</a>
-                    <a href="#" className="hover:text-white transition-colors">Soporte</a>
+                    <button className="hover:text-white transition-colors">Soporte</button>
                 </div>
             </footer>
         </div>

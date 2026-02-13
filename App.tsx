@@ -150,6 +150,8 @@ export const GOAL_OPTIONS: WeeklyGoalOption[] = [
   },
 ];
 
+import { PrivacyPolicy } from './components/PrivacyPolicy';
+
 export default function App() {
   const [view, setView] = useState<ViewState>(ViewState.DASHBOARD);
   const [isPro, setIsPro] = useState(() => {
@@ -158,6 +160,7 @@ export default function App() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
+  const [showPrivacy, setShowPrivacy] = useState(false);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -676,8 +679,20 @@ export default function App() {
   }
 
   if (!isAuthenticated) {
+    if (showPrivacy) {
+      return <PrivacyPolicy onBack={() => setShowPrivacy(false)} />;
+    }
     if (showLanding) {
-      return <LandingPage onGetStarted={() => setShowLanding(false)} onLogin={() => setShowLanding(false)} />;
+      return (
+        <>
+          <LandingPage
+            onGetStarted={() => setShowLanding(false)}
+            onLogin={() => setShowLanding(false)}
+            onPrivacy={() => setShowPrivacy(true)}
+          />
+          <SupportChat />
+        </>
+      );
     }
     return <AuthView onLogin={handleLogin} uiText={uiText} onBack={() => setShowLanding(true)} />;
   }
@@ -781,7 +796,7 @@ export default function App() {
           )}
           {view === ViewState.ACHIEVEMENTS && <Achievements logs={logs} setView={setView} isPro={isPro} />}
           {view === ViewState.CHAT && <AICoachChat userProfile={userProfile} isPro={isPro} />}
-          {view === ViewState.SUPPORT && <SupportChat setView={setView} isPro={isPro} />}
+          {/* {view === ViewState.SUPPORT && <SupportChat />} */}
           {view === ViewState.SCANNER && <FoodScanner onSave={handleSaveLog} isPro={isPro} />}
           {view === ViewState.RECIPES && <ChefChat userProfile={userProfile} />}
         </main>

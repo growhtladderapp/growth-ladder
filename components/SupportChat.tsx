@@ -1,112 +1,172 @@
-
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, HelpCircle, Loader2, ChevronLeft, MessageSquare, Info } from 'lucide-react';
-import { ViewState } from '../types';
-import { GoogleGenAI } from "@google/genai";
-
-interface SupportChatProps {
-  setView: (view: ViewState) => void;
-  isPro: boolean;
-}
+import { MessageCircle, X, Send, Loader2, Bot, User } from 'lucide-react';
+import { createSupportSession } from '../services/geminiService';
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
+  id: string;
   role: 'user' | 'model';
   text: string;
 }
 
-export const SupportChat: React.FC<SupportChatProps> = ({ setView, isPro }) => {
+export const SupportChat: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: 'Hola, soy el asistente de soporte de Growth Ladder. ¿Tienes problemas con el escáner, las rutinas o tu perfil? ¡Dime cómo puedo ayudarte!' }
+    {
+      id: 'welcome',
+      role: 'model',
+      text: '¡Hola! Soy el Asistente de Soporte de Growth Ladder. 🤖\n\n¿En qué puedo ayudarte hoy? (Problemas de login, registro, cómo funciona la app...)'
+    }
   ]);
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [inputText, setInputText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatSessionRef = useRef<any>(null);
 
-  const accentColor = isPro ? 'text-emerald-500' : 'text-brand-500';
-  const bgAccent = isPro ? 'bg-emerald-600' : 'bg-brand-600';
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
+    scrollToBottom();
+  }, [messages, isOpen]);
 
-  const handleSend = async () => {
-    if (!input.trim() || loading) return;
-    const userMsg = input.trim();
-    setInput('');
-    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
-    setLoading(true);
+  const handleOpen = async () => {
+    setIsOpen(true);
+    if (!chatSessionRef.current) {
+      try {
+        chatSessionRef.current = await createSupportSession();
+      } catch (error) {
+        console.error("Failed to init support chat", error);
+      }
+    }
+  };
+
+  const handleSend = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!inputText.trim() || isLoading) return;
+
+    const userMessage = { id: Date.now().toString(), role: 'user' as const, text: inputText };
+    setMessages(prev => [...prev, userMessage]);
+    setInputText('');
+    setIsLoading(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: userMsg,
-        config: {
-          systemInstruction: "Eres el Soporte Técnico de la app Growth Ladder. Tu misión es ayudar al usuario con problemas de la app (Escáner, Registro de Calorías, Rutinas AI, Perfil). Sé amable, útil y conciso. Si el problema es técnico, sugiere reiniciar la app o revisar permisos de cámara/notificaciones.",
-        }
-      });
-      setMessages(prev => [...prev, { role: 'model', text: response.text || 'Entendido. ¿Alguna otra duda?' }]);
-    } catch (e) {
-      setMessages(prev => [...prev, { role: 'model', text: 'Error de conexión con el soporte. Por favor, intenta más tarde.' }]);
+      if (!chatSessionRef.current) {
+        chatSessionRef.current = await createSupportSession();
+      }
+
+      const result = await chatSessionRef.current.sendMessage(userMessage.text);
+      const response = result.response.text();
+
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'model',
+        text: response
+      }]);
+    } catch (error) {
+      console.error("Error sending message", error);
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'model',
+        text: "Lo siento, tuve un problema al procesar tu mensaje. Por favor intenta de nuevo."
+      }]);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)] animate-fade-in pb-16">
-      <div className="flex items-center gap-3 p-2 mb-4">
-        <button onClick={() => setView(ViewState.DASHBOARD)} className="p-2 text-slate-400 hover:text-white"><ChevronLeft size={20} /></button>
-        <div className={`p-2 rounded-xl ${bgAccent} text-white shadow-lg`}>
-          <HelpCircle size={20} />
-        </div>
-        <div>
-          <h2 className="text-white font-bold leading-tight">Ayuda y Soporte</h2>
-          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Chatbot de Asistencia</p>
-        </div>
-      </div>
+    <>
+      {/* Floating Button */}
+      {!isOpen && (
+        <button
+          onClick={handleOpen}
+          className="fixed bottom-6 right-6 z-50 bg-brand-600 hover:bg-brand-500 text-white p-4 rounded-full shadow-2xl transition-all hover:scale-110 active:scale-95 animate-in fade-in slide-in-from-bottom-10"
+        >
+          <MessageCircle size={28} />
+        </button>
+      )}
 
-      <div className="flex-1 overflow-y-auto space-y-4 p-2 scrollbar-hide" ref={scrollRef}>
-        {messages.map((msg, idx) => (
-          <div key={idx} className={`flex ${msg.role === 'model' ? 'justify-start' : 'justify-end'}`}>
-            <div className={`max-w-[85%] p-4 rounded-2xl text-sm ${msg.role === 'model'
-                ? 'bg-zinc-900 text-slate-300 border border-slate-800 rounded-tl-none'
-                : `${bgAccent} text-white rounded-br-none`
-              }`}>
-              {msg.text}
-            </div>
-          </div>
-        ))}
-        {loading && (
-          <div className="flex justify-start animate-pulse">
-            <div className="bg-zinc-900 p-4 rounded-2xl rounded-tl-none border border-slate-800 flex items-center gap-2">
-              <Loader2 size={16} className="animate-spin text-slate-500" />
-              <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Escribiendo...</span>
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Chat Window */}
+      {isOpen && (
+        <div className="fixed bottom-6 right-6 z-50 w-[90vw] sm:w-[400px] h-[500px] bg-zinc-900 border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-10 sm:right-6">
 
-      <div className="p-2 mt-auto">
-        <div className="relative flex items-center">
-          <input
-            type="text"
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSend()}
-            placeholder="Describe tu problema..."
-            className="w-full bg-zinc-900 border border-slate-800 rounded-xl py-4 pl-4 pr-12 text-white placeholder:text-slate-600 focus:border-brand-500 outline-none"
-          />
-          <button
-            onClick={handleSend}
-            className={`absolute right-2 p-2 rounded-lg ${bgAccent} text-white shadow-lg active:scale-95 transition-transform`}
-          >
-            <Send size={18} />
-          </button>
+          {/* Header */}
+          <div className="p-4 bg-zinc-800/50 border-b border-white/5 flex items-center justify-between backdrop-blur-md">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-brand-500/20 flex items-center justify-center text-brand-500">
+                <Bot size={20} />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-sm">Soporte Técnico</h3>
+                <p className="text-[10px] text-slate-400 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> En línea
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-slate-400 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-full"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+              >
+                <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${msg.role === 'user' ? 'bg-slate-700 text-slate-300' : 'bg-brand-500/20 text-brand-500'
+                  }`}>
+                  {msg.role === 'user' ? <User size={14} /> : <Bot size={14} />}
+                </div>
+                <div className={`max-w-[80%] rounded-2xl p-3 text-sm leading-relaxed ${msg.role === 'user'
+                  ? 'bg-brand-600 text-white rounded-tr-none'
+                  : 'bg-zinc-800 text-slate-200 rounded-tl-none border border-white/5'
+                  }`}>
+                  <ReactMarkdown>{msg.text}</ReactMarkdown>
+                </div>
+              </div>
+            ))}
+            {isLoading && (
+              <div className="flex gap-3">
+                <div className="w-8 h-8 rounded-full bg-brand-500/20 flex-shrink-0 flex items-center justify-center text-brand-500">
+                  <Bot size={14} />
+                </div>
+                <div className="bg-zinc-800 rounded-2xl p-3 rounded-tl-none border border-white/5 flex items-center gap-2">
+                  <Loader2 size={16} className="animate-spin text-slate-400" />
+                  <span className="text-xs text-slate-400">Escribiendo...</span>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input */}
+          <form onSubmit={handleSend} className="p-3 bg-zinc-800/30 border-t border-white/5 backdrop-blur-sm">
+            <div className="relative">
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Describe tu problema..."
+                className="w-full bg-zinc-900 border border-white/10 text-white pl-4 pr-12 py-3 rounded-xl focus:outline-none focus:border-brand-500 transition-colors text-sm"
+              />
+              <button
+                type="submit"
+                disabled={!inputText.trim() || isLoading}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg transition-all disabled:opacity-50 disabled:bg-transparent disabled:text-slate-600"
+              >
+                <Send size={16} />
+              </button>
+            </div>
+          </form>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
