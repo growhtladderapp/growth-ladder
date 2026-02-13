@@ -60,6 +60,9 @@ export const createCoachSession = (userProfile: UserProfile | null) => {
         - Usa emojis deportivos.
         - ${profileContext}
         
+        INSTRUCCIÓN CLAVE:
+        Cuando el usuario pida una rutina o consejo, BASATE SIEMPRE en su peso, altura, edad y género (si están disponibles en el contexto) para determinar cargas, volumen y dificultad. Si es principiante, prioriza la técnica. Si es avanzado, prioriza la intensidad.
+        
         Responde siempre en el idioma que el usuario utilice.
       `,
     },
@@ -174,42 +177,51 @@ export const getMuscleGuide = async (muscle: MuscleGroup, userProfile?: UserProf
     const goalContext = currentGoal
       ? `META USUARIO: ${currentGoal.title} (${currentGoal.type}). ENFOQUE: ${currentGoal.description}.`
       : "";
-    const profileContext = userProfile
-      ? `ATLETA: Nivel ${userProfile.experience}, Objetivo: ${userProfile.focus}.`
-      : "";
+
+    // Enhanced Biometric Context
+    let profileContext = "";
+    if (userProfile) {
+      profileContext = `
+        PERFIL DEL ATLETA:
+        - Nivel: ${userProfile.experience}
+        - Objetivo Principal: ${userProfile.focus}
+        - Datos Biométricos: Altura ${userProfile.height}cm, Peso ${userProfile.weight}kg, Edad ${userProfile.age} años, Género ${userProfile.gender}.
+      `;
+    }
 
     const envContext = environment === 'home'
       ? "ENTORNO: CASA (SIN EQUIPAMIENTO: SOLO PESO CORPORAL / CALISTENIA). No asumir que tiene bandas ni mancuernas."
       : "ENTORNO: GIMNASIO (Acceso total a máquinas, barras, poleas y peso libre).";
 
     const prompt = `
-      Eres un experto en biomecánica. Crea una GUÍA TÉCNICA para: ${muscle}.
+      Eres un experto en biomecánica y entrenador personal de élite. Crea una GUÍA TÉCNICA DE ENTRENAMIENTO para: ${muscle}.
+      
+      CONTEXTO:
       ${goalContext}
       ${profileContext}
       ${envContext}
 
-      ADAPTA LOS EJERCICIOS A LA META Y AL ENTORNO DEL USUARIO:
-      - Si es CASA: Usa EXCLUSIVAMENTE ejercicios con peso corporal. Prohibido incluir ejercicios que requieran mancuernas, barras, bandas elásticas o máquinas. Solo calistenia pura y uso de muebles básicos (silla, pared).
-      - Si es GIMNASIO: Aprovecha máquinas y equipamiento compuesto.
-      - Si es "Quema Calórica/Cardio": Enfócate en altas repeticiones, superseries o ejercicios compuestos.
-      - Si es "Fuerza/Músculo": Enfócate en aislamiento y control.
-      - Si es "Runner/Distancia": Enfócate en estabilidad y resistencia muscular.
+      TUS INSTRUCCIONES:
+      1. ADAPTA LA DIFICULTAD Y VOLUMEN a la experiencia y edad del atleta. (Ej. Si es principiante/mayor, ejercicios más seguros. Si es avanzado, técnicas de intensidad).
+      2. ADAPTA LA SELECCIÓN DE EJERCICIOS al entorno (${environment}).
+         - CASA: ¡Solo Peso Corporal/Muebles! Prohibido equipamiento de gimnasio.
+         - GIMNASIO: Usa lo mejor del equipamiento disponible.
+      3. ENFOQUE BIOMÉTRICO: Considera el peso corporal (${userProfile?.weight || 'N/A'}kg) para sugerir repeticiones o progresiones (ej. si es pesado, ejercicios de bajo impacto o menor volumen en calistenia).
 
-      RETORNA JSON:
+      RETORNA JSON (Mínimo 4 ejercicios):
       {
         "muscle": "${muscle}",
-        "introduction": "Breve análisis biomecánico adaptado a la meta y entorno (${environment}).",
+        "introduction": "Análisis biomecánico personalizado para el atleta y su entorno.",
         "exercises": [
           { 
             "name": "Nombre Ejercicio",
             "difficulty": "Principiante/Intermedio/Avanzado",
-            "instructions": ["Paso 1", "Paso 2"],
-            "commonError": "Error común a evitar",
-            "gifUrl": "URL opcional" 
+            "instructions": ["Paso 1", "Paso 2", "Paso 3"],
+            "commonError": "Error crítico a evitar",
+            "gifUrl": "URL opcional (deja vacío si no estás seguro)" 
           }
         ]
       }
-      (Mínimo 4 ejercicios).
     `;
 
     const response = await ai.models.generateContent({

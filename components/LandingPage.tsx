@@ -12,15 +12,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin 
         <div className="min-h-screen bg-brand-dark text-white font-sans selection:bg-brand-500/30 selection:text-brand-200 overflow-x-hidden">
 
             {/* Navbar */}
-            <nav className="fixed top-0 left-0 right-0 z-50 bg-brand-dark/80 backdrop-blur-lg border-b border-white/5">
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-b border-zinc-200">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <Logo className="w-10 h-10" />
-                        <span className="font-black italic tracking-tighter text-xl uppercase hidden sm:block">Growth Ladder</span>
+                        <Logo className="w-10 h-10 text-black" />
+                        <span className="font-extrabold tracking-tight text-xl text-black hidden sm:block font-display">GROWTH LADDER</span>
                     </div>
                     <button
                         onClick={onLogin}
-                        className="px-6 py-2.5 rounded-xl font-bold text-sm bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-slate-300 hover:text-white backdrop-blur-md"
+                        className="px-8 py-3 rounded-full font-bold text-sm bg-black text-white hover:bg-zinc-800 transition-all shadow-lg hover:shadow-xl active:scale-95"
                     >
                         Iniciar Sesión
                     </button>
@@ -28,42 +28,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin 
             </nav>
 
             {/* Hero Section */}
-            <header className="relative pt-32 pb-20 sm:pt-48 sm:pb-32 px-6 overflow-hidden">
-                {/* Ambient Glow */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-500/20 blur-[120px] rounded-full animate-pulse-slow pointer-events-none"></div>
-
-                <div className="max-w-4xl mx-auto text-center relative z-10 animate-in fade-in slide-in-from-bottom-10 duration-1000">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] mb-8 shadow-[0_0_20px_rgba(16,185,129,0.2)] animate-in zoom-in duration-700 delay-200">
-                        <ShieldCheck size={14} /> Sistema de Alto Rendimiento
-                    </div>
-
-                    <h1 className="text-5xl sm:text-7xl font-black italic tracking-tighter uppercase leading-[0.9] mb-6 drop-shadow-2xl">
-                        Escala <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-emerald-400">Sin Límites</span>
-                    </h1>
-
-                    <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 font-medium leading-relaxed">
-                        La plataforma definitiva para atletas que buscan superar sus marcas.
-                        Entrena, mide y evoluciona con inteligencia artificial y gamificación avanzada.
-                    </p>
-
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <button
-                            onClick={onGetStarted}
-                            className="w-full sm:w-auto px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white rounded-2xl font-black uppercase tracking-widest text-sm flex items-center justify-center gap-3 transition-all hover:scale-105 shadow-[0_0_40px_rgba(249,115,22,0.3)] group"
-                        >
-                            Empezar Ahora <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-                        </button>
-                        <button
-                            onClick={onGetStarted} // Also goes to auth/signup
-                            className="w-full sm:w-auto px-8 py-4 bg-transparent border border-white/10 hover:bg-white/5 text-white rounded-2xl font-bold uppercase tracking-widest text-sm transition-all"
-                        >
-                            Explorar Demo
-                        </button>
-                    </div>
-
-                    <p className="mt-8 text-[10px] text-slate-600 font-bold uppercase tracking-[0.2em]">
-                        Created by TrainingWithHabits
-                    </p>
+            {/* Hero Section */}
+            {/* Hero Section */}
+            <header className="relative pt-20 pb-10 sm:pt-24 sm:pb-16 px-6 overflow-hidden flex justify-center items-center bg-white">
+                <div className="max-w-7xl mx-auto w-full relative z-10">
+                    <img
+                        src="/hero-banner.png"
+                        alt="Log Workouts, Grow Stronger, Stay Motivated"
+                        className="w-full h-auto object-cover rounded-2xl shadow-2xl"
+                    />
                 </div>
             </header>
 
@@ -104,10 +77,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin 
             {/* Social Proof / Stats */}
             <section className="py-20 border-y border-white/5 bg-black/20 backdrop-blur-sm">
                 <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 sm:grid-cols-4 gap-12 text-center">
-                    <Stat number="10k+" label="Atletas Activos" />
-                    <Stat number="500+" label="Rutinas Pro" />
-                    <Stat number="1M+" label="Kilos Levantados" />
-                    <Stat number="4.9" label="Calificación App" icon={<Star size={12} className="text-yellow-400 fill-yellow-400 inline mb-1" />} />
+                    <Stat number="+25k" label="Atletas Activos" />
+                    <Stat number="+150" label="Modos Deportivos" />
+                    <Stat number="+5M" label="Calorías Quemadas" />
+                    <Stat number="4.9/5" label="Valoración" icon={<Star size={12} className="text-yellow-400 fill-yellow-400 inline mb-1" />} />
                 </div>
             </section>
 

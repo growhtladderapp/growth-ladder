@@ -711,7 +711,7 @@ export default function App() {
           </div>
         )}
 
-        {isPro && view !== ViewState.CHAT && view !== ViewState.SUPPORT && (
+        {view !== ViewState.CHAT && view !== ViewState.SUPPORT && (
           <button
             onClick={() => setView(ViewState.CHAT)}
             className="fixed bottom-24 right-5 z-40 w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center shadow-lg border border-emerald-400 transition-transform active:scale-95 animate-in zoom-in"
@@ -735,6 +735,7 @@ export default function App() {
               customTargets={goalTargets}
               onUpdateTarget={handleUpdateGoalTarget}
               userProfile={userProfile}
+              onLogout={handleLogout}
             />
           )}
           {view === ViewState.WORKOUT && (

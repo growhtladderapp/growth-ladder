@@ -25,6 +25,7 @@ interface DashboardProps {
   customTargets: Record<number, number>;
   onUpdateTarget: (id: number, target: number) => void;
   userProfile: UserProfile | null;
+  onLogout: () => void;
 }
 
 const PRESET_COLORS = [
@@ -131,7 +132,7 @@ const SwipeableLogItem: React.FC<SwipeableItemProps> = ({ dayData, onDelete, onS
   );
 };
 
-export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, onDeleteDate, onChangeThemeColor, setView, uiText, selectedGoalId, onSelectGoal, customTargets, onUpdateTarget, userProfile }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, onDeleteDate, onChangeThemeColor, setView, uiText, selectedGoalId, onSelectGoal, customTargets, onUpdateTarget, userProfile, onLogout }) => {
   const [goalDuration, setGoalDuration] = useState<DurationType>('WEEK');
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -377,7 +378,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
                 </React.Fragment>
               ))}
             </nav>
-            <button onClick={() => { setIsSidebarOpen(false); toast('Cerrando Sesión...', 'info'); }} className="flex items-center gap-4 p-4 mt-auto border-t border-white/5 text-red-500 font-bold uppercase text-[11px] tracking-widest w-full">
+            <button onClick={() => { setIsSidebarOpen(false); onLogout(); }} className="flex items-center gap-4 p-4 mt-auto border-t border-white/5 text-red-500 font-bold uppercase text-[11px] tracking-widest w-full">
               <LogOut size={20} /> {uiText.cerrar_sesion}
             </button>
           </div>
