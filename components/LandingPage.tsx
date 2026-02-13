@@ -77,9 +77,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin 
             {/* Social Proof / Stats */}
             <section className="py-20 border-y border-white/5 bg-black/20 backdrop-blur-sm">
                 <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 sm:grid-cols-4 gap-12 text-center">
-                    <Stat number="+25k" label="Atletas Activos" />
+                    <Stat number="+10k" label="Atletas Activos" />
                     <Stat number="+150" label="Modos Deportivos" />
-                    <Stat number="+5M" label="Calorías Quemadas" />
+                    <Stat number="+50k" label="Sesiones Finalizadas" />
                     <Stat number="4.9/5" label="Valoración" icon={<Star size={12} className="text-yellow-400 fill-yellow-400 inline mb-1" />} />
                 </div>
             </section>
