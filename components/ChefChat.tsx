@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from './ToastContext'; // Assuming this exists or similar
-import { Send, ChefHat, Sparkles, Loader2, Utensils } from 'lucide-react';
+import { Send, ChefHat, Sparkles, Loader2, Utensils, Volume2 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 import ReactMarkdown from 'react-markdown';
 import { UserProfile } from '../types';
@@ -102,12 +102,25 @@ export const ChefChat: React.FC<ChefChatProps> = ({ userProfile }) => {
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-zinc-900/50 backdrop-blur-sm border-x border-slate-800">
                 {messages.map((msg, idx) => (
                     <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[85%] rounded-2xl p-4 shadow-sm ${msg.role === 'user' ? 'bg-orange-600 text-white rounded-tr-sm' : 'bg-slate-800 text-slate-200 rounded-tl-sm border border-slate-700'}`}>
+                        <div className={`max-w-[85%] rounded-2xl p-4 shadow-sm relative group ${msg.role === 'user' ? 'bg-orange-600 text-white rounded-tr-sm' : 'bg-slate-800 text-slate-200 rounded-tl-sm border border-slate-700'}`}>
                             <div className="prose prose-invert text-sm prose-p:leading-relaxed prose-headings:text-orange-400 prose-strong:text-white">
                                 <ReactMarkdown>
                                     {msg.text}
                                 </ReactMarkdown>
                             </div>
+                            {msg.role === 'model' && (
+                                <button
+                                    onClick={() => {
+                                        const speech = new SpeechSynthesisUtterance(msg.text);
+                                        speech.lang = 'es-ES';
+                                        window.speechSynthesis.speak(speech);
+                                    }}
+                                    className="absolute -bottom-6 left-0 p-1 text-slate-400 hover:text-orange-500 transition-colors opacity-0 group-hover:opacity-100"
+                                    title="Escuchar"
+                                >
+                                    <Volume2 size={16} />
+                                </button>
+                            )}
                         </div>
                     </div>
                 ))}
