@@ -85,7 +85,7 @@ export const SupportChat: React.FC = () => {
           className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full shadow-2xl transition-all hover:scale-110 active:scale-95 animate-in fade-in slide-in-from-bottom-10 overflow-hidden border-2 border-white bg-white"
         >
           <img
-            src="/support-avatar.png"
+            src="/support-avatar.svg"
             alt="Soporte"
             className="w-full h-full object-cover"
           />
@@ -100,7 +100,7 @@ export const SupportChat: React.FC = () => {
           <div className="p-4 bg-zinc-800/50 border-b border-white/5 flex items-center justify-between backdrop-blur-md">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center overflow-hidden border border-white/20">
-                <img src="/support-avatar.png" alt="Bot" className="w-full h-full object-cover" />
+                <img src="/support-avatar.svg" alt="Bot" className="w-full h-full object-cover" />
               </div>
               <div>
                 <h3 className="font-bold text-white text-sm">Soporte Técnico</h3>
@@ -126,7 +126,7 @@ export const SupportChat: React.FC = () => {
               >
                 <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden ${msg.role === 'user' ? 'bg-slate-700 text-slate-300' : 'bg-transparent border border-white/10'
                   }`}>
-                  {msg.role === 'user' ? <User size={14} /> : <img src="/support-avatar.png" alt="Bot" className="w-full h-full object-cover" />}
+                  {msg.role === 'user' ? <User size={14} /> : <img src="/support-avatar.svg" alt="Bot" className="w-full h-full object-cover" />}
                 </div>
                 <div className={`max-w-[80%] rounded-2xl p-3 text-sm leading-relaxed ${msg.role === 'user'
                   ? 'bg-brand-600 text-white rounded-tr-none'
@@ -139,7 +139,7 @@ export const SupportChat: React.FC = () => {
             {isLoading && (
               <div className="flex gap-3">
                 <div className="w-8 h-8 rounded-full bg-transparent border border-white/10 flex-shrink-0 flex items-center justify-center overflow-hidden">
-                  <img src="/support-avatar.png" alt="Bot" className="w-full h-full object-cover" />
+                  <img src="/support-avatar.svg" alt="Bot" className="w-full h-full object-cover" />
                 </div>
                 <div className="bg-zinc-800 rounded-2xl p-3 rounded-tl-none border border-white/5 flex items-center gap-2">
                   <Loader2 size={16} className="animate-spin text-slate-400" />
@@ -163,9 +163,9 @@ export const SupportChat: React.FC = () => {
               <button
                 type="submit"
                 disabled={!inputText.trim() || isLoading}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-brand-600 hover:bg-brand-500 text-white rounded-lg transition-all disabled:opacity-50 disabled:bg-transparent disabled:text-slate-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-transparent hover:bg-white/5 rounded-full transition-all disabled:opacity-50"
               >
-                <Send size={16} />
+                <img src="/send-icon.svg" alt="Enviar" className="w-5 h-5" />
               </button>
             </div>
           </form>

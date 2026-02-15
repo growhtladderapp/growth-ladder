@@ -1,9 +1,11 @@
 
+
 import React, { useState, useRef, useEffect } from 'react';
 import { UserProfile } from '../types';
 import { createCoachSession } from '../services/geminiService';
-import { Send, Bot, Loader2, Sparkles, ShieldCheck, ClipboardList } from 'lucide-react';
+import { Send, Bot, Loader2, Sparkles, ShieldCheck, ClipboardList, Volume2, Mic } from 'lucide-react';
 import { Chat } from "@google/genai";
+import ReactMarkdown from 'react-markdown';
 
 interface AICoachChatProps {
   userProfile: UserProfile | null;
@@ -14,6 +16,8 @@ interface Message {
   role: 'user' | 'model';
   text: string;
 }
+
+type VoiceGender = 'male' | 'female';
 
 // Custom Sporty Robot Component - Exported for use in App FAB
 export const SportyRobotIcon: React.FC<{ size?: number; className?: string }> = ({ size = 24, className = "" }) => {
@@ -67,11 +71,67 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
   const [chatSession, setChatSession] = useState<Chat | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Voice State
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [preferredGender, setPreferredGender] = useState<VoiceGender>(() => {
+    return (localStorage.getItem('coach_voice_gender') as VoiceGender) || 'male';
+  });
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  // Load available voices
+  useEffect(() => {
+    const loadVoices = () => {
+      const available = window.speechSynthesis.getVoices();
+      setVoices(available);
+    };
+
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+  }, []);
+
+  const getBestVoice = (gender: VoiceGender): SpeechSynthesisVoice | null => {
+    const esVoices = voices.filter(v => v.lang.startsWith('es'));
+
+    if (gender === 'female') {
+      return esVoices.find(v => v.name.includes('Google') || v.name.includes('Helena') || v.name.includes('Paulina')) || esVoices[0] || null;
+    } else {
+      // Prioritize male voices for Coach
+      return esVoices.find(v => v.name.includes('Pablo') || v.name.includes('Jorge') || v.name.includes('Juan') || v.name.includes('Microsoft')) || esVoices.find(v => !v.name.includes('Google')) || esVoices[0] || null;
+    }
+  };
+
+  const speakText = (text: string) => {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voice = getBestVoice(preferredGender);
+    if (voice) utterance.voice = voice;
+    utterance.rate = 1.0;
+    utterance.pitch = preferredGender === 'female' ? 1.0 : 0.9;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const toggleVoice = () => {
+    const newGender = preferredGender === 'female' ? 'male' : 'female';
+    setPreferredGender(newGender);
+    localStorage.setItem('coach_voice_gender', newGender);
+
+    // Test voice
+    const testMsg = "Sistema de audio calibrado. Director de rendimiento en línea.";
+    const utterance = new SpeechSynthesisUtterance(testMsg);
+    const voice = getBestVoice(newGender);
+    if (voice) utterance.voice = voice;
+    utterance.pitch = newGender === 'female' ? 1.0 : 0.9;
+    window.speechSynthesis.speak(utterance);
+  };
 
   // Initialize Chat Session
   useEffect(() => {
@@ -90,7 +150,11 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
 
     try {
       const result = await chatSession.sendMessage({ message: userMsg });
-      setMessages(prev => [...prev, { role: 'model', text: result.text }]);
+      const responseText = result.text;
+      setMessages(prev => [...prev, { role: 'model', text: responseText }]);
+
+      // Auto-speak usage is minimal to not annoy, but user requested "listening also here"
+      // We generally don't auto-speak unless requested, but here we add the button.
     } catch (error) {
       setMessages(prev => [...prev, { role: 'model', text: 'Error en la interfaz de comunicación. Reintente el envío, atleta.' }]);
     } finally {
@@ -104,7 +168,6 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
       handleSend();
     }
   };
-
 
 
   return (
@@ -123,8 +186,22 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
             <p className="text-[9px] text-emerald-500/80 font-mono tracking-[0.2em] uppercase">Status: Análisis Activo</p>
           </div>
         </div>
-        <div className="bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20 text-[9px] font-black text-emerald-500 uppercase tracking-tighter">
-          Elite AI
+
+        <div className="flex items-center gap-2">
+          {/* Voice Toggle */}
+          <button
+            onClick={toggleVoice}
+            className="flex items-center gap-2 bg-emerald-900/30 hover:bg-emerald-900/50 text-emerald-500 px-3 py-1.5 rounded-lg transition-colors border border-emerald-500/20"
+            title={`Cambiar a voz ${preferredGender === 'female' ? 'masculina' : 'femenina'}`}
+          >
+            <div className="relative">
+              <Mic size={12} />
+              <div className={`absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full ${preferredGender === 'female' ? 'bg-pink-400' : 'bg-blue-400'}`}></div>
+            </div>
+            <span className="text-[9px] font-black uppercase tracking-wider">
+              {preferredGender === 'female' ? 'Voz F' : 'Voz M'}
+            </span>
+          </button>
         </div>
       </div>
 
@@ -134,13 +211,24 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
           const isModel = msg.role === 'model';
           return (
             <div key={idx} className={`flex ${isModel ? 'justify-start' : 'justify-end'}`}>
-              <div className={`max-w-[85%] rounded-2xl p-4 shadow-xl relative ${isModel
+              <div className={`max-w-[85%] rounded-2xl p-4 shadow-xl relative group ${isModel
                 ? 'bg-zinc-900/80 text-slate-200 border border-zinc-800 rounded-tl-none'
                 : 'bg-emerald-600/90 text-white border-t border-emerald-400/30 rounded-br-none'
                 }`}>
-                <p className="text-xs leading-relaxed whitespace-pre-wrap font-medium">{msg.text}</p>
+                <div className="text-xs leading-relaxed whitespace-pre-wrap font-medium">
+                  <ReactMarkdown>{msg.text}</ReactMarkdown>
+                </div>
 
-                <div className={`mt-3 flex items-center gap-1.5 opacity-30 ${isModel ? 'justify-end' : 'justify-start'}`}>
+                <div className={`mt-3 flex items-center gap-2 opacity-30 group-hover:opacity-100 transition-opacity ${isModel ? 'justify-between' : 'justify-end'}`}>
+                  {isModel && (
+                    <button
+                      onClick={() => speakText(msg.text)}
+                      className="text-emerald-500 hover:text-emerald-400 transition-colors"
+                      title="Escuchar análisis"
+                    >
+                      <Volume2 size={14} />
+                    </button>
+                  )}
                   <span className="text-[8px] font-black uppercase tracking-widest">
                     {isModel ? 'GL_PERFORMANCE_DIRECTOR' : 'ATHLETE_ID_001'}
                   </span>
@@ -178,9 +266,9 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
           <button
             onClick={handleSend}
             disabled={loading || !input.trim()}
-            className="absolute right-2 p-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-all shadow-lg active:scale-95 disabled:opacity-30 disabled:scale-100"
+            className="absolute right-2 p-2 bg-transparent hover:bg-white/10 rounded-full transition-all active:scale-95 disabled:opacity-30 disabled:scale-100"
           >
-            <Send size={18} />
+            <img src="/send-icon.svg" alt="Enviar" className="w-5 h-5" />
           </button>
         </div>
         <p className="text-[8px] text-zinc-600 mt-2 text-center font-bold uppercase tracking-widest">Growth Ladder Performance Protocol v2.5</p>

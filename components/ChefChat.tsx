@@ -224,9 +224,9 @@ export const ChefChat: React.FC<ChefChatProps> = ({ userProfile }) => {
                     <button
                         onClick={handleSend}
                         disabled={loading || !input.trim()}
-                        className="absolute right-2 p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg text-white shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 transition-all"
+                        className="absolute right-2 p-2 bg-transparent hover:bg-white/10 rounded-full transition-all active:scale-95 disabled:opacity-50 disabled:scale-100"
                     >
-                        <Send size={18} />
+                        <img src="/send-icon.svg" alt="Enviar" className="w-5 h-5" />
                     </button>
                 </div>
             </div>

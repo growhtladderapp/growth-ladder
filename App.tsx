@@ -796,7 +796,7 @@ export default function App() {
           )}
           {view === ViewState.ACHIEVEMENTS && <Achievements logs={logs} setView={setView} isPro={isPro} />}
           {view === ViewState.CHAT && <AICoachChat userProfile={userProfile} isPro={isPro} />}
-          {/* {view === ViewState.SUPPORT && <SupportChat />} */}
+          <SupportChat />
           {view === ViewState.SCANNER && <FoodScanner onSave={handleSaveLog} isPro={isPro} />}
           {view === ViewState.RECIPES && <ChefChat userProfile={userProfile} />}
         </main>
