@@ -82,9 +82,13 @@ export const SupportChat: React.FC = () => {
       {!isOpen && (
         <button
           onClick={handleOpen}
-          className="fixed bottom-6 right-6 z-50 bg-brand-600 hover:bg-brand-500 text-white p-4 rounded-full shadow-2xl transition-all hover:scale-110 active:scale-95 animate-in fade-in slide-in-from-bottom-10"
+          className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full shadow-2xl transition-all hover:scale-110 active:scale-95 animate-in fade-in slide-in-from-bottom-10 overflow-hidden border-2 border-white bg-white"
         >
-          <MessageCircle size={28} />
+          <img
+            src="/support-avatar.png"
+            alt="Soporte"
+            className="w-full h-full object-cover"
+          />
         </button>
       )}
 
@@ -95,8 +99,8 @@ export const SupportChat: React.FC = () => {
           {/* Header */}
           <div className="p-4 bg-zinc-800/50 border-b border-white/5 flex items-center justify-between backdrop-blur-md">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-brand-500/20 flex items-center justify-center text-brand-500">
-                <Bot size={20} />
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center overflow-hidden border border-white/20">
+                <img src="/support-avatar.png" alt="Bot" className="w-full h-full object-cover" />
               </div>
               <div>
                 <h3 className="font-bold text-white text-sm">Soporte Técnico</h3>
@@ -120,9 +124,9 @@ export const SupportChat: React.FC = () => {
                 key={msg.id}
                 className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
               >
-                <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${msg.role === 'user' ? 'bg-slate-700 text-slate-300' : 'bg-brand-500/20 text-brand-500'
+                <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden ${msg.role === 'user' ? 'bg-slate-700 text-slate-300' : 'bg-transparent border border-white/10'
                   }`}>
-                  {msg.role === 'user' ? <User size={14} /> : <Bot size={14} />}
+                  {msg.role === 'user' ? <User size={14} /> : <img src="/support-avatar.png" alt="Bot" className="w-full h-full object-cover" />}
                 </div>
                 <div className={`max-w-[80%] rounded-2xl p-3 text-sm leading-relaxed ${msg.role === 'user'
                   ? 'bg-brand-600 text-white rounded-tr-none'
@@ -134,8 +138,8 @@ export const SupportChat: React.FC = () => {
             ))}
             {isLoading && (
               <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-brand-500/20 flex-shrink-0 flex items-center justify-center text-brand-500">
-                  <Bot size={14} />
+                <div className="w-8 h-8 rounded-full bg-transparent border border-white/10 flex-shrink-0 flex items-center justify-center overflow-hidden">
+                  <img src="/support-avatar.png" alt="Bot" className="w-full h-full object-cover" />
                 </div>
                 <div className="bg-zinc-800 rounded-2xl p-3 rounded-tl-none border border-white/5 flex items-center gap-2">
                   <Loader2 size={16} className="animate-spin text-slate-400" />

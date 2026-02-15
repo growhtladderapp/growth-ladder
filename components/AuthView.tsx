@@ -51,7 +51,10 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
         if (error) throw error;
       }
     } catch (error: any) {
-      toast(error.message || 'Error signing in', 'error');
+      console.error('Social Login Error:', error);
+      let msg = error.message || 'Error signing in';
+      if (msg.includes('500')) msg = 'Error de Configuración (500). Revisa las URLs en Supabase.';
+      toast(msg, 'error');
       setLoading(null);
     }
   };
@@ -93,8 +96,12 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
         // Login is handled by onAuthStateChange in App.tsx
       }
     } catch (error: any) {
+      console.error('Auth Error:', error);
       let errorMessage = error.message;
-      if (errorMessage.includes('Invalid login credentials')) {
+
+      if (error.status === 500 || errorMessage.includes('Internal Server Error')) {
+        errorMessage = 'Error interno (500). Posible fallo en envío de correo o configuración.';
+      } else if (errorMessage.includes('Invalid login credentials')) {
         errorMessage = 'Correo o contraseña incorrectos.';
       } else if (errorMessage.includes('User already registered')) {
         errorMessage = 'Ya existe una cuenta con este correo.';
@@ -139,7 +146,20 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
       setShowOtpInput(true);
       toast('SMS enviado. Por favor verifica tu código.', 'success');
     } catch (error: any) {
+      console.error('Login Error:', error);
       let errorMessage = error.message;
+
+      // Handle Supabase 500 Errors (often Config/URL issues)
+      if (error.status === 500 || errorMessage.includes('Internal Server Error')) {
+        errorMessage = 'Error del servidor (500). Verifica la configuración de URL en Supabase.';
+      } else if (errorMessage.includes('Invalid login credentials')) {
+        errorMessage = 'Correo o contraseña incorrectos.';
+      } else if (errorMessage.includes('User already registered')) {
+        errorMessage = 'Ya existe una cuenta con este correo.';
+      } else if (errorMessage.includes('rate limit')) {
+        errorMessage = 'Demasiados intentos. Espera unos minutos.';
+      }
+
       toast(errorMessage, 'error');
     } finally {
       setLoading(null);
