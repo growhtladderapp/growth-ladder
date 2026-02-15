@@ -286,17 +286,35 @@ export const getSportGuide = async (sport: string, userProfile?: UserProfile | n
       ? "ENTORNO: CASA (SIN EQUIPAMIENTO: SOLO PESO CORPORAL). No asumir equipamiento deportivo."
       : "ENTORNO: GIMNASIO (Full equipment).";
 
+    // Enhanced Biometric Context for Sports
+    let profileContext = "";
+    if (userProfile) {
+      profileContext = `
+        PERFIL DEL ATLETA:
+        - Nivel: ${userProfile.experience}
+        - Datos Biométricos: Altura ${userProfile.height}cm, Peso ${userProfile.weight}kg, Edad ${userProfile.age} años.
+        - Objetivo: ${userProfile.focus}
+      `;
+    }
+
     const prompt = `
-      Crea una guía de acondicionamiento físico para el deporte: ${sport}.
+      Crea una rutina de acondicionamiento físico específica para el deporte: ${sport}.
+      
+      CONTEXTO:
       ${goalContext}
+      ${profileContext}
       ${envContext}
-      Adaptado para mejorar el rendimiento en este deporte específico alineado con la meta y entorno del usuario.
+
+      TUS INSTRUCCIONES:
+      1. Diseña una rutina que mejore el rendimiento en ${sport}, considerando la biometría del atleta (peso/edad).
+      2. Si el atleta es pesado, evita ejercicios de alto impacto articular si no son necesarios.
+      3. Selecciona ejercicios específicos para la musculatura usada en ${sport}.
       
       RETORNA JSON:
       {
         "sport": "${sport}",
-        "focus": "Enfoque principal (e.g. Resistencia, Explosividad)",
-        "introduction": "Intro estratégica adaptada a ${environment}.",
+        "focus": "Enfoque principal (e.g. Potencia de Salto, Resistencia Aeróbica)",
+        "introduction": "Estrategia de entrenamiento basada en tu perfil biométrico.",
         "exercises": [
           { 
             "name": "Nombre Ejercicio",
