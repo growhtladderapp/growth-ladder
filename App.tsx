@@ -10,7 +10,6 @@ import { FoodScanner } from './components/FoodScanner';
 import { AICoachChat, SportyRobotIcon } from './components/AICoachChat';
 import { Achievements } from './components/Achievements';
 import { SettingsView } from './components/SettingsView';
-import { SupportChat } from './components/SupportChat';
 import { CommunityView } from './components/CommunityView';
 import { AuthView } from './components/AuthView';
 import { ChefChat } from './components/ChefChat';
@@ -690,7 +689,6 @@ export default function App() {
             onLogin={() => setShowLanding(false)}
             onPrivacy={() => setShowPrivacy(true)}
           />
-          <SupportChat />
         </>
       );
     }
@@ -796,7 +794,6 @@ export default function App() {
           )}
           {view === ViewState.ACHIEVEMENTS && <Achievements logs={logs} setView={setView} isPro={isPro} />}
           {view === ViewState.CHAT && <AICoachChat userProfile={userProfile} isPro={isPro} />}
-          <SupportChat />
           {view === ViewState.SCANNER && <FoodScanner onSave={handleSaveLog} isPro={isPro} />}
           {view === ViewState.RECIPES && <ChefChat userProfile={userProfile} />}
         </main>

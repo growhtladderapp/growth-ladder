@@ -1,7 +1,8 @@
 
 import React, { useState, useMemo, useRef } from 'react';
-import { Settings, User, Bell, Palette, ChevronLeft, Shield, LogOut, ChevronRight, Globe, Moon, Sun, Check, Sparkles, Search, X, Plus } from 'lucide-react';
+import { Settings, User, Bell, Palette, ChevronLeft, Shield, LogOut, ChevronRight, Globe, Moon, Sun, Check, Sparkles, Search, X, Plus, MessageCircle } from 'lucide-react';
 import { ViewState, UserProfile } from '../types';
+import { SupportChat } from './SupportChat';
 
 interface SettingsViewProps {
    userProfile: UserProfile | null;
@@ -100,8 +101,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ userProfile, onUpdat
    };
 
 
+   const [showSupportChat, setShowSupportChat] = useState(false);
+
    return (
       <div className="pb-24 pt-4 animate-fade-in space-y-6">
+         {/* Support Chat Modal */}
+         <SupportChat isOpen={showSupportChat} onClose={() => setShowSupportChat(false)} />
+
          {/* Modal de Idiomas */}
          {showLangModal && (
             <div className="fixed inset-0 z-[150] bg-black/80 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-200">
@@ -231,6 +237,23 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ userProfile, onUpdat
             <div className="space-y-3">
                <h3 className="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em] px-1">App y {uiText.apariencia}</h3>
                <div className="space-y-1 overflow-hidden rounded-2xl border border-slate-800">
+
+                  {/* SUPPORTE TÉCNICO BUTTON - NEW */}
+                  <button
+                     onClick={() => setShowSupportChat(true)}
+                     className={`${cardClass} w-full p-4 flex items-center justify-between border-b border-white/5 hover:bg-white/5 transition-colors group`}
+                  >
+                     <div className="flex items-center gap-4 text-left">
+                        <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
+                           <MessageCircle size={18} />
+                        </div>
+                        <div>
+                           <p className="text-white font-bold text-sm">{uiText.ayuda || 'Soporte Técnico'}</p>
+                           <p className="text-[10px] text-emerald-500 font-black uppercase">Online</p>
+                        </div>
+                     </div>
+                     <ChevronRight size={16} className="text-slate-700" />
+                  </button>
 
                   {/* BOTÓN IDIOMA */}
                   <button
