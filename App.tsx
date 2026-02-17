@@ -708,6 +708,13 @@ export default function App() {
             onTerms={() => setShowTerms(true)}
             onSupport={() => setShowSupport(true)}
           />
+          {/* Support FAB for Landing */}
+          <button
+            onClick={() => setShowSupport(true)}
+            className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center shadow-xl border-2 border-emerald-400/50 transition-all hover:scale-105 active:scale-95 animate-in zoom-in duration-300 hover:shadow-emerald-500/20"
+          >
+            <Headphones size={24} className="text-white" />
+          </button>
         </>
       );
     }
