@@ -59,10 +59,13 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
     }
   };
 
+  const [debugError, setDebugError] = useState<string | null>(null);
+
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading('email');
     setMessage(null);
+    setDebugError(null);
 
     try {
       if (isSignUp) {
@@ -78,10 +81,8 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
         if (error) throw error;
 
         if (data.user && data.session) {
-          // User registered and auto-logged in (Supabase default if confirm email is off)
           toast('¡Bienvenido! Tu cuenta ha sido creada.', 'success');
         } else {
-          // User registered but needs to confirm email
           setMessage('¡Solicitud enviada! Si no recibes el correo en unos minutos, revisa tu carpeta de Spam. Si ya tienes cuenta, intenta Iniciar Sesión.');
         }
 
@@ -97,6 +98,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
       }
     } catch (error: any) {
       console.error('Auth Error:', error);
+      setDebugError(error.message || JSON.stringify(error));
       let errorMessage = error.message;
 
       if (error.status === 500 || errorMessage.includes('Internal Server Error')) {
@@ -328,6 +330,14 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
             </button>
 
             {message && <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl"><p className="text-emerald-400 text-xs text-center font-medium">{message}</p></div>}
+
+            {/* DEBUG: Show raw error if any (for debugging 500s) */}
+            {debugError && (
+              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl mt-2 select-text animate-in fade-in slide-in-from-top-2">
+                <p className="text-red-400 text-[10px] font-mono break-all text-center leading-tight">{debugError}</p>
+                <p className="text-slate-500 text-[8px] mt-1 text-center uppercase tracking-widest">Error Técnico - Comparte esto con soporte</p>
+              </div>
+            )}
           </form>
         ) : (
           !showPhoneInput && !showOtpInput && (
