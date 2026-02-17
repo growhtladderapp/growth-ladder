@@ -11,7 +11,8 @@ export enum ViewState {
   SETTINGS = 'SETTINGS',
   SUPPORT = 'SUPPORT',
   COMMUNITY = 'COMMUNITY',
-  RECIPES = 'RECIPES'
+  RECIPES = 'RECIPES',
+  TERMS = 'TERMS'
 }
 
 export enum MuscleGroup {
@@ -49,6 +50,8 @@ export interface DailyLogEntry {
   protein?: number;
   carbs?: number;
   fat?: number;
+  imageUri?: string;
+  foodName?: string;
 }
 
 export interface CalendarEvent {

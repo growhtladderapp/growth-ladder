@@ -100,12 +100,22 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
 
   const getBestVoice = (gender: VoiceGender): SpeechSynthesisVoice | null => {
     const esVoices = voices.filter(v => v.lang.startsWith('es'));
+    const femaleNames = ['Helena', 'Sabina', 'Laura', 'Paulina', 'Monica', 'Zira', 'Elena'];
 
     if (gender === 'female') {
-      return esVoices.find(v => v.name.includes('Google') || v.name.includes('Helena') || v.name.includes('Paulina')) || esVoices[0] || null;
+      return esVoices.find(v => v.name.includes('Google') || femaleNames.some(n => v.name.includes(n))) || esVoices[0] || null;
     } else {
       // Prioritize male voices for Coach
-      return esVoices.find(v => v.name.includes('Pablo') || v.name.includes('Jorge') || v.name.includes('Juan') || v.name.includes('Microsoft')) || esVoices.find(v => !v.name.includes('Google')) || esVoices[0] || null;
+      // 1. Explicit Male Names
+      const maleVoice = esVoices.find(v => v.name.includes('Pablo') || v.name.includes('Raul') || v.name.includes('Jorge') || v.name.includes('Juan') || v.name.includes('Alvaro') || v.name.includes('Manuel') || v.name.includes('David') || v.name.includes('Mark'));
+      if (maleVoice) return maleVoice;
+
+      // 2. Microsoft voices that are NOT female
+      const microsoftMale = esVoices.find(v => v.name.includes('Microsoft') && !femaleNames.some(n => v.name.includes(n)));
+      if (microsoftMale) return microsoftMale;
+
+      // 3. Fallback: Not Google (often female) and not known female
+      return esVoices.find(v => !v.name.includes('Google') && !femaleNames.some(n => v.name.includes(n))) || esVoices[0] || null;
     }
   };
 
@@ -133,11 +143,27 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
     window.speechSynthesis.speak(utterance);
   };
 
-  // Initialize Chat Session
+  // Initialize Chat Session with Async Handling
   useEffect(() => {
-    if (userProfile) {
-      setChatSession(createCoachSession(userProfile));
-    }
+    let active = true;
+
+    const initChat = async () => {
+      if (userProfile) {
+        try {
+          // Force async handling even if sync, just in case SDK changes behavior
+          const session = await createCoachSession(userProfile);
+          if (active) {
+            setChatSession(session);
+          }
+        } catch (e) {
+          console.error("Failed to init coach session", e);
+        }
+      }
+    };
+
+    initChat();
+
+    return () => { active = false; };
   }, [isPro, userProfile]);
 
   const handleSend = async () => {
@@ -149,14 +175,23 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
     setLoading(true);
 
     try {
+      // Safe check for sendMessage method
+      if (typeof chatSession.sendMessage !== 'function') {
+        throw new Error("Chat session not initialized correctly");
+      }
+
       const result = await chatSession.sendMessage({ message: userMsg });
-      const responseText = result.text;
+
+      // Handle response - SDK v1 usually provides .text directly
+      const responseText = result.text || "Sin respuesta del modelo.";
+
       setMessages(prev => [...prev, { role: 'model', text: responseText }]);
 
       // Auto-speak usage is minimal to not annoy, but user requested "listening also here"
       // We generally don't auto-speak unless requested, but here we add the button.
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'model', text: 'Error en la interfaz de comunicación. Reintente el envío, atleta.' }]);
+      console.error("Coach Chat Error:", error);
+      setMessages(prev => [...prev, { role: 'model', text: 'Error de conexión con el Director. Por favor verifica tu red e intenta nuevamente.' }]);
     } finally {
       setLoading(false);
     }
@@ -176,8 +211,8 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
       <div className="flex items-center justify-between p-4 border-b border-emerald-900/30 bg-zinc-950/80 backdrop-blur-xl sticky top-0 z-10">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600/10 flex items-center justify-center border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-              <SportyRobotIcon size={24} className="text-emerald-500" />
+            <div className="w-10 h-10 rounded-xl bg-emerald-600/10 flex items-center justify-center border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)] overflow-hidden">
+              <img src="/director-logo.png" alt="Director Logo" className="w-full h-full object-cover p-1.5" />
             </div>
             <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-zinc-950"></div>
           </div>

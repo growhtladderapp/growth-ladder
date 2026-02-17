@@ -59,13 +59,21 @@ export const ChefChat: React.FC<ChefChatProps> = ({ userProfile }) => {
 
     const getBestVoice = (gender: VoiceGender): SpeechSynthesisVoice | null => {
         const esVoices = voices.filter(v => v.lang.startsWith('es'));
+        const femaleNames = ['Helena', 'Sabina', 'Laura', 'Paulina', 'Monica', 'Zira', 'Elena'];
 
         if (gender === 'female') {
             // Prioritize known high-quality female voices or Google
-            return esVoices.find(v => v.name.includes('Google') || v.name.includes('Helena') || v.name.includes('Paulina') || v.name.includes('Monica')) || esVoices[0] || null;
+            return esVoices.find(v => v.name.includes('Google') || femaleNames.some(n => v.name.includes(n))) || esVoices[0] || null;
         } else {
             // Prioritize known male voices
-            return esVoices.find(v => v.name.includes('Pablo') || v.name.includes('Jorge') || v.name.includes('Juan') || v.name.includes('Microsoft')) || esVoices.find(v => !v.name.includes('Google')) || esVoices[0] || null;
+            const maleVoice = esVoices.find(v => v.name.includes('Pablo') || v.name.includes('Raul') || v.name.includes('Jorge') || v.name.includes('Juan') || v.name.includes('Alvaro') || v.name.includes('Manuel') || v.name.includes('David') || v.name.includes('Mark'));
+            if (maleVoice) return maleVoice;
+
+            // 2. Microsoft voices that are NOT female
+            const microsoftMale = esVoices.find(v => v.name.includes('Microsoft') && !femaleNames.some(n => v.name.includes(n)));
+            if (microsoftMale) return microsoftMale;
+
+            return esVoices.find(v => !v.name.includes('Google') && !femaleNames.some(n => v.name.includes(n))) || esVoices[0] || null;
         }
     };
 

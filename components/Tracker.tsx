@@ -2,11 +2,12 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { DailyLogEntry, UserProfile, Routine, CalendarEvent } from '../types';
 import { useToast } from '../components/ToastContext';
-import { Ruler, Scale, HeartPulse, ChevronLeft, ChevronRight, TrendingUp, Calendar as CalendarIcon, Clock, Dumbbell, User, Flame, Footprints, Camera, Edit2, Save, X, Activity, Plus, Trash2, Bell, CheckCircle2, BarChart3, LineChart, Target, Zap } from 'lucide-react';
+import { Ruler, Scale, HeartPulse, ChevronLeft, ChevronRight, TrendingUp, Calendar as CalendarIcon, Clock, Dumbbell, User, Flame, Footprints, Camera, Edit2, Save, X, Activity, Plus, Trash2, Bell, CheckCircle2, BarChart3, LineChart, Target, Zap, Utensils } from 'lucide-react';
 import { AreaChart, Area, Tooltip, ResponsiveContainer, XAxis, YAxis, LineChart as ReLineChart, Line, CartesianGrid } from 'recharts';
 
 interface TrackerProps {
   onSave: (entry: DailyLogEntry) => void;
+  onDeleteLog?: (entry: DailyLogEntry) => void;
   userProfile: UserProfile | null;
   onUpdateProfile: (profile: UserProfile) => void;
   logs: DailyLogEntry[];
@@ -16,7 +17,76 @@ interface TrackerProps {
   onNavigateToWorkout?: () => void;
 }
 
-export const Tracker: React.FC<TrackerProps> = ({ userProfile, onUpdateProfile, logs, calendarEvents, onUpdateEvents, isPro = false, onNavigateToWorkout, onSave }) => {
+const SwipeableFoodItem: React.FC<{ entry: DailyLogEntry; onDelete: () => void; isPro: boolean }> = ({ entry, onDelete, isPro }) => {
+  const [offsetX, setOffsetX] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const startX = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX;
+    setIsSwiping(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isSwiping) return;
+    const currentX = e.touches[0].clientX;
+    const diff = currentX - startX.current;
+    if (diff < -100) setOffsetX(diff); // Only swipe left to delete
+    else if (diff > 0) setOffsetX(0); // No swipe right
+    else setOffsetX(diff);
+  };
+
+  const handleTouchEnd = () => {
+    setIsSwiping(false);
+    if (offsetX < -80) onDelete();
+    setOffsetX(0);
+  };
+
+  const time = new Date(entry.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  return (
+    <div className="relative rounded-xl overflow-hidden mb-3 select-none touch-pan-y h-20">
+      <div className="absolute inset-0 bg-red-600 flex items-center justify-end pr-6 text-white font-bold gap-2">
+        <Trash2 size={20} /> Eliminar
+      </div>
+      <div
+        className={`relative z-10 h-full ${isPro ? 'bg-zinc-900 border-zinc-800' : 'bg-brand-card border-slate-800'} border rounded-xl flex items-center p-3 transition-transform duration-200`}
+        style={{ transform: `translateX(${offsetX}px)` }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div className="w-14 h-14 rounded-lg overflow-hidden bg-slate-800 shrink-0 mr-3 border border-slate-700">
+          {entry.imageUri ? (
+            <img src={entry.imageUri} alt="Food" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-slate-500">
+              <Utensils size={18} />
+            </div>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-start">
+            <h4 className="text-white font-bold text-sm truncate">{entry.foodName || 'Alimento Registrado'}</h4>
+            <span className="text-[10px] text-slate-500 font-mono">{time}</span>
+          </div>
+          <div className="flex items-center gap-3 mt-1">
+            <span className="text-white font-black text-xs">{entry.calories} <span className="text-[8px] text-slate-500 font-normal uppercase">kcal</span></span>
+            {(entry.protein || entry.carbs || entry.fat) && (
+              <div className="flex gap-1.5 text-[9px] text-slate-400 font-mono">
+                <span className="text-emerald-500">{entry.protein || 0}p</span>
+                <span className="text-orange-500">{entry.carbs || 0}c</span>
+                <span className="text-yellow-500">{entry.fat || 0}f</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const Tracker: React.FC<TrackerProps> = ({ userProfile, onUpdateProfile, logs, calendarEvents, onUpdateEvents, isPro = false, onNavigateToWorkout, onSave, onDeleteLog }) => {
   const [viewState, setViewState] = useState<'PROFILE' | 'CALENDAR' | 'STATS' | 'FORM'>('PROFILE');
   const { toast } = useToast();
   const [currentCalendarDate, setCurrentCalendarDate] = useState(new Date());
@@ -114,6 +184,14 @@ export const Tracker: React.FC<TrackerProps> = ({ userProfile, onUpdateProfile, 
       .filter(ev => new Date(ev.date).toDateString() === dateStr)
       .sort((a, b) => a.time.localeCompare(b.time));
   }, [selectedDay, calendarEvents, currentCalendarDate]);
+
+  const selectedDayLogs = useMemo(() => {
+    if (!selectedDay) return [];
+    const dateStr = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth(), selectedDay).toDateString();
+    // Filter logs for this day that have calories or food data (exclude weight-only updates if they don't have distinct timestamps or we want to show everything)
+    // Actually, show everything for now.
+    return logs.filter(l => new Date(l.date).toDateString() === dateStr).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [selectedDay, logs, currentCalendarDate]);
 
   const handleAddEvent = () => {
     if (!newEventTitle || !selectedDay) return;
@@ -313,7 +391,27 @@ export const Tracker: React.FC<TrackerProps> = ({ userProfile, onUpdateProfile, 
               )}
             </div>
           </div>
-        )}
+            
+            {/* Food Logs Section */}
+        <div className="mt-6 border-t border-slate-800 pt-4">
+          <h3 className="text-white font-black text-sm uppercase italic tracking-widest mb-3 flex items-center gap-2">
+            <Utensils size={16} className="text-orange-500" /> Registro Diario
+          </h3>
+          {selectedDayLogs.length > 0 ? (
+            <div>
+              {selectedDayLogs.map((log, idx) => (
+                <SwipeableFoodItem
+                  key={log.date + idx}
+                  entry={log}
+                  isPro={isPro}
+                  onDelete={() => onDeleteLog && onDeleteLog(log)}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest text-center py-4">Sin registros de actividad</p>
+          )}
+        </div>
       </div>
     );
   }

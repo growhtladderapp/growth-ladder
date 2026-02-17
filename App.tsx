@@ -13,8 +13,11 @@ import { SettingsView } from './components/SettingsView';
 import { CommunityView } from './components/CommunityView';
 import { AuthView } from './components/AuthView';
 import { ChefChat } from './components/ChefChat';
+import { SupportChat } from './components/SupportChat';
+import { Headphones } from 'lucide-react';
 
 import { LandingPage } from './components/LandingPage';
+import { TermsAndConditions } from './components/TermsAndConditions';
 import { SubscriptionModal } from './components/SubscriptionModal';
 import { translateUI } from './services/geminiService';
 import { supabase, DatabaseLogEntry } from './services/supabase';
@@ -160,6 +163,8 @@ export default function App() {
   const [isTranslating, setIsTranslating] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -634,7 +639,6 @@ export default function App() {
     }
 
     // Save to Supabase
-    // Save to Supabase
     const dbEntry: DatabaseLogEntry = {
       user_id: userId,
       date: entry.date,
@@ -660,6 +664,15 @@ export default function App() {
     }
   };
 
+  const handleDeleteLog = (entry: DailyLogEntry) => {
+    setLogs(prev => {
+      const newLogs = prev.filter(l => l.date !== entry.date);
+      localStorage.setItem('gl_daily_logs', JSON.stringify(newLogs));
+      return newLogs;
+    });
+    // Todo: Sync delete with Supabase if needed
+  };
+
   const handleStartCustomWorkout = (muscles: any[]) => {
     setCustomWorkoutMuscles(muscles);
     setView(ViewState.WORKOUT);
@@ -681,13 +694,19 @@ export default function App() {
     if (showPrivacy) {
       return <PrivacyPolicy onBack={() => setShowPrivacy(false)} />;
     }
+    if (showTerms) {
+      return <TermsAndConditions onClose={() => setShowTerms(false)} />;
+    }
     if (showLanding) {
       return (
         <>
+          {showSupport && <SupportChat isOpen={true} onClose={() => setShowSupport(false)} />}
           <LandingPage
             onGetStarted={() => setShowLanding(false)}
             onLogin={() => setShowLanding(false)}
             onPrivacy={() => setShowPrivacy(true)}
+            onTerms={() => setShowTerms(true)}
+            onSupport={() => setShowSupport(true)}
           />
         </>
       );
@@ -696,7 +715,7 @@ export default function App() {
   }
 
   return (
-    <div className={`min-h-screen ${mainBgClass} font-sans transition-colors duration-500`}>
+    <div className={`min-h-screen ${mainBgClass} font-sans transition-colors duration-500`} >
       <div className={`max-w-md mx-auto min-h-screen relative shadow-2xl overflow-hidden ${isDarkMode ? (isPro ? 'bg-black' : 'bg-brand-dark') : 'bg-white'}`}>
 
         {/* Paywall Modal */}
@@ -725,12 +744,20 @@ export default function App() {
         )}
 
         {view !== ViewState.CHAT && view !== ViewState.SUPPORT && (
-          <button
-            onClick={() => setView(ViewState.CHAT)}
-            className="fixed bottom-24 right-5 z-40 w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center shadow-lg border border-emerald-400 transition-transform active:scale-95 animate-in zoom-in"
-          >
-            <SportyRobotIcon size={28} className="text-white" />
-          </button>
+          <>
+            <button
+              onClick={() => setView(ViewState.CHAT)}
+              className="fixed bottom-36 right-5 z-40 w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center shadow-lg border border-emerald-400 transition-transform active:scale-95 animate-in zoom-in"
+            >
+              <SportyRobotIcon size={28} className="text-white" />
+            </button>
+            <button
+              onClick={() => setView(ViewState.SUPPORT)}
+              className="fixed bottom-52 right-5 z-40 w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center shadow-lg border border-zinc-600 transition-transform active:scale-95 animate-in zoom-in delay-100"
+            >
+              <Headphones size={20} className="text-white" />
+            </button>
+          </>
         )}
 
         <main className="p-5 h-full overflow-y-auto pt-safe pb-32">
@@ -783,7 +810,7 @@ export default function App() {
               uiText={uiText}
             />
           )}
-          {view === ViewState.LOG && <Tracker logs={logs} userProfile={userProfile} onUpdateProfile={handleUpdateProfile} onSave={handleSaveLog} isPro={isPro} calendarEvents={calendarEvents} onUpdateEvents={handleUpdateEvents} />}
+          {view === ViewState.LOG && <Tracker logs={logs} userProfile={userProfile} onUpdateProfile={handleUpdateProfile} onSave={handleSaveLog} onDeleteLog={handleDeleteLog} isPro={isPro} calendarEvents={calendarEvents} onUpdateEvents={handleUpdateEvents} />}
           {view === ViewState.GUIDE && (
             <MuscleWiki
               isPro={isPro}
@@ -796,10 +823,11 @@ export default function App() {
           {view === ViewState.CHAT && <AICoachChat userProfile={userProfile} isPro={isPro} />}
           {view === ViewState.SCANNER && <FoodScanner onSave={handleSaveLog} isPro={isPro} />}
           {view === ViewState.RECIPES && <ChefChat userProfile={userProfile} />}
+          <SupportChat isOpen={view === ViewState.SUPPORT} onClose={() => setView(ViewState.DASHBOARD)} />
         </main>
 
         <Navigation currentView={view} setView={setView} isPro={isPro} uiText={uiText} />
       </div>
-    </div>
+    </div >
   );
 }

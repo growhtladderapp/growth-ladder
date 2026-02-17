@@ -6,9 +6,11 @@ interface LandingPageProps {
     onGetStarted: () => void;
     onLogin: () => void;
     onPrivacy: () => void;
+    onTerms: () => void;
+    onSupport: () => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin, onPrivacy }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin, onPrivacy, onTerms, onSupport }) => {
     return (
         <div className="min-h-screen bg-brand-dark text-white font-sans selection:bg-brand-500/30 selection:text-brand-200 overflow-x-hidden">
 
@@ -95,8 +97,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                 </p>
                 <div className="flex justify-center gap-6 text-[10px] uppercase font-bold text-slate-600 tracking-widest">
                     <button onClick={onPrivacy} className="hover:text-white transition-colors">Privacidad</button>
-                    <a href="#" className="hover:text-white transition-colors">Términos</a>
-                    <button className="hover:text-white transition-colors">Soporte</button>
+                    <button onClick={onTerms} className="hover:text-white transition-colors">Términos y Condiciones</button>
+                    <button onClick={onSupport} className="hover:text-white transition-colors">Soporte</button>
                 </div>
             </footer>
         </div>

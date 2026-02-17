@@ -295,7 +295,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
           <div className={`absolute top-0 left-0 h-full w-[280px] bg-[#0a0a0a] shadow-2xl border-r border-white/5 p-6 animate-in slide-in-from-left duration-300 flex flex-col`}>
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center gap-3">
-                <Logo className="w-8 h-8" />
+                <Logo className="w-9 h-9" />
                 <span className="text-white font-black italic tracking-tighter text-lg uppercase">Growth Ladder</span>
               </div>
               <button onClick={() => setIsSidebarOpen(false)} className="text-slate-500 p-2"><X size={24} /></button>
@@ -459,7 +459,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
             )}
           </button>
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight uppercase italic leading-none">Growth Ladder</h1>
+            <h1 className="text-2xl font-bold text-white tracking-tight uppercase italic leading-none">Growth Ladder</h1>
             <p className="text-slate-400 text-[10px] flex items-center gap-1 mt-1 transition-all uppercase tracking-widest font-black">
               <span className={`w-1.5 h-1.5 rounded-full ${isSyncing
                 ? 'bg-yellow-500 animate-ping'
