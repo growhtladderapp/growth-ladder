@@ -124,7 +124,7 @@ export const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => 
           {isLoading && (
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-transparent border border-white/10 flex-shrink-0 flex items-center justify-center overflow-hidden">
-                <img src="/support-avatar.svg" alt="Bot" className="w-full h-full object-cover" />
+                <img src="/support-avatar.png" alt="Bot" className="w-full h-full object-cover" />
               </div>
               <div className="bg-zinc-800 rounded-2xl p-3 rounded-tl-none border border-white/5 flex items-center gap-2">
                 <Loader2 size={16} className="animate-spin text-slate-400" />
