@@ -390,28 +390,29 @@ export const Tracker: React.FC<TrackerProps> = ({ userProfile, onUpdateProfile, 
                 </div>
               )}
             </div>
-          </div>
-            
+
             {/* Food Logs Section */}
-        <div className="mt-6 border-t border-slate-800 pt-4">
-          <h3 className="text-white font-black text-sm uppercase italic tracking-widest mb-3 flex items-center gap-2">
-            <Utensils size={16} className="text-orange-500" /> Registro Diario
-          </h3>
-          {selectedDayLogs.length > 0 ? (
-            <div>
-              {selectedDayLogs.map((log, idx) => (
-                <SwipeableFoodItem
-                  key={log.date + idx}
-                  entry={log}
-                  isPro={isPro}
-                  onDelete={() => onDeleteLog && onDeleteLog(log)}
-                />
-              ))}
+            <div className="mt-6 border-t border-slate-800 pt-4">
+              <h3 className="text-white font-black text-sm uppercase italic tracking-widest mb-3 flex items-center gap-2">
+                <Utensils size={16} className="text-orange-500" /> Registro Diario
+              </h3>
+              {selectedDayLogs.length > 0 ? (
+                <div>
+                  {selectedDayLogs.map((log, idx) => (
+                    <SwipeableFoodItem
+                      key={log.date + idx}
+                      entry={log}
+                      isPro={isPro}
+                      onDelete={() => onDeleteLog && onDeleteLog(log)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest text-center py-4">Sin registros de actividad</p>
+              )}
             </div>
-          ) : (
-            <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest text-center py-4">Sin registros de actividad</p>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     );
   }
