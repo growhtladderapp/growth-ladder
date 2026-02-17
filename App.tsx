@@ -711,9 +711,9 @@ export default function App() {
           {/* Support FAB for Landing */}
           <button
             onClick={() => setShowSupport(true)}
-            className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center shadow-xl border-2 border-emerald-400/50 transition-all hover:scale-105 active:scale-95 animate-in zoom-in duration-300 hover:shadow-emerald-500/20"
+            className="fixed bottom-6 right-6 z-50 w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl border-2 border-emerald-500/20 transition-all hover:scale-105 active:scale-95 animate-in zoom-in duration-300 hover:shadow-emerald-500/20 overflow-hidden"
           >
-            <Headphones size={24} className="text-white" />
+            <img src="/support-avatar.svg" alt="Soporte" className="w-full h-full object-cover" />
           </button>
         </>
       );
