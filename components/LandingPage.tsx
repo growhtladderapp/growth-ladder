@@ -53,9 +53,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                 <div className="w-full max-w-md lg:max-w-lg relative z-10">
                     <div className="absolute inset-0 bg-brand-500/20 blur-3xl rounded-full"></div>
                     <img
-                        src="/hero-banner.png"
+                        src="/landing-hero.png"
                         alt="Mobile App Interface"
-                        className="w-full h-auto object-cover rounded-[2.5rem] shadow-2xl border-8 border-white relative z-10 rotate-3 hover:rotate-0 transition-transform duration-500"
+                        className="w-full h-auto object-contain rounded-xl shadow-2xl relative z-10 hover:scale-[1.02] transition-transform duration-500"
                     />
                 </div>
             </header>
