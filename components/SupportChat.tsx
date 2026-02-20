@@ -86,7 +86,7 @@ export const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => 
         {/* Header */}
         <div className="p-4 bg-zinc-800/50 border-b border-white/5 flex items-center justify-between backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <img src="/support-avatar.svg" alt="Bot" className="w-full h-full object-cover" />
+            <img src="/support-agent.png" alt="Bot" className="w-full h-full object-cover" />
             <div>
               <h3 className="font-bold text-white text-sm">Soporte Técnico</h3>
               <p className="text-[10px] text-slate-400 flex items-center gap-1">
@@ -111,7 +111,7 @@ export const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => 
             >
               <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden ${msg.role === 'user' ? 'bg-slate-700 text-slate-300' : 'bg-transparent border border-white/10'
                 }`}>
-                {msg.role === 'user' ? <User size={14} /> : <img src="/support-avatar.svg" alt="Bot" className="w-full h-full object-cover" />}
+                {msg.role === 'user' ? <User size={14} /> : <img src="/support-agent.png" alt="Bot" className="w-full h-full object-cover" />}
               </div>
               <div className={`max-w-[80%] rounded-2xl p-3 text-sm leading-relaxed ${msg.role === 'user'
                 ? 'bg-brand-600 text-white rounded-tr-none'
@@ -124,7 +124,7 @@ export const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => 
           {isLoading && (
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-transparent border border-white/10 flex-shrink-0 flex items-center justify-center overflow-hidden">
-                <img src="/support-avatar.svg" alt="Bot" className="w-full h-full object-cover" />
+                <img src="/support-agent.png" alt="Bot" className="w-full h-full object-cover" />
               </div>
               <div className="bg-zinc-800 rounded-2xl p-3 rounded-tl-none border border-white/5 flex items-center gap-2">
                 <Loader2 size={16} className="animate-spin text-slate-400" />

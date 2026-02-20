@@ -713,7 +713,7 @@ export default function App() {
             onClick={() => setShowSupport(true)}
             className="fixed bottom-6 right-6 z-50 w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl border-2 border-emerald-500/20 transition-all hover:scale-105 active:scale-95 animate-in zoom-in duration-300 hover:shadow-emerald-500/20 overflow-hidden"
           >
-            <img src="/support-avatar.svg" alt="Soporte" className="w-full h-full object-cover" />
+            <img src="/support-agent.png" alt="Soporte" className="w-full h-full object-cover" />
           </button>
         </>
       );
@@ -762,7 +762,7 @@ export default function App() {
               onClick={() => setView(ViewState.SUPPORT)}
               className="fixed bottom-52 right-5 z-40 w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center shadow-lg border border-zinc-600 transition-transform active:scale-95 animate-in zoom-in delay-100"
             >
-              <Headphones size={20} className="text-white" />
+              <img src="/support-agent.png" alt="Soporte" className="w-full h-full object-cover rounded-full" />
             </button>
           </>
         )}
