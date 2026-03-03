@@ -53,7 +53,14 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
     } catch (error: any) {
       console.error('Social Login Error:', error);
       let msg = error.message || 'Error signing in';
-      if (msg.includes('500')) msg = 'Error de Configuración (500). Revisa las URLs en Supabase.';
+
+      // DEBUG: Mostrar el error completo para saber qué pasa
+      // Si es un 500, a menudo trae más info en error.error_description o similar
+      const detailedError = error.error_description || error.msg || JSON.stringify(error);
+      if (msg.includes('500')) {
+        msg = `Error 500: ${detailedError}`;
+      }
+
       toast(msg, 'error');
       setLoading(null);
     }
