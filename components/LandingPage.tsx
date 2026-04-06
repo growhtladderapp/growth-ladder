@@ -19,7 +19,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Logo className="w-10 h-10 text-black" />
-                        <span className="font-extrabold tracking-tight text-xl text-black hidden sm:block font-display">GROWTH LADDER</span>
+                        <span className="font-extrabold tracking-tight text-xl text-black hidden sm:block font-display">TWH</span>
                     </div>
                     <button
                         onClick={onLogin}
@@ -53,7 +53,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                 <div className="w-full max-w-md lg:max-w-lg relative z-10">
                     <div className="absolute inset-0 bg-brand-500/20 blur-3xl rounded-full"></div>
                     <img
-                        src="/landing-hero.png"
+                        src="/landing-hero-smartwatch.png"
                         alt="Mobile App Interface"
                         className="w-full h-auto object-contain rounded-xl shadow-2xl relative z-10 hover:scale-[1.02] transition-transform duration-500"
                     />
@@ -110,7 +110,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                     <Logo className="w-12 h-12" />
                 </div>
                 <p className="text-slate-500 text-xs mb-4">
-                    &copy; {new Date().getFullYear()} Growth Ladder. Todos los derechos reservados.
+                    &copy; {new Date().getFullYear()} TWH. Todos los derechos reservados.
                 </p>
                 <div className="flex justify-center gap-6 text-[10px] uppercase font-bold text-slate-600 tracking-widest">
                     <button onClick={onPrivacy} className="hover:text-white transition-colors">Privacidad</button>

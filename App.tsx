@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { ViewState, DailyLogEntry, UserProfile, CalendarEvent } from './types';
+import { ViewState, DailyLogEntry, UserProfile, CalendarEvent, MuscleGroup } from './types';
 import { Navigation } from './components/Navigation';
 import { Dashboard } from './components/Dashboard';
 import { WorkoutAI } from './components/WorkoutAI';
@@ -14,6 +14,7 @@ import { CommunityView } from './components/CommunityView';
 import { AuthView } from './components/AuthView';
 import { ChefChat } from './components/ChefChat';
 import { SupportChat } from './components/SupportChat';
+import { OnboardingCarousel } from './components/OnboardingCarousel';
 import { Headphones } from 'lucide-react';
 
 import { LandingPage } from './components/LandingPage';
@@ -101,8 +102,7 @@ export const GOAL_OPTIONS: WeeklyGoalOption[] = [
     unit: 'kcal',
     icon: Zap as any,
     gradient: "from-purple-500 to-pink-600",
-    shadow: "shadow-purple-500/40",
-    isPro: true
+    shadow: "shadow-purple-500/40"
   },
   {
     id: 5,
@@ -124,8 +124,7 @@ export const GOAL_OPTIONS: WeeklyGoalOption[] = [
     unit: 'km',
     icon: Flag as any,
     gradient: "from-indigo-500 to-violet-700",
-    shadow: "shadow-indigo-500/40",
-    isPro: true
+    shadow: "shadow-indigo-500/40"
   },
   {
     id: 7,
@@ -147,8 +146,7 @@ export const GOAL_OPTIONS: WeeklyGoalOption[] = [
     unit: 'días',
     icon: Crown as any,
     gradient: "from-amber-300 to-yellow-600",
-    shadow: "shadow-yellow-500/40",
-    isPro: true
+    shadow: "shadow-yellow-500/40"
   },
 ];
 
@@ -161,16 +159,18 @@ export default function App() {
   });
   const [showPaywall, setShowPaywall] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [initialMuscles, setInitialMuscles] = useState<MuscleGroup[] | undefined>(undefined);
+  const [initialSport, setInitialSport] = useState<string | undefined>(undefined);
   const [showLanding, setShowLanding] = useState(true);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [loadingInitial, setLoadingInitial] = useState(true);
-  // Custom muscles selected from Guide
-  const [customWorkoutMuscles, setCustomWorkoutMuscles] = useState<any[]>([]);
   const { toast } = useToast();
 
   const [selectedGoalId, setSelectedGoalId] = useState<number>(() => {
@@ -285,6 +285,10 @@ export default function App() {
         setIsAuthenticated(true);
         setUserId(session.user.id);
         fetchUserData(session.user.id);
+        const hasSeenOnboarding = localStorage.getItem(`gl_onboarding_seen_${session.user.id}`);
+        if (!hasSeenOnboarding) {
+          setShowOnboarding(true);
+        }
       }
       setLoadingInitial(false);
     });
@@ -297,6 +301,10 @@ export default function App() {
         setIsAuthenticated(true);
         setUserId(session.user.id);
         fetchUserData(session.user.id);
+        const hasSeenOnboarding = localStorage.getItem(`gl_onboarding_seen_${session.user.id}`);
+        if (!hasSeenOnboarding) {
+          setShowOnboarding(true);
+        }
       } else {
         setIsAuthenticated(false);
         setUserId(null);
@@ -337,7 +345,7 @@ export default function App() {
           const randomIndex = Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length);
           const quote = MOTIVATIONAL_QUOTES[randomIndex];
 
-          new Notification("Growth Ladder: Motivación", {
+          new Notification("TrainingWithHabits: Motivación", {
             body: quote,
             icon: '/logo-new.png',
             tag: 'motivation'
@@ -372,7 +380,7 @@ export default function App() {
 
         if (isSameDay && event.time === currentTime && !event.notified) {
           if (Notification.permission === 'granted') {
-            new Notification("Growth Ladder: Hora de Entrenar", {
+            new Notification("TrainingWithHabits: Hora de Entrenar", {
               body: `${event.title} - ¡Vamos a darle con todo!`,
               icon: '/logo-new.png'
             });
@@ -611,8 +619,8 @@ export default function App() {
 
     if (error) {
       console.error('Error updating profile:', error);
-      // Optional: don't alert the user if it's just a background sync issue, or keep it if critical
-      toast('Error syncing profile to cloud.', 'warning');
+      // Optional: don't alert the user if it's just a background sync issue
+      // toast('Error syncing profile to cloud.', 'warning');
     }
   };
 
@@ -673,8 +681,15 @@ export default function App() {
     // Todo: Sync delete with Supabase if needed
   };
 
-  const handleStartCustomWorkout = (muscles: any[]) => {
-    setCustomWorkoutMuscles(muscles);
+  const handleStartCustomWorkout = (muscles: MuscleGroup[]) => {
+    setInitialMuscles(muscles);
+    setInitialSport(undefined);
+    setView(ViewState.WORKOUT);
+  };
+
+  const handleStartSportWorkout = (sport: string) => {
+    setInitialSport(sport);
+    setInitialMuscles(undefined);
     setView(ViewState.WORKOUT);
   };
 
@@ -708,13 +723,7 @@ export default function App() {
             onTerms={() => setShowTerms(true)}
             onSupport={() => setShowSupport(true)}
           />
-          {/* Support FAB for Landing */}
-          <button
-            onClick={() => setShowSupport(true)}
-            className="fixed bottom-6 right-6 z-50 w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl border-2 border-emerald-500/20 transition-all hover:scale-105 active:scale-95 animate-in zoom-in duration-300 hover:shadow-emerald-500/20 overflow-hidden"
-          >
-            <img src="/support-agent.png" alt="Soporte" className="w-full h-full object-cover" />
-          </button>
+
         </>
       );
     }
@@ -724,6 +733,15 @@ export default function App() {
   return (
     <div className={`min-h-screen ${mainBgClass} font-sans transition-colors duration-500`} >
       <div className={`max-w-md mx-auto min-h-screen relative shadow-2xl overflow-hidden ${isDarkMode ? (isPro ? 'bg-black' : 'bg-brand-dark') : 'bg-white'}`}>
+
+        {showOnboarding && userId && (
+          <OnboardingCarousel
+            onComplete={() => {
+              setShowOnboarding(false);
+              localStorage.setItem(`gl_onboarding_seen_${userId}`, 'true');
+            }}
+          />
+        )}
 
         {/* Paywall Modal */}
         {showPaywall && (
@@ -746,7 +764,7 @@ export default function App() {
             <h3 className="text-white font-black italic uppercase tracking-tighter text-xl mb-2 flex items-center gap-2">
               <Sparkles className="text-brand-500" /> {uiText.traduciendo}
             </h3>
-            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em]">Growth Ladder Engine</p>
+            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em]">TrainingWithHabits Engine</p>
           </div>
         )}
 
@@ -758,12 +776,7 @@ export default function App() {
             >
               <SportyRobotIcon size={28} className="text-white" />
             </button>
-            <button
-              onClick={() => setView(ViewState.SUPPORT)}
-              className="fixed bottom-52 right-5 z-40 w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center shadow-lg border border-zinc-600 transition-transform active:scale-95 animate-in zoom-in delay-100"
-            >
-              <img src="/support-agent.png" alt="Soporte" className="w-full h-full object-cover rounded-full" />
-            </button>
+
           </>
         )}
 
@@ -791,7 +804,8 @@ export default function App() {
               userProfile={userProfile}
               onUpdateProfile={handleUpdateProfile}
               onSaveLog={handleSaveLog}
-              initialMuscles={customWorkoutMuscles.length > 0 ? customWorkoutMuscles : undefined}
+              initialMuscles={initialMuscles}
+              initialSport={initialSport}
             />
           )}
           {view === ViewState.SETTINGS && (
@@ -822,6 +836,7 @@ export default function App() {
             <MuscleWiki
               isPro={isPro}
               onStartWorkout={handleStartCustomWorkout}
+              onStartSportWorkout={handleStartSportWorkout}
               userProfile={userProfile}
               currentGoal={GOAL_OPTIONS.find(g => g.id === selectedGoalId)}
             />

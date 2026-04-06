@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0" />
-  <title>Growth Ladder</title>
-  <link rel="icon" type="image/png" href="/logo-new.png" />
-  <link rel="apple-touch-icon" href="/logo-new.png" />
+  <title>TrainingWithHabits</title>
+  <link rel="icon" type="image/png" href="/twh-logo.png" />
+  <link rel="apple-touch-icon" href="/twh-logo.png" />
   <link rel="manifest" href="/manifest.json" />
   <meta name="description"
-    content="Growth Ladder: El sistema definitivo de rendimiento para atletas. Entrena, mide y evoluciona con gamificación e IA." />
+    content="TrainingWithHabits: El sistema definitivo de rendimiento para atletas. Entrena, mide y evoluciona con gamificación e IA." />
   <meta name="theme-color" content="#f97316" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -65,14 +65,45 @@
       border-color: var(--border-main) !important;
     }
 
-    .text-slate-100,
-    .text-white {
+    .light-mode .text-slate-100,
+    .light-mode .text-zinc-100,
+    .light-mode .text-white {
       color: var(--text-main) !important;
     }
 
-    .text-slate-400,
-    .text-slate-500 {
+    .light-mode .text-slate-400,
+    .light-mode .text-slate-500,
+    .light-mode .text-zinc-400,
+    .light-mode .text-zinc-500,
+    .light-mode .text-slate-300,
+    .light-mode .text-zinc-300 {
       color: var(--text-muted) !important;
+    }
+
+    .light-mode .bg-black,
+    .light-mode .bg-zinc-900,
+    .light-mode .bg-zinc-950,
+    .light-mode .bg-\[\#0a0a0a\] {
+      background-color: var(--bg-card) !important;
+    }
+
+    .light-mode .bg-zinc-800,
+    .light-mode .bg-slate-800,
+    .light-mode .bg-slate-900 {
+      background-color: #f1f5f9 !important;
+    }
+
+    .light-mode .border-zinc-800,
+    .light-mode .border-slate-800,
+    .light-mode .border-slate-700,
+    .light-mode .border-white\/5,
+    .light-mode .border-white\/10 {
+      border-color: var(--border-main) !important;
+    }
+
+    .light-mode .bg-white\/5,
+    .light-mode .bg-white\/10 {
+      background-color: rgba(0, 0, 0, 0.05) !important;
     }
 
     /* Custom scrollbar for webkit */

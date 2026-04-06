@@ -8,6 +8,7 @@ type Category = 'MUSCLE' | 'SPORT';
 interface MuscleWikiProps {
   isPro?: boolean;
   onStartWorkout?: (muscles: MuscleGroup[]) => void;
+  onStartSportWorkout?: (sport: string) => void;
   userProfile: UserProfile | null;
   currentGoal?: WeeklyGoalOption;
 }
@@ -42,7 +43,7 @@ const SPORTS_DATA: Record<string, string[]> = {
 
 const ALL_CATEGORIES = Object.keys(SPORTS_DATA);
 
-export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWorkout, userProfile, currentGoal }) => {
+export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWorkout, onStartSportWorkout, userProfile, currentGoal }) => {
   const [activeTab, setActiveTab] = useState<Category>('MUSCLE');
   // New Environment State
   const [environment, setEnvironment] = useState<'home' | 'gym'>('gym');
@@ -248,14 +249,34 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
             Análisis Biomecánico
           </div>
 
-          <div className="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black via-black/80 to-transparent">
-            <div className="flex items-center gap-2 mb-1">
-              {isMuscle ? <Box size={16} className={accentColor} /> : <Medal size={16} className={accentColor} />}
-              <span className={`text-[10px] ${bgAccent} px-2 py-0.5 rounded text-white font-bold uppercase tracking-widest`}>
-                {isMuscle ? 'Grupo Muscular' : 'Deporte'}
-              </span>
+          <div className="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black via-black/80 to-transparent flex justify-between items-end">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                {isMuscle ? <Box size={16} className={accentColor} /> : <Medal size={16} className={accentColor} />}
+                <span className={`text-[10px] ${bgAccent} px-2 py-0.5 rounded text-white font-bold uppercase tracking-widest`}>
+                  {isMuscle ? 'Grupo Muscular' : 'Deporte'}
+                </span>
+              </div>
+              <h1 className="text-4xl font-black text-white leading-none drop-shadow-md capitalize tracking-tighter">{title}</h1>
             </div>
-            <h1 className="text-4xl font-black text-white leading-none drop-shadow-md capitalize tracking-tighter">{title}</h1>
+
+            {onStartSportWorkout && !isMuscle && (
+              <button
+                onClick={() => onStartSportWorkout(title as string)}
+                className={`${bgAccent} text-white px-4 py-3 rounded-xl font-bold uppercase text-[10px] tracking-widest flex items-center gap-2 shadow-xl hover:scale-105 active:scale-95 transition-all mb-1`}
+              >
+                <PlayCircle size={16} /> ¡Entrenar Ya!
+              </button>
+            )}
+
+            {onStartWorkout && isMuscle && (
+              <button
+                onClick={() => onStartWorkout([title as MuscleGroup])}
+                className={`${bgAccent} text-white px-4 py-3 rounded-xl font-bold uppercase text-[10px] tracking-widest flex items-center gap-2 shadow-xl hover:scale-105 active:scale-95 transition-all mb-1`}
+              >
+                <PlayCircle size={16} /> ¡Entrenar Ya!
+              </button>
+            )}
           </div>
         </div>
 
@@ -357,7 +378,8 @@ export const MuscleWiki: React.FC<MuscleWikiProps> = ({ isPro = false, onStartWo
     );
   };
 
-  // --- MAIN LIST VIEW ---
+  if (selectedMuscle || selectedSport) return renderDetailView();
+
   return (
     <div className="space-y-6 pb-20 animate-fade-in">
       <header className="flex items-center justify-between">

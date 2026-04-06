@@ -17,7 +17,7 @@ export const translateUI = async (targetLanguage: string, currentKeys: Record<st
       REGLAS:
       1. Mantén las claves intactas.
       2. Traduce los valores manteniendo un tono motivador, profesional y de fitness de élite.
-      3. No cambies nombres de marca como "Growth Ladder".
+      3. No cambies nombres de marca como "TrainingWithHabits".
       4. Devuelve UNICAMENTE el objeto JSON traducido.
       
       OBJETO A TRADUCIR:
@@ -41,23 +41,23 @@ export const translateUI = async (targetLanguage: string, currentKeys: Record<st
 
 export const createCoachSession = (userProfile: UserProfile | null) => {
   const profileContext = userProfile
-    ? `CONTEXTO FISIOLÓGICO DEL ATLETA: Género: ${userProfile.gender || 'No especificado'}, Edad ${userProfile.age}, Masa Corporal ${userProfile.weight}kg, Estatura ${userProfile.height}cm, Nivel de Experiencia: ${userProfile.experience}, Objetivo Primario: ${userProfile.focus}.`
+    ? `CONTEXTO FISIOL�GICO DEL ATLETA: Género: ${userProfile.gender || 'No especificado'}, Edad ${userProfile.age}, Masa Corporal ${userProfile.weight}kg, Estatura ${userProfile.height}cm, Nivel de Experiencia: ${userProfile.experience}, Objetivo Primario: ${userProfile.focus}.`
     : "Perfil fisiológico del atleta no definido.";
 
   return ai.chats.create({
     model: "gemini-3-flash-preview",
     config: {
       systemInstruction: `
-        Eres el 'Director de Rendimiento y Bienestar Integral de Growth Ladder'.
-        Tu rol es ser un MENTOR HÍBRIDO: Entrenador de Élite + Psicólogo Deportivo + Filósofo Estoico.
+        Eres el 'Director de Rendimiento y Bienestar Integral de TrainingWithHabits'.
+        Tu rol es ser un MENTOR HÍBRIDO: Entrenador de �0lite + Psicólogo Deportivo + Filósofo Estoico.
 
         TUS CAPACIDADES Y LÍMITES:
-        1. 🏋️‍♂️ **Entrenamiento y Nutrición**: Creas rutinas y planes de alimentación personalizados de alto nivel.
-        2. 🧠 **Psicología y Filosofía de Vida**:
+        1. �x�9️⬍�"️ **Entrenamiento y Nutrición**: Creas rutinas y planes de alimentación personalizados de alto nivel.
+        2. �x�� **Psicología y Filosofía de Vida**:
            - SIEMPRE vincula los consejos psicológicos al rendimiento, la disciplina, la superación personal y la salud mental.
            - Usa filosofías como el Estocismo (dominio de uno mismo) o Kaizen (mejora continua).
            - Si el usuario está desmotivado, actúa como un psicólogo deportivo empático pero firme.
-        3. 🚫 **Límites Estrictos**:
+        3. �xa� **Límites Estrictos**:
            - NO hables de política, religión, ni temas no relacionados con el crecimiento personal o físico.
            - Si el tema se desvía, redirígelo sutilmente al entrenamiento o bienestar. "Entiendo tu punto, pero ¿cómo crees que esto afecta tu rendimiento hoy?".
 
@@ -81,11 +81,11 @@ export const createSupportSession = async () => {
     model: "gemini-3-flash-preview",
     config: {
       systemInstruction: `
-        Eres el **Agente de Soporte Técnico de Growth Ladder**.
+        Eres el **Agente de Soporte Técnico de TrainingWithHabits**.
         Tu misión es ayudar a los usuarios con problemas técnicos y dudas sobre la app.
 
         **CONOCIMIENTO SOBRE LA APP:**
-        - **Growth Ladder** es una app de fitness que usa IA para rutinas y seguimiento.
+        - **TrainingWithHabits** es una app de fitness que usa IA para rutinas y seguimiento.
         - **Login**: Se puede entrar con Google, Apple, Correo Electrónico o Teléfono (SMS).
         - **Problemas Comunes**:
           - "No me llega el SMS": Verifica que pusiste el código de país (+54..). Si es modo test, usa el código fijo 123456.
@@ -94,7 +94,7 @@ export const createSupportSession = async () => {
         - **Estilo**: Amable, técnico pero claro, paciente. Usa emojis simples.
         - **Limitaciones**: No puedes acceder a la base de datos real del usuario. Solo das guías.
 
-        Si no sabes la respuesta, sugiere contactar a: support@growthladder.app
+        Si no sabes la respuesta, sugiere contactar a: support@trainingwithhabits.app
       `,
     }
   });
@@ -133,18 +133,23 @@ export const analyzeFoodImage = async (base64Image: string): Promise<FoodAnalysi
   }
 };
 
-export const generatePersonalizedRoutine = async (goal: UserGoal, biometrics: UserBiometrics, muscleFocus: MuscleGroup | MuscleGroup[], environment: 'home' | 'gym' = 'gym'): Promise<Routine> => {
+export const generatePersonalizedRoutine = async (goal: UserGoal, biometrics: UserBiometrics, muscleFocus: MuscleGroup | MuscleGroup[] | string, environment: 'home' | 'gym' = 'gym'): Promise<Routine> => {
   try {
+    const isSport = typeof muscleFocus === 'string' && !Object.values(MuscleGroup).includes(muscleFocus as any);
     const focusLabel = Array.isArray(muscleFocus) ? muscleFocus.join(", ") : muscleFocus;
 
     const envContext = environment === 'home'
-      ? "ENTORNO: CASA. REGLA ESTRICTA: NO USAR NINGÚN EQUIPAMIENTO. Solo ejercicios con peso corporal (calistenia), suelo, pared o una silla estable. PROHIBIDO: Mancuernas, barras, máquinas, bandas elásticas."
+      ? "ENTORNO: CASA. REGLA ESTRICTA: NO USAR NING�aN EQUIPAMIENTO. Solo ejercicios con peso corporal (calistenia), suelo, pared o una silla estable. PROHIBIDO: Mancuernas, barras, máquinas, bandas elásticas."
       : "ENTORNO: GIMNASIO. Acceso total a equipamiento comercial.";
 
+    const sportContext = isSport
+      ? `ESTO ES UN ENTRENAMIENTO ESPECÍFICO PARA EL DEPORTE: ${muscleFocus}. Los ejercicios deben mejorar el rendimiento, fuerza y movilidad necesaria para este deporte.`
+      : `ENFOQUE HOY (GRUPOS MUSCULARES): ${focusLabel}.`;
+
     const prompt = `
-      Actúa como un entrenador de ÉLITE OLÍMPICA. Crea una rutina de entrenamiento de ALTO RENDIMIENTO.
+      Actúa como un entrenador de �0LITE OLÍMPICA. Crea una rutina de entrenamiento de ALTO RENDIMIENTO.
       ATLETA: Nivel ${goal.experience}, Meta: ${goal.focus}.
-      ENFOQUE HOY: ${focusLabel}.
+      ${sportContext}
       BIOMETRÍA: Peso ${biometrics.weight}kg, Altura ${biometrics.height}cm, Edad ${biometrics.age}.
       ${envContext}
       
@@ -153,6 +158,7 @@ export const generatePersonalizedRoutine = async (goal: UserGoal, biometrics: Us
       2. Incluye notas técnicas sobre cadencia o respiración.
       3. Estima una duración realista.
       4. Si es CASA, sé creativo con ejercicios de peso corporal pero mantén la intensidad alta.
+      5. Si es un DEPORTE, prioriza movimientos funcionales que simulen o potencien gestos técnicos de ese deporte.
     `;
 
     const response = await ai.models.generateContent({
@@ -225,7 +231,7 @@ export const getMuscleGuide = async (muscle: MuscleGroup, userProfile?: UserProf
       : "ENTORNO: GIMNASIO (Acceso total a máquinas, barras, poleas y peso libre).";
 
     const prompt = `
-      Eres un experto en biomecánica y entrenador personal de élite. Crea una GUÍA TÉCNICA DE ENTRENAMIENTO para: ${muscle}.
+      Eres un experto en biomecánica y entrenador personal de élite. Crea una GUÍA T�0CNICA DE ENTRENAMIENTO para: ${muscle}.
       
       CONTEXTO:
       ${goalContext}
@@ -234,10 +240,10 @@ export const getMuscleGuide = async (muscle: MuscleGroup, userProfile?: UserProf
 
       TUS INSTRUCCIONES:
       1. ADAPTA LA DIFICULTAD Y VOLUMEN a la experiencia y edad del atleta. (Ej. Si es principiante/mayor, ejercicios más seguros. Si es avanzado, técnicas de intensidad).
-      2. ADAPTA LA SELECCIÓN DE EJERCICIOS al entorno (${environment}).
+      2. ADAPTA LA SELECCI�N DE EJERCICIOS al entorno (${environment}).
          - CASA: ¡Solo Peso Corporal/Muebles! Prohibido equipamiento de gimnasio.
          - GIMNASIO: Usa lo mejor del equipamiento disponible.
-      3. ENFOQUE BIOMÉTRICO: Considera el peso corporal (${userProfile?.weight || 'N/A'}kg) para sugerir repeticiones o progresiones (ej. si es pesado, ejercicios de bajo impacto o menor volumen en calistenia).
+      3. ENFOQUE BIOM�0TRICO: Considera el peso corporal (${userProfile?.weight || 'N/A'}kg) para sugerir repeticiones o progresiones (ej. si es pesado, ejercicios de bajo impacto o menor volumen en calistenia).
 
       RETORNA JSON (Mínimo 4 ejercicios):
       {

@@ -18,7 +18,7 @@ export const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ onClose 
                         </div>
                         <div>
                             <h2 className="text-xl font-bold text-white tracking-tight">Términos y Condiciones de Uso</h2>
-                            <p className="text-xs text-slate-400 font-medium">Última actualización: Febrero 2026</p>
+                            <p className="text-xs text-slate-400 font-medium">�altima actualización: Febrero 2026</p>
                         </div>
                     </div>
                     <button
@@ -37,7 +37,7 @@ export const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ onClose 
                             <span className="text-brand-500">1.</span> Aceptación de los Términos
                         </h3>
                         <p>
-                            Bienvenido a <strong>Growth Ladder</strong> ("la Aplicación"). Al descargar, acceder o utilizar la Aplicación, usted ("el Usuario") acepta estar legalmente vinculado por estos Términos y Condiciones ("Términos"). Si no está de acuerdo con alguno de estos términos, no debe utilizar la Aplicación.
+                            Bienvenido a <strong>TrainingWithHabits</strong> ("la Aplicación"). Al descargar, acceder o utilizar la Aplicación, usted ("el Usuario") acepta estar legalmente vinculado por estos Términos y Condiciones ("Términos"). Si no está de acuerdo con alguno de estos términos, no debe utilizar la Aplicación.
                         </p>
                     </section>
 
@@ -50,14 +50,14 @@ export const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ onClose 
                             <div>
                                 <strong className="text-red-400 block mb-1">Advertencia de Salud Importante</strong>
                                 <p className="text-xs text-red-100/80">
-                                    Growth Ladder no es un proveedor de atención médica. El contenido, rutinas e información proporcionada por la IA (Coach, Chef, Director de Rendimiento) son solo para fines informativos y educativos.
+                                    TrainingWithHabits no es un proveedor de atención médica. El contenido, rutinas e información proporcionada por la IA (Coach, Chef, Director de Rendimiento) son solo para fines informativos y educativos.
                                 </p>
                             </div>
                         </div>
                         <ul className="list-disc pl-5 mt-3 space-y-2 marker:text-zinc-600">
                             <li>Usted debe consultar a su médico antes de comenzar cualquier programa de ejercicios o nutrición.</li>
                             <li>El uso de la información proporcionada es bajo su propio riesgo.</li>
-                            <li>Growth Ladder no se hace responsable de lesiones o daños resultantes del uso de la Aplicación.</li>
+                            <li>TrainingWithHabits no se hace responsable de lesiones o daños resultantes del uso de la Aplicación.</li>
                         </ul>
                     </section>
 
@@ -79,7 +79,7 @@ export const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ onClose 
                             <span className="text-brand-500">4.</span> Cuentas de Usuario y Seguridad
                         </h3>
                         <p>
-                            Usted es responsable de mantener la confidencialidad de su cuenta y contraseña. Growth Ladder se reserva el derecho de suspender cuentas que violen estos términos o realicen actividades fraudulentas.
+                            Usted es responsable de mantener la confidencialidad de su cuenta y contraseña. TrainingWithHabits se reserva el derecho de suspender cuentas que violen estos términos o realicen actividades fraudulentas.
                         </p>
                     </section>
 
@@ -88,7 +88,7 @@ export const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ onClose 
                             <span className="text-brand-500">5.</span> Propiedad Intelectual
                         </h3>
                         <p>
-                            Todo el contenido, marcas, logotipos y software son propiedad de Growth Ladder o sus licenciantes. Se prohíbe la reproducción, distribución o ingeniería inversa sin autorización expresa.
+                            Todo el contenido, marcas, logotipos y software son propiedad de TrainingWithHabits o sus licenciantes. Se prohíbe la reproducción, distribución o ingeniería inversa sin autorización expresa.
                         </p>
                     </section>
 
@@ -106,13 +106,13 @@ export const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ onClose 
                             <span className="text-brand-500">7.</span> Modificaciones
                         </h3>
                         <p>
-                            Growth Ladder se reserva el derecho de modificar estos Términos en cualquier momento. El uso continuado de la Aplicación tras dichos cambios constituye su aceptación de los nuevos Términos.
+                            TrainingWithHabits se reserva el derecho de modificar estos Términos en cualquier momento. El uso continuado de la Aplicación tras dichos cambios constituye su aceptación de los nuevos Términos.
                         </p>
                     </section>
 
                     <div className="pt-6 border-t border-white/5 text-center">
                         <p className="text-xs text-slate-500">
-                            Para consultas legales o soporte, contáctenos en: <a href="mailto:legal@growthladder.app" className="text-brand-500 hover:underline">legal@growthladder.app</a>
+                            Para consultas legales o soporte, contáctenos en: <a href="mailto:legal@trainingwithhabits.app" className="text-brand-500 hover:underline">legal@trainingwithhabits.app</a>
                         </p>
                     </div>
 

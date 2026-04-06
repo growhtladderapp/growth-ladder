@@ -47,3 +47,27 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- 5. Crear una función de seguridad que bypass RLS para consultar si es admin sin bucle.
+CREATE OR REPLACE FUNCTION public.is_superadmin()
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND is_superadmin = true
+  );
+END;
+$$;
+
+-- 6. Eliminar la política defectuosa que causa el error 500 (Recursión Infinita)
+DROP POLICY IF EXISTS "Superadmins can view all profiles" ON public.profiles;
+
+-- 7. Crear la nueva política utilizando la función segura
+CREATE POLICY "Superadmins can view all profiles"
+  ON public.profiles
+  FOR SELECT
+  USING ( is_superadmin() );

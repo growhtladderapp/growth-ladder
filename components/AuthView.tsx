@@ -215,7 +215,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
           <Logo className="w-20 h-20" />
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-white italic tracking-tighter uppercase text-center leading-none">
-          Growth <span className="text-brand-500">Ladder</span>
+          TWH
         </h1>
         <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em] mt-3">Elite Performance System<br /><span className="text-[8px] opacity-70">created by trainingwithhabits</span></p>
       </div>

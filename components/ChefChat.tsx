@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from './ToastContext'; // Assuming this exists or similar
-import { Send, ChefHat, Sparkles, Loader2, Utensils, Volume2, User, Mic } from 'lucide-react';
+import { Send, ChefHat, Sparkles, Loader2, Utensils, Volume2, User, Mic, Camera, X } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 import ReactMarkdown from 'react-markdown';
 import { UserProfile } from '../types';
@@ -24,8 +24,21 @@ export const ChefChat: React.FC<ChefChatProps> = ({ userProfile }) => {
     ]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setSelectedImage(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     // Voice State
     const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
@@ -106,11 +119,20 @@ export const ChefChat: React.FC<ChefChatProps> = ({ userProfile }) => {
     };
 
     const handleSend = async () => {
-        if (!input.trim() || loading) return;
+        if ((!input.trim() && !selectedImage) || loading) return;
 
         const userMsg = input.trim();
         setInput('');
-        setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+
+        const currentImage = selectedImage;
+        setSelectedImage(null);
+
+        let tempUserMsg = userMsg;
+        if (currentImage && !tempUserMsg) {
+            tempUserMsg = "Analiza esta comida.";
+        }
+
+        setMessages(prev => [...prev, { role: 'user', text: tempUserMsg + (currentImage ? "\n\n*[Imagen Adjunta]*" : "") }]);
         setLoading(true);
 
         try {
@@ -127,8 +149,13 @@ export const ChefChat: React.FC<ChefChatProps> = ({ userProfile }) => {
         INSTRUCCIONES DE COMPORTAMIENTO (PRIORIDAD ALTA):
         1. SI el usuario saluda ("hola", "buenas", etc.): Responde textualmente: "¡Hola! Soy tu Chef Estrella Michelin y Nutricionista. ¿En qué puedo ayudarte hoy?\n\n1. 🍽️ **Pedir una receta fitness** (Dime qué ingredientes tienes o qué te apetece).\n2. 🍎 **Consultar calorías/macros** (Pregúntame por cualquier alimento)."
         2. SI pide una receta: Proporciona una receta creativa, fitness y deliciosa.
-        3. SI pregunta por calorías/macros de un ALIMENTO: Responde con la información nutricional precisa y breve.
-        4. SI pregunta sobre CUALQUIER OTRA COSA (ej: ejercicios, rutinas, clima, noticias, "creame una rutina", etc.): Responde textualmente: "👨‍🍳 Lo siento, solo puedo ayudarte con **Recetas Fitness** o **Información Nutricional de Alimentos**. Para rutinas de entrenamiento, por favor consulta con mi colega, el Coach IA."
+        3. SI te envía una IMAGEN DE COMIDA: Debes analizar visualmente la imagen e identificar de qué plato o ingrediente(s) se trata. Luego proporciona:
+           - Un listado de los ingredientes principales.
+           - Proporciones estimadas.
+           - Información Nutricional Detallada: proteínas, carbohidratos, grasas, gramos aproximados en total.
+           - Si aplica, menciona otros detalles relevantes (fibra, micronutrientes, etc.) con estilo de Chef.
+        4. SI pregunta por calorías/macros de un ALIMENTO: Responde con la información nutricional precisa y breve.
+        5. SI pregunta sobre CUALQUIER OTRA COSA (ej: ejercicios, rutinas, clima, noticias, "creame una rutina", etc.): Responde textualmente: "👨‍🍳 Lo siento, solo puedo ayudarte con **Recetas Fitness** o **Información Nutricional de Alimentos**. Para rutinas de entrenamiento, por favor consulta con mi colega, el Coach IA."
         
         ESTILO DE RESPUESTA:
         - Pasión por la comida (usa términos culinarios: "sellar", "emulsionar", "al dente").
@@ -136,14 +163,25 @@ export const ChefChat: React.FC<ChefChatProps> = ({ userProfile }) => {
         - Estructura clara (Ingredientes, Pasos, Por qué funciona para el objetivo).
         - Nunca des consejos médicos, solo nutricionales/gastronómicos.
         
-        USUARIO DICE: "${userMsg}"
+        USUARIO DICE: "${tempUserMsg}"
       `;
+
+            const parts: any[] = [{ text: prompt }];
+            if (currentImage) {
+                const base64Data = currentImage.split(',')[1] || currentImage;
+                parts.push({
+                    inlineData: {
+                        mimeType: "image/jpeg",
+                        data: base64Data
+                    }
+                });
+            }
 
             const response = await ai.models.generateContent({
                 model: "gemini-3-flash-preview",
                 contents: [{
                     role: "user",
-                    parts: [{ text: prompt }]
+                    parts: parts
                 }]
             });
 
@@ -220,19 +258,43 @@ export const ChefChat: React.FC<ChefChatProps> = ({ userProfile }) => {
             </div>
 
             <div className="p-2 border-t border-slate-800 bg-black/40 rounded-b-2xl">
+                {selectedImage && (
+                    <div className="mb-2 ml-2 relative inline-block">
+                        <img src={selectedImage} alt="Preview" className="h-20 w-20 object-cover rounded-lg border-2 border-orange-500 shadow-xl" />
+                        <button
+                            onClick={() => setSelectedImage(null)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                        >
+                            <X size={14} />
+                        </button>
+                    </div>
+                )}
                 <div className="relative flex items-center gap-2">
+                    <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        className="hidden"
+                        onChange={handleFileSelect}
+                    />
+                    <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="p-3 text-slate-400 hover:text-orange-500 hover:bg-white/5 rounded-xl transition-all h-[56px] w-[56px] flex items-center justify-center shrink-0"
+                    >
+                        <Camera size={24} />
+                    </button>
                     <input
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                         placeholder="¿Qué comemos hoy, Chef?"
-                        className="w-full bg-zinc-900 border border-slate-700 text-white rounded-xl py-4 pl-4 pr-12 focus:border-orange-500 outline-none transition-all shadow-inner"
+                        className="w-full bg-zinc-900 border border-slate-700 text-white rounded-xl py-4 pl-4 pr-12 focus:border-orange-500 outline-none transition-all shadow-inner min-h-[56px]"
                     />
                     <button
                         onClick={handleSend}
-                        disabled={loading || !input.trim()}
-                        className="absolute right-2 p-2 bg-transparent hover:bg-white/10 rounded-full transition-all active:scale-95 disabled:opacity-50 disabled:scale-100"
+                        disabled={loading || (!input.trim() && !selectedImage)}
+                        className="absolute right-2 p-2 bg-transparent hover:bg-white/10 rounded-full transition-all active:scale-95 disabled:opacity-50 disabled:scale-100 h-10 w-10 flex items-center justify-center"
                     >
                         <img src="/send-icon.svg" alt="Enviar" className="w-5 h-5" />
                     </button>

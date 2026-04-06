@@ -11,12 +11,13 @@ interface WorkoutAIProps {
   onUpdateProfile: (profile: UserProfile) => void;
   onSaveLog: (entry: DailyLogEntry) => void;
   initialMuscles?: MuscleGroup[];
+  initialSport?: string;
 }
 
 const STORAGE_KEY = 'gl_definitive_routine';
 const WORKOUT_COMPLETED_KEY = 'gl_last_workout_completed';
 
-export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile, onUpdateProfile, onSaveLog, initialMuscles }) => {
+export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile, onUpdateProfile, onSaveLog, initialMuscles, initialSport }) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const [routine, setRoutine] = useState<Routine | null>(null);
@@ -40,13 +41,15 @@ export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile
 
   // Auto-generation trigger if initialMuscles provided
   useEffect(() => {
-    if (initialMuscles && initialMuscles.length > 0 && userProfile && !routine && !loading) {
-      // Only trigger if we don't have a routine loaded (or if we want to override)
-      // Let's force generate if initialMuscles are passed to ensure user gets what they asked for
-      setMuscle(MuscleGroup.FULL_BODY); // UI placeholder
-      handleGenerateCustom(initialMuscles);
+    if (userProfile && !routine && !loading) {
+      if (initialMuscles && initialMuscles.length > 0) {
+        setMuscle(MuscleGroup.FULL_BODY);
+        handleGenerateCustom(initialMuscles);
+      } else if (initialSport) {
+        handleGenerateCustom(initialSport);
+      }
     }
-  }, [initialMuscles, userProfile]);
+  }, [initialMuscles, initialSport, userProfile]);
 
   useEffect(() => {
     const savedRoutine = localStorage.getItem(STORAGE_KEY);
@@ -108,7 +111,7 @@ export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile
     }, 1500);
   };
 
-  const handleGenerateCustom = async (customMuscles: MuscleGroup[]) => {
+  const handleGenerateCustom = async (selection: MuscleGroup[] | string) => {
     setLoading(true);
     setRoutine(null);
     setCompletedExercises(new Set());
@@ -121,7 +124,7 @@ export const WorkoutAI: React.FC<WorkoutAIProps> = ({ isPro = false, userProfile
           weight: userProfile!.weight,
           height: userProfile!.height
         },
-        customMuscles,
+        selection,
         environment
       );
 

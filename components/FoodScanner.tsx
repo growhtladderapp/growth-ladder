@@ -17,6 +17,45 @@ export const FoodScanner: React.FC<FoodScannerProps> = ({ onSave, isPro = false 
   const [scannedImage, setScannedImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<'idle' | 'loading' | 'ready' | 'error' | 'denied'>('idle');
+  const [showFlash, setShowFlash] = useState(false);
+
+  const playSnapSound = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(150, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+      gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.1);
+    } catch (e) { }
+  };
+
+  const playSuccessSound = () => {
+    try {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
+      gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.3);
+    } catch (e) { }
+  };
 
   // We no longer start camera on useEffect mount to satisfy the "don't ask on start" requirement.
   useEffect(() => {
@@ -84,10 +123,17 @@ export const FoodScanner: React.FC<FoodScannerProps> = ({ onSave, isPro = false 
         const imageBase64 = canvas.toDataURL('image/jpeg', 0.8);
         setScannedImage(imageBase64);
         setIsAnalyzing(true);
+        setShowFlash(true);
+        playSnapSound();
+        if (navigator.vibrate) navigator.vibrate(50);
+
+        setTimeout(() => setShowFlash(false), 150);
 
         try {
           const analysis = await analyzeFoodImage(imageBase64);
           setScannedResult(analysis);
+          playSuccessSound();
+          if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
           stopCamera();
         } catch (err) {
           setError("No se pudo analizar la imagen. Inténtalo de nuevo con mejor iluminación.");
@@ -191,15 +237,34 @@ export const FoodScanner: React.FC<FoodScannerProps> = ({ onSave, isPro = false 
           />
           <canvas ref={canvasRef} className="hidden" />
 
+          {showFlash && <div className="absolute inset-0 bg-white z-50 animate-out fade-out duration-150 pointer-events-none"></div>}
+
+          <style>{`
+            @keyframes scanline {
+              0% { transform: translateY(0); opacity: 0; }
+              10% { opacity: 1; }
+              90% { opacity: 1; }
+              100% { transform: translateY(256px); opacity: 0; }
+            }
+            .animate-scanline {
+              animation: scanline 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            }
+          `}</style>
+
           {status === 'ready' && (
             <>
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                <div className={`w-64 h-64 border-2 ${isPro ? 'border-emerald-500/20' : 'border-brand-500/20'} rounded-[40px] relative`}>
+                <div className={`w-64 h-64 border-2 ${isPro ? 'border-emerald-500/20' : 'border-brand-500/20'} rounded-[40px] relative overflow-hidden`}>
                   <div className={`absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 ${isPro ? 'border-emerald-500' : 'border-brand-500'} rounded-tl-[40px] shadow-[0_0_15px_currentColor]`}></div>
                   <div className={`absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 ${isPro ? 'border-emerald-500' : 'border-brand-500'} rounded-tr-[40px] shadow-[0_0_15px_currentColor]`}></div>
                   <div className={`absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 ${isPro ? 'border-emerald-500' : 'border-brand-500'} rounded-bl-[40px] shadow-[0_0_15px_currentColor]`}></div>
                   <div className={`absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 ${isPro ? 'border-emerald-500' : 'border-brand-500'} rounded-br-[40px] shadow-[0_0_15px_currentColor]`}></div>
-                  {!isAnalyzing && <div className={`absolute top-1/2 left-4 right-4 h-0.5 ${isPro ? 'bg-emerald-400' : 'bg-brand-400'} shadow-[0_0_15px_currentColor] animate-pulse`}></div>}
+
+                  {isAnalyzing ? (
+                    <div className={`absolute top-0 left-0 right-0 h-1 ${isPro ? 'bg-emerald-400' : 'bg-brand-400'} shadow-[0_0_20px_currentColor] animate-scanline z-50`}></div>
+                  ) : (
+                    <div className={`absolute top-1/2 left-4 right-4 h-0.5 ${isPro ? 'bg-emerald-400' : 'bg-brand-400'} shadow-[0_0_15px_currentColor] animate-pulse`}></div>
+                  )}
                 </div>
               </div>
 

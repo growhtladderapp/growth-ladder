@@ -26,7 +26,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBack }) => {
                 <div className="space-y-8 text-sm leading-relaxed">
                     <section>
                         <h2 className="text-lg font-bold text-white mb-3">1. Introducción</h2>
-                        <p>En Growth Ladder, nos tomamos muy en serio tu privacidad. Esta política describe cómo recopilamos, usamos y protegemos tu información personal cuando utilizas nuestra aplicación.</p>
+                        <p>En TrainingWithHabits, nos tomamos muy en serio tu privacidad. Esta política describe cómo recopilamos, usamos y protegemos tu información personal cuando utilizas nuestra aplicación.</p>
                     </section>
 
                     <section>
@@ -65,7 +65,7 @@ export const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onBack }) => {
                     </section>
 
                     <div className="pt-8 border-t border-white/10 text-xs text-slate-500">
-                        <p>Última actualización: Febrero 2026</p>
+                        <p>�altima actualización: Febrero 2026</p>
                         <p>Si tienes dudas, contáctanos a traves del chat de soporte.</p>
                     </div>
                 </div>

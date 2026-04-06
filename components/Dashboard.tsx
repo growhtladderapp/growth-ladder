@@ -5,6 +5,7 @@ import { useToast } from '../components/ToastContext';
 import { Utensils } from 'lucide-react';
 // ... existing imports ...
 import { TrendingUp, Activity, Flame, Edit2, Target, Check, Lock, Watch, Calendar, ChevronRight, CheckCircle2, Trash2, Heart, Smartphone, Bluetooth, Footprints, MapPin, Crown, Sparkles, Archive, Save, LineChart, Briefcase, Loader2, Lightbulb, ChevronDown, Zap, Sun, Map, Flag, CalendarCheck, Route, Bell, X, Menu, Settings, User, LogOut, HelpCircle, Users, Trophy, Palette, MoreHorizontal, Plus } from 'lucide-react';
+import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 // ... 
 
@@ -132,7 +133,66 @@ const SwipeableLogItem: React.FC<SwipeableItemProps> = ({ dayData, onDelete, onS
   );
 };
 
+const SwipeableNotificationItem: React.FC<{ notification: any, onDelete: () => void }> = ({ notification: n, onDelete }) => {
+  const [offsetX, setOffsetX] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const startX = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX;
+    setIsSwiping(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isSwiping) return;
+    const diff = e.touches[0].clientX - startX.current;
+    if (diff < -150) setOffsetX(-150);
+    else if (diff > 0) setOffsetX(0); // Only swipe left to delete
+    else setOffsetX(diff);
+  };
+
+  const handleTouchEnd = () => {
+    setIsSwiping(false);
+    if (offsetX < -80) {
+      onDelete();
+    } else {
+      setOffsetX(0);
+    }
+  };
+
+  return (
+    <div className="relative border-b border-slate-800/50 overflow-hidden touch-pan-y group">
+      <div className="absolute inset-0 bg-red-500/90 flex items-center justify-end pr-4 text-white">
+        <Trash2 size={16} />
+      </div>
+      <div
+        className="p-4 bg-zinc-900 transition-transform relative z-10 w-full"
+        style={{ transform: `translateX(${offsetX}px)` }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div className="flex justify-between items-start mb-1 pointer-events-none">
+          <span className={`text-[10px] font-bold uppercase ${n.type === 'success' ? 'text-emerald-500' : n.type === 'alert' ? 'text-orange-500' : 'text-blue-500'}`}>{n.title}</span>
+          <span className="text-[9px] text-slate-500">{n.time}</span>
+        </div>
+        <p className="text-xs text-slate-300 pointer-events-none">{n.desc}</p>
+        {offsetX === 0 && (
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-30 text-slate-500 pointer-events-none transition-opacity md:hidden">
+            {/* Small visual cue for swipeability on mobile if needed, though usually hidden until interacted with */}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, onDeleteDate, onChangeThemeColor, setView, uiText, selectedGoalId, onSelectGoal, customTargets, onUpdateTarget, userProfile, onLogout }) => {
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: "Nuevo Récord", desc: "Superaste tu meta de calorías ayer.", time: "hace 2h", type: "success" },
+    { id: 2, title: "Coach AI", desc: "Recuerda hidratarte después del entreno.", time: "hace 4h", type: "info" },
+    { id: 3, title: "Recordatorio", desc: "No has registrado peso hoy.", time: "hace 6h", type: "alert" }
+  ]);
   const [goalDuration, setGoalDuration] = useState<DurationType>('WEEK');
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -181,6 +241,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
     });
     return Object.values(grouped).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [logs]);
+
+  // Data for the mixed distance/calories chart (last 7 days reversed for chronological order)
+  const chartData = useMemo(() => {
+    return [...historyData].slice(0, 7).reverse().map(d => ({
+      name: new Date(d.date).toLocaleDateString('es-ES', { weekday: 'short' }).charAt(0).toUpperCase() + new Date(d.date).toLocaleDateString('es-ES', { weekday: 'short' }).slice(1),
+      calorias: d.kcal,
+      distancia: Number(d.km.toFixed(1)),
+      fechaObj: new Date(d.date)
+    }));
+  }, [historyData]);
 
   const currentGoal = GOAL_OPTIONS.find(g => g.id === selectedGoalId) || GOAL_OPTIONS[0];
 
@@ -296,7 +366,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center gap-3">
                 <Logo className="w-9 h-9" />
-                <span className="text-white font-black italic tracking-tighter text-lg uppercase">Growth Ladder</span>
+                <span className="text-white font-black italic tracking-tighter text-lg uppercase">TWH</span>
               </div>
               <button onClick={() => setIsSidebarOpen(false)} className="text-slate-500 p-2"><X size={24} /></button>
             </div>
@@ -398,7 +468,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
                 </div>
               </div>
               <h3 className="text-white font-semibold text-[17px] leading-tight mb-2">
-                "Growth Ladder" desea acceder a Apple Health
+                "TrainingWithHabits" desea acceder a Apple Health
               </h3>
               <p className="text-zinc-300 text-[13px] leading-snug">
                 Permite el acceso para sincronizar tus datos de frecuencia cardíaca, calorías y distancia vía Bluetooth.
@@ -421,19 +491,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
               <button onClick={() => setShowNotifications(false)} className="text-slate-500"><X size={18} /></button>
             </div>
             <div className="max-h-[350px] overflow-y-auto">
-              {[
-                { id: 1, title: "Nuevo Récord", desc: "Superaste tu meta de calorías ayer.", time: "hace 2h", type: "success" },
-                { id: 2, title: "Coach AI", desc: "Recuerda hidratarte después del entreno.", time: "hace 4h", type: "info" },
-                { id: 3, title: "Recordatorio", desc: "No has registrado peso hoy.", time: "hace 6h", type: "alert" }
-              ].map(n => (
-                <div key={n.id} className="p-4 border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
-                  <div className="flex justify-between items-start mb-1">
-                    <span className={`text-[10px] font-bold uppercase ${n.type === 'success' ? 'text-emerald-500' : n.type === 'alert' ? 'text-orange-500' : 'text-blue-500'}`}>{n.title}</span>
-                    <span className="text-[9px] text-slate-500">{n.time}</span>
-                  </div>
-                  <p className="text-xs text-slate-300">{n.desc}</p>
+              {notifications.length > 0 ? (
+                notifications.map(n => (
+                  <SwipeableNotificationItem
+                    key={n.id}
+                    notification={n}
+                    onDelete={() => setNotifications(prev => prev.filter(item => item.id !== n.id))}
+                  />
+                ))
+              ) : (
+                <div className="p-6 text-center text-slate-500 text-[10px] font-bold uppercase tracking-widest">
+                  No hay notificaciones
                 </div>
-              ))}
+              )}
             </div>
             <button onClick={() => setShowNotifications(true)} className="w-full py-3 text-center text-[10px] text-slate-500 font-bold uppercase tracking-widest border-t border-slate-800 bg-black/20">Cerrar</button>
           </div>
@@ -459,7 +529,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
             )}
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight uppercase italic leading-none">Growth Ladder</h1>
+            <h1 className="text-2xl font-bold text-white tracking-tight uppercase italic leading-none">TWH</h1>
             <p className="text-slate-400 text-[10px] flex items-center gap-1 mt-1 transition-all uppercase tracking-widest font-black">
               <span className={`w-1.5 h-1.5 rounded-full ${isSyncing
                 ? 'bg-yellow-500 animate-ping'
@@ -501,59 +571,79 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
       </header>
 
       {/* AI Insight */}
-      {isPro && (
-        <div className="bg-emerald-900/20 border border-emerald-500/30 p-4 rounded-xl mb-6 relative overflow-hidden animate-fade-in shadow-xl">
-          <div className="absolute top-0 right-0 p-3 opacity-20">
-            <Zap size={60} className="text-emerald-500" />
+      <div className="bg-emerald-900/20 border border-emerald-500/30 p-4 rounded-xl mb-6 relative overflow-hidden animate-fade-in shadow-xl">
+        <div className="absolute top-0 right-0 p-3 opacity-20">
+          <Zap size={60} className="text-emerald-500" />
+        </div>
+        <div className="flex items-start gap-3 relative z-10">
+          <div className="bg-emerald-500/20 p-2 rounded-lg text-emerald-400">
+            <Briefcase size={20} />
           </div>
-          <div className="flex items-start gap-3 relative z-10">
-            <div className="bg-emerald-500/20 p-2 rounded-lg text-emerald-400">
-              <Briefcase size={20} />
-            </div>
-            <div>
-              <h3 className="text-emerald-400 font-bold text-sm uppercase tracking-wide mb-1">{uiText.coach_ia}</h3>
-              <p className="text-zinc-300 text-xs leading-relaxed">
-                Tu recuperación ha mejorado un 15% esta semana. Recomendación: Aumenta la intensidad en el entrenamiento de piernas mañana.
-              </p>
-            </div>
+          <div>
+            <h3 className="text-emerald-400 font-bold text-sm uppercase tracking-wide mb-1">{uiText.coach_ia}</h3>
+            <p className="text-zinc-300 text-xs leading-relaxed">
+              Tu recuperación ha mejorado un 15% esta semana. Recomendación: Aumenta la intensidad en el entrenamiento de piernas mañana.
+            </p>
           </div>
         </div>
-      )}
+      </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-2">
-        <div className={`relative overflow-hidden rounded-2xl p-4 border ${isPro ? 'bg-zinc-900 border-zinc-800' : 'bg-brand-card border-slate-800'} shadow-lg group`}>
-          <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${isPro ? 'from-emerald-500/20' : 'from-blue-500/20'} to-transparent blur-2xl rounded-full -mr-10 -mt-10 transition-all group-hover:scale-150`}></div>
-          <div className="relative z-10 flex flex-col justify-between h-full min-h-[100px]">
-            <div className="flex justify-between items-start">
-              <div className={`p-2 rounded-xl ${isPro ? 'bg-emerald-900/20 text-emerald-400' : 'bg-blue-500/10 text-blue-500'} shadow-inner border border-white/5`}>
-                <Footprints size={20} fill="currentColor" />
-              </div>
+      {/* DISTANCE & CALORIES CHART */}
+      <div className={`rounded-2xl border ${isPro ? 'bg-zinc-900 border-zinc-800' : 'bg-brand-card border-slate-800'} shadow-lg overflow-hidden group mb-6 relative`}>
+        <div className="absolute top-0 right-0 p-4 flex gap-3 text-right z-10">
+          <div>
+            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block mb-0.5">{uiText.distancia}</span>
+            <div className="flex items-baseline gap-1 justify-end">
+              <span className="text-xl font-black text-emerald-500 tracking-tight leading-none">{todayKm.toFixed(1)}</span>
+              <span className="text-xs text-slate-400 font-bold">km</span>
             </div>
-            <div>
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">{uiText.distancia}</span>
-              <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-black text-white tracking-tight">{todayKm.toFixed(1)}</span>
-                <span className="text-xs text-slate-400 font-bold">km</span>
-              </div>
+          </div>
+          <div>
+            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block mb-0.5">{uiText.calorias}</span>
+            <div className="flex items-baseline gap-1 justify-end">
+              <span className="text-xl font-black text-orange-500 tracking-tight leading-none">{todayCalories}</span>
+              <span className="text-xs text-slate-400 font-bold">kcal</span>
             </div>
           </div>
         </div>
-        <div className={`relative overflow-hidden rounded-2xl p-4 border ${isPro ? 'bg-zinc-900 border-zinc-800' : 'bg-brand-card border-slate-800'} shadow-lg group`}>
-          <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-orange-500/20 to-transparent blur-2xl rounded-full -mr-10 -mt-10 transition-all group-hover:scale-150`}></div>
-          <div className="relative z-10 flex flex-col justify-between h-full min-h-[100px]">
-            <div className="flex justify-between items-start">
-              <div className={`p-2 rounded-xl ${isPro ? 'bg-orange-900/20 text-orange-400' : 'bg-orange-500/10 text-orange-500'} shadow-inner border border-white/5`}>
-                <Flame size={20} fill="currentColor" className={isPro ? "" : "animate-pulse"} />
-              </div>
-            </div>
-            <div>
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">{uiText.calorias}</span>
-              <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-black text-white tracking-tight">{todayCalories}</span>
-                <span className="text-xs text-slate-400 font-bold">kcal</span>
-              </div>
-            </div>
+
+        <div className="pt-4 pl-4 pb-0 z-10 relative pointer-events-none">
+          <div className="flex items-center gap-2 mb-1">
+            <Footprints size={14} className="text-emerald-500" />
+            <Flame size={14} className="text-orange-500" />
           </div>
+          <span className="text-xs font-bold text-white uppercase tracking-wide">Actividad Diaria</span>
+        </div>
+
+        <div className="h-[120px] w-full mt-2">
+          {chartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorCal" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorDist" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#64748b', fontWeight: 'bold' }} dy={-5} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}
+                  itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                  labelStyle={{ color: '#a1a1aa', fontSize: '10px', textTransform: 'uppercase', marginBottom: '4px' }}
+                />
+                <Area type="monotone" dataKey="calorias" stroke="#f97316" strokeWidth={3} fillOpacity={1} fill="url(#colorCal)" activeDot={{ r: 6, strokeWidth: 0, fill: '#f97316' }} />
+                <Area type="monotone" dataKey="distancia" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorDist)" activeDot={{ r: 6, strokeWidth: 0, fill: '#10b981' }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+              Sin datos recientes
+            </div>
+          )}
         </div>
       </div>
 

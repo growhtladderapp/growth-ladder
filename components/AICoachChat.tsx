@@ -64,7 +64,7 @@ export const SportyRobotIcon: React.FC<{ size?: number; className?: string }> = 
 
 export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) => {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: 'Sesión iniciada. Soy su Director de Rendimiento de Growth Ladder. ¿En qué área técnica de su optimización física requiere asistencia hoy: protocolos nutricionales, biomecánica de ejecución o periodización?' }
+    { role: 'model', text: 'Sesión iniciada. Soy su Director de Rendimiento de TrainingWithHabits. ¿En qué área técnica de su optimización física requiere asistencia hoy: protocolos nutricionales, biomecánica de ejecución o periodización?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -100,22 +100,35 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
 
   const getBestVoice = (gender: VoiceGender): SpeechSynthesisVoice | null => {
     const esVoices = voices.filter(v => v.lang.startsWith('es'));
-    const femaleNames = ['Helena', 'Sabina', 'Laura', 'Paulina', 'Monica', 'Zira', 'Elena'];
+    const femaleNames = ['Helena', 'Sabina', 'Laura', 'Paulina', 'Monica', 'Zira', 'Elena', 'Lucía', 'María'];
+    const qualityTerms = ['Premium', 'Natural', 'Neural', 'HighQuality'];
 
     if (gender === 'female') {
-      return esVoices.find(v => v.name.includes('Google') || femaleNames.some(n => v.name.includes(n))) || esVoices[0] || null;
+      // 1. Buscamos voces Premium de mujer
+      const premiumFemale = esVoices.find(v =>
+        (v.name.includes('Google') || femaleNames.some(n => v.name.includes(n))) &&
+        qualityTerms.some(t => v.name.includes(t))
+      );
+      if (premiumFemale) return premiumFemale;
+
+      // 2. Cualquier Google u otros nombres femeninos
+      const anyFemale = esVoices.find(v => v.name.includes('Google') || femaleNames.some(n => v.name.includes(n)));
+      return anyFemale || esVoices[0] || null;
     } else {
-      // Prioritize male voices for Coach
-      // 1. Explicit Male Names
-      const maleVoice = esVoices.find(v => v.name.includes('Pablo') || v.name.includes('Raul') || v.name.includes('Jorge') || v.name.includes('Juan') || v.name.includes('Alvaro') || v.name.includes('Manuel') || v.name.includes('David') || v.name.includes('Mark'));
-      if (maleVoice) return maleVoice;
+      // 1. Buscamos voces Premium de hombre
+      const maleNames = ['Pablo', 'Raul', 'Jorge', 'Juan', 'Alvaro', 'Manuel', 'David', 'Mark', 'Enrique', 'Ricardo'];
+      const premiumMale = esVoices.find(v =>
+        maleNames.some(n => v.name.includes(n)) &&
+        qualityTerms.some(t => v.name.includes(t))
+      );
+      if (premiumMale) return premiumMale;
 
-      // 2. Microsoft voices that are NOT female
-      const microsoftMale = esVoices.find(v => v.name.includes('Microsoft') && !femaleNames.some(n => v.name.includes(n)));
-      if (microsoftMale) return microsoftMale;
+      // 2. Cualquier nombre masculino
+      const anyMale = esVoices.find(v => maleNames.some(n => v.name.includes(n)));
+      if (anyMale) return anyMale;
 
-      // 3. Fallback: Not Google (often female) and not known female
-      return esVoices.find(v => !v.name.includes('Google') && !femaleNames.some(n => v.name.includes(n))) || esVoices[0] || null;
+      // 3. Fallback: Evitar las que parecen ser de mujer por nombre si es posible
+      return esVoices.find(v => !femaleNames.some(n => v.name.includes(n))) || esVoices[0] || null;
     }
   };
 
@@ -125,7 +138,7 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
     const voice = getBestVoice(preferredGender);
     if (voice) utterance.voice = voice;
     utterance.rate = 1.0;
-    utterance.pitch = preferredGender === 'female' ? 1.0 : 0.9;
+    utterance.pitch = preferredGender === 'female' ? 1.05 : 0.95; // Un poco más de tono para ella, más bajo para él
     window.speechSynthesis.speak(utterance);
   };
 
@@ -134,12 +147,15 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
     setPreferredGender(newGender);
     localStorage.setItem('coach_voice_gender', newGender);
 
-    // Test voice
-    const testMsg = "Sistema de audio calibrado. Director de rendimiento en línea.";
+    // Test voice con el nuevo rol
+    const testMsg = newGender === 'female'
+      ? "Sistema de audio calibrado. Directora de rendimiento en línea."
+      : "Sistema de audio calibrado. Director de rendimiento en línea.";
+
     const utterance = new SpeechSynthesisUtterance(testMsg);
     const voice = getBestVoice(newGender);
     if (voice) utterance.voice = voice;
-    utterance.pitch = newGender === 'female' ? 1.0 : 0.9;
+    utterance.pitch = newGender === 'female' ? 1.05 : 0.95;
     window.speechSynthesis.speak(utterance);
   };
 
@@ -212,12 +228,18 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-10 h-10 rounded-xl bg-emerald-600/10 flex items-center justify-center border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)] overflow-hidden">
-              <img src="/director-logo.png" alt="Director Logo" className="w-full h-full object-cover p-1.5" />
+              <img
+                src={preferredGender === 'female' ? "/performance-director-female.png" : "/performance-director.png"}
+                alt={preferredGender === 'female' ? "Directora de Rendimiento" : "Director de Rendimiento"}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-zinc-950"></div>
           </div>
           <div>
-            <h2 className="text-white text-sm font-black uppercase tracking-widest italic">Director de Rendimiento</h2>
+            <h2 className="text-white text-sm font-black uppercase tracking-widest italic">
+              {preferredGender === 'female' ? 'Directora de Rendimiento' : 'Director de Rendimiento'}
+            </h2>
             <p className="text-[9px] text-emerald-500/80 font-mono tracking-[0.2em] uppercase">Status: Análisis Activo</p>
           </div>
         </div>
@@ -306,7 +328,7 @@ export const AICoachChat: React.FC<AICoachChatProps> = ({ userProfile, isPro }) 
             <img src="/send-icon.svg" alt="Enviar" className="w-5 h-5" />
           </button>
         </div>
-        <p className="text-[8px] text-zinc-600 mt-2 text-center font-bold uppercase tracking-widest">Growth Ladder Performance Protocol v2.5</p>
+        <p className="text-[8px] text-zinc-600 mt-2 text-center font-bold uppercase tracking-widest">TrainingWithHabits Performance Protocol v2.5</p>
       </div>
     </div>
   );
