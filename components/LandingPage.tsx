@@ -21,6 +21,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                         <Logo className="w-10 h-10 text-black" />
                         <span className="font-extrabold tracking-tight text-xl text-black hidden sm:block font-display">TWH</span>
                     </div>
+                    <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-800">
+                        <button className="hover:text-brand-600 transition-colors uppercase tracking-widest text-xs">Soluciones</button>
+                        <button className="hover:text-brand-600 transition-colors uppercase tracking-widest text-xs">Funciones</button>
+                        <button className="hover:text-brand-600 transition-colors uppercase tracking-widest text-xs">Recursos</button>
+                    </div>
                     <button
                         onClick={onLogin}
                         className="px-8 py-3 rounded-full font-bold text-sm bg-black text-white hover:bg-zinc-800 transition-all shadow-lg hover:shadow-xl active:scale-95"
