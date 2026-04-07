@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Logo } from './Logo';
-import { Trophy, Zap, Activity, Users, ArrowRight, ShieldCheck, Star } from 'lucide-react';
+import { Trophy, Zap, Activity, Users, ArrowRight, ShieldCheck, Star, X } from 'lucide-react';
 
 interface LandingPageProps {
     onGetStarted: () => void;
@@ -11,6 +11,8 @@ interface LandingPageProps {
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin, onPrivacy, onTerms, onSupport }) => {
+    const [showDownloadModal, setShowDownloadModal] = useState(false);
+
     return (
         <div className="min-h-screen bg-brand-dark text-white font-sans selection:bg-brand-500/30 selection:text-brand-200 overflow-x-hidden">
 
@@ -34,7 +36,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                             Iniciar Sesión
                         </button>
                         <button
-                            onClick={onLogin}
+                            onClick={() => setShowDownloadModal(true)}
                             className="px-4 sm:px-6 py-2.5 rounded-full font-bold text-sm bg-black text-white hover:bg-zinc-800 transition-all shadow-lg hover:shadow-xl active:scale-95"
                         >
                             Descargar
@@ -131,6 +133,48 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                     <button onClick={onSupport} className="hover:text-white transition-colors">Soporte</button>
                 </div>
             </footer>
+
+            {/* Download Modal */}
+            {showDownloadModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-[2rem] w-full max-w-md p-8 relative shadow-2xl animate-in zoom-in-95 duration-200 text-center">
+                        <button
+                            onClick={() => setShowDownloadModal(false)}
+                            className="absolute top-5 right-5 p-2 rounded-full hover:bg-zinc-100 text-zinc-500 hover:text-black transition-colors"
+                        >
+                            <X size={20} />
+                        </button>
+
+                        <h2 className="text-2xl font-black text-black mb-2 mt-2">Empezar</h2>
+                        <p className="text-slate-500 text-sm font-medium mb-8">Escanea este código QR para descargar la app</p>
+
+                        <div className="bg-white border-4 border-zinc-100 rounded-3xl p-4 w-fit mx-auto mb-8 shadow-sm">
+                            <img
+                                src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://trainingwithhabits.app"
+                                alt="QR Code TrainingWithHabits"
+                                className="w-48 h-48 mx-auto"
+                            />
+                        </div>
+
+                        <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">o encuéntrala en Appstore y Google Play</p>
+
+                        <div className="flex flex-col sm:flex-row justify-center gap-3">
+                            <button className="bg-black text-white px-5 py-3 flex items-center justify-center gap-3 rounded-2xl hover:bg-zinc-800 transition-colors shadow-lg w-full">
+                                <div className="text-left flex flex-col">
+                                    <span className="text-[9px] uppercase tracking-[0.15em] text-slate-400 font-bold leading-none mb-1">Descárgalo en el</span>
+                                    <span className="text-base font-bold leading-none">App Store</span>
+                                </div>
+                            </button>
+                            <button className="bg-black text-white px-5 py-3 flex items-center justify-center gap-3 rounded-2xl hover:bg-zinc-800 transition-colors shadow-lg w-full">
+                                <div className="text-left flex flex-col">
+                                    <span className="text-[9px] uppercase tracking-[0.15em] text-slate-400 font-bold leading-none mb-1">Disponible en</span>
+                                    <span className="text-base font-bold leading-none">Google Play</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
