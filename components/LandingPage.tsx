@@ -71,7 +71,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                     </div>
                     <div className="w-full flex justify-center mt-10 z-20">
                         <button
-                            onClick={onGetStarted}
+                            onClick={() => setShowDownloadModal(true)}
                             className="px-10 py-4 w-full sm:w-auto rounded-full bg-brand-600 text-white font-bold text-lg shadow-xl shadow-brand-500/30 hover:bg-brand-500 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
                         >
                             <Zap size={20} className="fill-white" /> Empezar Gratis
