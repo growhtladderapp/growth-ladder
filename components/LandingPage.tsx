@@ -59,22 +59,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                     <p className="text-lg text-slate-600 mb-8 font-medium leading-relaxed">
                         Entrena inteligente con rutinas adaptativas, seguimiento de nutrición y un coach disponible 24/7.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                </div>
+                <div className="w-full max-w-md lg:max-w-lg flex flex-col items-center relative z-10">
+                    <div className="w-full relative">
+                        <div className="absolute inset-0 bg-brand-500/20 blur-3xl rounded-full"></div>
+                        <img
+                            src="/landing-hero-smartwatch.png"
+                            alt="Mobile App Interface"
+                            className="w-full h-auto object-contain rounded-xl shadow-2xl relative z-10 hover:scale-[1.02] transition-transform duration-500"
+                        />
+                    </div>
+                    <div className="w-full flex justify-center mt-10 z-20">
                         <button
                             onClick={onGetStarted}
-                            className="px-8 py-4 rounded-full bg-brand-600 text-white font-bold text-lg shadow-xl shadow-brand-500/30 hover:bg-brand-500 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+                            className="px-10 py-4 w-full sm:w-auto rounded-full bg-brand-600 text-white font-bold text-lg shadow-xl shadow-brand-500/30 hover:bg-brand-500 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
                         >
                             <Zap size={20} className="fill-white" /> Empezar Gratis
                         </button>
                     </div>
-                </div>
-                <div className="w-full max-w-md lg:max-w-lg relative z-10">
-                    <div className="absolute inset-0 bg-brand-500/20 blur-3xl rounded-full"></div>
-                    <img
-                        src="/landing-hero-smartwatch.png"
-                        alt="Mobile App Interface"
-                        className="w-full h-auto object-contain rounded-xl shadow-2xl relative z-10 hover:scale-[1.02] transition-transform duration-500"
-                    />
                 </div>
             </header>
 
