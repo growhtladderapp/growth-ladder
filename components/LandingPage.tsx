@@ -26,12 +26,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                         <button className="hover:text-brand-600 transition-colors uppercase tracking-widest text-xs">Funciones</button>
                         <button className="hover:text-brand-600 transition-colors uppercase tracking-widest text-xs">Recursos</button>
                     </div>
-                    <button
-                        onClick={onLogin}
-                        className="px-8 py-3 rounded-full font-bold text-sm bg-black text-white hover:bg-zinc-800 transition-all shadow-lg hover:shadow-xl active:scale-95"
-                    >
-                        Iniciar Sesión
-                    </button>
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        <button
+                            onClick={onLogin}
+                            className="px-4 sm:px-6 py-2.5 rounded-full font-bold text-sm text-slate-700 hover:text-black hover:bg-zinc-100 transition-all active:scale-95 hidden sm:block"
+                        >
+                            Iniciar Sesión
+                        </button>
+                        <button
+                            onClick={onLogin}
+                            className="px-4 sm:px-6 py-2.5 rounded-full font-bold text-sm bg-black text-white hover:bg-zinc-800 transition-all shadow-lg hover:shadow-xl active:scale-95"
+                        >
+                            Descargar
+                        </button>
+                    </div>
                 </div>
             </nav>
 
