@@ -19,10 +19,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
             {/* Navbar */}
             <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-b border-zinc-200">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <Logo className="w-10 h-10 text-black" />
+                    <button
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                        className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity active:scale-95 group focus:outline-none"
+                    >
+                        <Logo className="w-10 h-10 text-black group-hover:scale-110 transition-transform" />
                         <span className="font-extrabold tracking-tight text-xl text-black hidden sm:block font-display">TWH</span>
-                    </div>
+                    </button>
                     <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-800">
                         <button className="hover:text-brand-600 transition-colors uppercase tracking-widest text-xs">Soluciones</button>
                         <button className="hover:text-brand-600 transition-colors uppercase tracking-widest text-xs">Funciones</button>
@@ -61,7 +64,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                             onClick={onGetStarted}
                             className="px-8 py-4 rounded-full bg-brand-600 text-white font-bold text-lg shadow-xl shadow-brand-500/30 hover:bg-brand-500 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
                         >
-                            <Zap size={20} className="fill-white" /> Empezar Ahora
+                            <Zap size={20} className="fill-white" /> Empezar Gratis
                         </button>
                     </div>
                 </div>
