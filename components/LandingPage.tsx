@@ -150,6 +150,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                 </div>
             </section>
 
+            {/* More Features Grid */}
+            <section className="py-20 px-6 bg-[#faf9f6] relative z-10 border-b border-zinc-100">
+                <div className="max-w-6xl mx-auto text-center mb-16">
+                    <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                        Más funcionalidades por disfrutar
+                    </h2>
+                </div>
+
+                <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    <ExtraFeatureCard emoji="📈" title="Gráficos de Progreso" />
+                    <ExtraFeatureCard emoji="📸" title="Fotos de Progreso" />
+                    <ExtraFeatureCard emoji="🥗" title="Lector IA de Alimentos" />
+                    <ExtraFeatureCard emoji="🏋️‍♂️" title="Base de Datos Verificada" />
+                    <ExtraFeatureCard emoji="⌚" title="App para Smartwatch" />
+                    <ExtraFeatureCard emoji="🔄" title="Sincronizar con otras Apps" />
+                    <ExtraFeatureCard emoji="💧" title="Registro de Agua" />
+                    <ExtraFeatureCard emoji="🔥" title="Medidor de Rachas" />
+                    <ExtraFeatureCard emoji="👥" title="Comunidad TWH" />
+                </div>
+            </section>
+
             {/* Features Grid */}
             <section className="py-20 px-6 relative z-10">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -273,6 +294,15 @@ const Stat = ({ number, label, icon }: { number: string, label: string, icon?: R
             {number} {icon}
         </h4>
         <p className="text-[10px] font-bold text-brand-500 uppercase tracking-widest">{label}</p>
+    </div>
+);
+
+const ExtraFeatureCard = ({ emoji, title }: { emoji: string, title: string }) => (
+    <div className="p-8 pb-10 rounded-[2rem] bg-white border border-zinc-100 hover:border-zinc-200 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-lg flex flex-col items-center justify-center gap-6 group cursor-pointer">
+        <div className="text-[4rem] leading-none group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 drop-shadow-sm filter">
+            {emoji}
+        </div>
+        <h4 className="text-slate-800 font-bold text-base tracking-tight">{title}</h4>
     </div>
 );
 
