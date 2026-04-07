@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { Logo } from './Logo';
-import { Trophy, Zap, Activity, Users, ArrowRight, ShieldCheck, Star, X } from 'lucide-react';
+import { Trophy, Zap, Activity, Users, ArrowRight, ShieldCheck, Star, X, Map, Compass, Heart, ActivitySquare, Circle, Link2, CircleDashed } from 'lucide-react';
+
+const integrations = [
+    { name: "STRAVA", icon: <Map size={24} /> },
+    { name: "GARMIN", icon: <Compass size={24} /> },
+    { name: "APPLE HEALTH", icon: <Heart size={24} /> },
+    { name: "FITBIT", icon: <ActivitySquare size={24} /> },
+    { name: "WHOOP", icon: <Circle size={24} /> },
+    { name: "HEALTH CONNECT", icon: <Link2 size={24} /> },
+    { name: "OURA", icon: <CircleDashed size={24} /> }
+];
 
 interface LandingPageProps {
     onGetStarted: () => void;
@@ -79,6 +89,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                     </div>
                 </div>
             </header>
+
+            {/* Integrations Carousel */}
+            <section className="w-full py-12 relative overflow-hidden bg-white border-y border-zinc-100">
+                <div className="text-center mb-8 relative z-20">
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">
+                        Sincroniza con tus aplicaciones favoritas
+                    </h3>
+                </div>
+
+                {/* Left/Right Overlays for gradient fade */}
+                <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent z-10"></div>
+                <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent z-10"></div>
+
+                <div className="flex w-full overflow-hidden">
+                    <div className="flex items-center gap-16 whitespace-nowrap animate-scroll w-max pr-16">
+                        {[...integrations, ...integrations].map((app, i) => (
+                            <div key={i} className="flex items-center gap-3 text-slate-400 grayscale hover:grayscale-0 hover:text-black transition-colors duration-300">
+                                {app.icon}
+                                <span className="font-extrabold text-xl tracking-tight">{app.name}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
             {/* Features Grid */}
             <section className="py-20 px-6 relative z-10">
