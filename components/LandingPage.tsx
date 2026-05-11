@@ -124,15 +124,92 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                     </p>
                 </div>
                 <div className="w-full max-w-md lg:max-w-lg flex flex-col items-center relative z-10">
-                    <div className="w-full relative">
-                        <div className="absolute inset-0 bg-brand-500/20 blur-3xl rounded-full"></div>
-                        <img
-                            src="/landing-hero-smartwatch.png"
-                            alt="Mobile App Interface"
-                            className="w-full h-auto object-contain rounded-xl shadow-2xl relative z-10 hover:scale-[1.02] transition-transform duration-500"
-                        />
+                    <div className="w-full relative flex justify-center perspective-1000">
+                        {/* Glow Behind Phone */}
+                        <div className="absolute inset-0 bg-brand-500/20 blur-3xl rounded-full scale-75"></div>
+                        
+                        {/* iPhone 15 Pro Frame */}
+                        <div className="relative border-[#1c1c1e] bg-black border-[12px] rounded-[3rem] h-[550px] w-[260px] sm:h-[600px] sm:w-[280px] shadow-2xl ring-1 ring-white/10 rotate-y-[-5deg] rotate-x-[5deg] hover:rotate-y-0 hover:rotate-x-0 transition-transform duration-700">
+                            {/* Dynamic Island */}
+                            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[85px] h-[24px] bg-black rounded-full z-20 shadow-[inset_0_0_2px_rgba(255,255,255,0.1)]"></div>
+                            
+                            {/* Hardware Buttons */}
+                            <div className="absolute -left-[14px] top-[100px] w-[2px] h-[26px] bg-[#2c2c2e] rounded-l-md"></div>
+                            <div className="absolute -left-[14px] top-[140px] w-[2px] h-[50px] bg-[#2c2c2e] rounded-l-md"></div>
+                            <div className="absolute -left-[14px] top-[200px] w-[2px] h-[50px] bg-[#2c2c2e] rounded-l-md"></div>
+                            <div className="absolute -right-[14px] top-[160px] w-[2px] h-[70px] bg-[#2c2c2e] rounded-r-md"></div>
+
+                            {/* Screen Content */}
+                            <div className="rounded-[2.2rem] overflow-hidden w-full h-full bg-[#0a0a0a] relative flex flex-col p-4 pt-12 pb-6 border border-zinc-800/50">
+                                {/* Header */}
+                                <div className="flex justify-between items-center mb-5">
+                                    <div>
+                                        <h2 className="text-white font-black text-xl leading-none">Hola, Atleta</h2>
+                                        <p className="text-zinc-500 text-[10px] font-bold">Listos para hoy?</p>
+                                    </div>
+                                    <div className="w-8 h-8 rounded-full bg-brand-500/20 text-brand-500 flex items-center justify-center">
+                                        <Flame size={16} />
+                                    </div>
+                                </div>
+                                
+                                {/* Progress Ring */}
+                                <div className="bg-[#1c1c1e] rounded-3xl p-3 mb-4 flex items-center gap-3 border border-[#2c2c2e] shadow-lg">
+                                    <div className="relative w-14 h-14 shrink-0">
+                                        <svg className="w-full h-full transform -rotate-90">
+                                            <circle cx="28" cy="28" r="24" stroke="currentColor" strokeWidth="5" fill="none" className="text-[#2c2c2e]" />
+                                            <circle cx="28" cy="28" r="24" stroke="currentColor" strokeWidth="5" fill="none" strokeDasharray="150" strokeDashoffset="40" className="text-brand-500 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
+                                        </svg>
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <span className="text-brand-500 font-black text-xs">75%</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-white font-bold text-xs">Progreso Diario</h3>
+                                        <p className="text-zinc-500 text-[9px]">3 de 4 completados</p>
+                                    </div>
+                                </div>
+
+                                {/* Habits */}
+                                <div className="space-y-2 mb-4">
+                                    {[
+                                        { n: 'Agua', i: '💧', d: true },
+                                        { n: 'Entrenamiento', i: '🏋️', d: true },
+                                        { n: 'Lectura', i: '📚', d: false }
+                                    ].map((h, idx) => (
+                                        <div key={idx} className="bg-[#1c1c1e] rounded-2xl p-2.5 flex items-center justify-between border border-[#2c2c2e]">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-7 h-7 rounded-xl bg-black flex items-center justify-center text-xs">{h.i}</div>
+                                                <span className="text-white font-bold text-[11px]">{h.n}</span>
+                                            </div>
+                                            <div className={`w-4 h-4 rounded-full flex items-center justify-center ${h.d ? 'bg-brand-500 text-black shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-[#2c2c2e]'}`}>
+                                                {h.d && <span className="text-[8px] font-black leading-none">✓</span>}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Tools Grid */}
+                                <div className="grid grid-cols-2 gap-2 mt-auto">
+                                    <div className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e]">
+                                        <Dumbbell size={14} className="text-brand-500 mb-2" />
+                                        <div className="h-1.5 w-12 bg-zinc-700 rounded-full"></div>
+                                    </div>
+                                    <div className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e]">
+                                        <Brain size={14} className="text-purple-500 mb-2" />
+                                        <div className="h-1.5 w-12 bg-zinc-700 rounded-full"></div>
+                                    </div>
+                                </div>
+                                
+                                {/* Bottom Nav Mock */}
+                                <div className="absolute bottom-4 left-4 right-4 h-12 bg-[#1c1c1e] rounded-full border border-[#2c2c2e] flex justify-around items-center px-2">
+                                    <div className="w-8 h-8 rounded-full bg-brand-500/20 flex items-center justify-center"><ActivitySquare size={14} className="text-brand-500" /></div>
+                                    <div className="w-8 h-8 rounded-full flex items-center justify-center"><TrendingUp size={14} className="text-zinc-500" /></div>
+                                    <div className="w-8 h-8 rounded-full flex items-center justify-center"><Users size={14} className="text-zinc-500" /></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="w-full flex justify-center mt-10 z-20">
+                    <div className="w-full flex justify-center mt-8 z-20">
                         <button
                             onClick={() => setShowDownloadModal(true)}
                             className="px-10 py-4 w-full sm:w-auto rounded-full bg-brand-600 text-white font-bold text-lg shadow-xl shadow-brand-500/30 hover:bg-brand-500 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
