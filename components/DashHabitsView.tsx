@@ -132,69 +132,63 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
         <div className="mt-8 mb-6 px-1">
           <h2 className="text-lg font-bold text-white mb-4">Herramientas PRO</h2>
           <div className="grid grid-cols-2 gap-3">
-            <button onClick={() => onToolClick(ViewState.GUIDE)} className="bg-[#1c1c1e] p-4 rounded-3xl border border-[#2c2c2e] flex flex-col items-start gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-lg relative overflow-hidden group">
+            <button onClick={() => onToolClick(ViewState.GUIDE)} className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e] flex flex-row items-center gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-sm relative overflow-hidden group">
               <div className="absolute -right-2 -top-2 w-12 h-12 bg-white/5 rounded-full blur-xl group-hover:bg-brand-500/10 transition-colors"></div>
-              <div className="w-10 h-10 rounded-full bg-brand-500/20 text-brand-500 flex items-center justify-center">
-                <Dumbbell size={20} />
+              <div className="w-8 h-8 rounded-full bg-brand-500/20 text-brand-500 flex items-center justify-center shrink-0">
+                <Dumbbell size={16} />
               </div>
               <div className="text-left">
-                <h3 className="font-bold text-white text-sm">Musculación</h3>
-                <p className="text-[10px] text-zinc-500">Guía interactiva</p>
+                <h3 className="font-bold text-white text-xs leading-none">Musculación</h3>
               </div>
             </button>
             
-            <button onClick={() => onToolClick(ViewState.SCANNER)} className="bg-[#1c1c1e] p-4 rounded-3xl border border-[#2c2c2e] flex flex-col items-start gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-lg relative overflow-hidden group">
+            <button onClick={() => onToolClick(ViewState.SCANNER)} className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e] flex flex-row items-center gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-sm relative overflow-hidden group">
               <div className="absolute -right-2 -top-2 w-12 h-12 bg-white/5 rounded-full blur-xl group-hover:bg-blue-500/10 transition-colors"></div>
-              <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center">
-                <ScanLine size={20} />
+              <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center shrink-0">
+                <ScanLine size={16} />
               </div>
               <div className="text-left">
-                <h3 className="font-bold text-white text-sm">Escáner IA</h3>
-                <p className="text-[10px] text-zinc-500">Calorías al instante</p>
+                <h3 className="font-bold text-white text-xs leading-none">Escáner IA</h3>
               </div>
             </button>
 
-            <button onClick={() => onToolClick(ViewState.WORKOUT)} className="bg-[#1c1c1e] p-4 rounded-3xl border border-[#2c2c2e] flex flex-col items-start gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-lg relative overflow-hidden group">
+            <button onClick={() => onToolClick(ViewState.WORKOUT)} className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e] flex flex-row items-center gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-sm relative overflow-hidden group">
               <div className="absolute -right-2 -top-2 w-12 h-12 bg-white/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition-colors"></div>
-              <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center">
-                <Brain size={20} />
+              <div className="w-8 h-8 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center shrink-0">
+                <Brain size={16} />
               </div>
               <div className="text-left">
-                <h3 className="font-bold text-white text-sm">Rutinas IA</h3>
-                <p className="text-[10px] text-zinc-500">Generador inteligente</p>
+                <h3 className="font-bold text-white text-xs leading-none">Rutinas IA</h3>
               </div>
             </button>
 
-            <button onClick={() => onToolClick(ViewState.CHAT)} className="bg-[#1c1c1e] p-4 rounded-3xl border border-[#2c2c2e] flex flex-col items-start gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-lg relative overflow-hidden group">
+            <button onClick={() => onToolClick(ViewState.CHAT)} className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e] flex flex-row items-center gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-sm relative overflow-hidden group">
               <div className="absolute -right-2 -top-2 w-12 h-12 bg-white/5 rounded-full blur-xl group-hover:bg-orange-500/10 transition-colors"></div>
-              <div className="w-10 h-10 rounded-full bg-orange-500/20 text-orange-500 flex items-center justify-center">
-                <MessageSquare size={20} />
+              <div className="w-8 h-8 rounded-full bg-orange-500/20 text-orange-500 flex items-center justify-center shrink-0">
+                <MessageSquare size={16} />
               </div>
               <div className="text-left">
-                <h3 className="font-bold text-white text-sm">Coach AI</h3>
-                <p className="text-[10px] text-zinc-500">Chat de entrenamiento</p>
+                <h3 className="font-bold text-white text-xs leading-none">Coach AI</h3>
               </div>
             </button>
 
-            <button onClick={() => onToolClick(ViewState.RECIPES)} className="bg-[#1c1c1e] p-4 rounded-3xl border border-[#2c2c2e] flex flex-col items-start gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-lg relative overflow-hidden group">
+            <button onClick={() => onToolClick(ViewState.RECIPES)} className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e] flex flex-row items-center gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-sm relative overflow-hidden group">
               <div className="absolute -right-2 -top-2 w-12 h-12 bg-white/5 rounded-full blur-xl group-hover:bg-emerald-500/10 transition-colors"></div>
-              <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
-                <ChefHat size={20} />
+              <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0">
+                <ChefHat size={16} />
               </div>
               <div className="text-left">
-                <h3 className="font-bold text-white text-sm">Chef AI</h3>
-                <p className="text-[10px] text-zinc-500">Recetas personalizadas</p>
+                <h3 className="font-bold text-white text-xs leading-none">Chef AI</h3>
               </div>
             </button>
 
-            <button onClick={() => onToolClick(ViewState.COMMUNITY)} className="bg-[#1c1c1e] p-4 rounded-3xl border border-[#2c2c2e] flex flex-col items-start gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-lg relative overflow-hidden group">
+            <button onClick={() => onToolClick(ViewState.COMMUNITY)} className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e] flex flex-row items-center gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-sm relative overflow-hidden group">
               <div className="absolute -right-2 -top-2 w-12 h-12 bg-white/5 rounded-full blur-xl group-hover:bg-pink-500/10 transition-colors"></div>
-              <div className="w-10 h-10 rounded-full bg-pink-500/20 text-pink-500 flex items-center justify-center">
-                <Users size={20} />
+              <div className="w-8 h-8 rounded-full bg-pink-500/20 text-pink-500 flex items-center justify-center shrink-0">
+                <Users size={16} />
               </div>
               <div className="text-left">
-                <h3 className="font-bold text-white text-sm">Trainers</h3>
-                <p className="text-[10px] text-zinc-500">Comunidad élite</p>
+                <h3 className="font-bold text-white text-xs leading-none">Trainers</h3>
               </div>
             </button>
           </div>

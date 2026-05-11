@@ -39,7 +39,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
         {/* Header Decor */}
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-brand-500/20 to-transparent pointer-events-none"></div>
 
-        <button onClick={onClose} className="absolute top-5 right-5 z-50 p-2 text-slate-500 hover:text-white transition-colors cursor-pointer">
+        <button onClick={onClose} className="absolute top-4 right-4 z-50 p-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors cursor-pointer shadow-lg backdrop-blur-md">
           <X size={20} />
         </button>
 
@@ -50,22 +50,45 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
                 <div className="inline-flex p-3 rounded-2xl bg-brand-500/10 border border-brand-500/20 mb-4">
                   <Crown className="text-brand-500" size={32} />
                 </div>
-                <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter italic">Desbloquea el <span className="text-brand-500">Máximo Nivel</span></h2>
+                <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Desbloquea el <span className="text-brand-500">Nivel Pro</span></h2>
                 <p className="text-slate-400 text-xs mt-2 mb-6">Elige tu plan y comienza tu transformación.</p>
 
-                {/* Beneficios Comunes */}
-                <ul className="space-y-2 mb-6 bg-white/5 p-4 rounded-xl border border-white/5">
-                  {[
-                    'Coach IA Ilimitado',
-                    'Chef IA: Recetas Saludables',
-                    'Metas de Élite y Estadísticas',
-                    'Modo Recuperación Activa'
-                  ].map(f => (
-                    <li key={f} className="flex items-center gap-2 text-[10px] text-slate-300 font-bold uppercase tracking-wider">
-                      <Zap size={10} className="text-brand-500" /> {f}
-                    </li>
-                  ))}
-                </ul>
+                {/* Beneficios Dinámicos */}
+                <div className="mb-6 bg-white/5 p-4 rounded-xl border border-white/5 text-left">
+                  <h4 className="text-[10px] font-bold text-brand-500 uppercase tracking-widest mb-3">
+                    Incluido en {selectedPlan === 'standard' ? 'Estándar' : 'Pro / Personalizado'}:
+                  </h4>
+                  <ul className="space-y-3">
+                    {selectedPlan === 'standard' ? (
+                      <>
+                        <li className="flex items-center gap-3 text-sm text-slate-300 font-medium">
+                          <Check size={16} className="text-brand-500 shrink-0" /> Coach IA (10 msg/día)
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-slate-300 font-medium">
+                          <Check size={16} className="text-brand-500 shrink-0" /> Guía de Musculación
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-slate-300 font-medium">
+                          <Check size={16} className="text-brand-500 shrink-0" /> Sincronización Básica
+                        </li>
+                      </>
+                    ) : (
+                      <>
+                        <li className="flex items-center gap-3 text-sm text-white font-bold">
+                          <Sparkles size={16} className="text-brand-500 shrink-0" /> Coach IA Ilimitado 24/7
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-white font-bold">
+                          <Check size={16} className="text-brand-500 shrink-0" /> Chef IA y Escáner de Comida
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-white font-bold">
+                          <Check size={16} className="text-brand-500 shrink-0" /> Rutinas IA Adaptativas
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-white font-bold">
+                          <Check size={16} className="text-brand-500 shrink-0" /> Comunidad Élite Privada
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </div>
               </div>
 
               <div className="space-y-4">
