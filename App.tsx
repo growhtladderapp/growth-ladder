@@ -167,10 +167,37 @@ export default function App() {
   const [initialMuscles, setInitialMuscles] = useState<MuscleGroup[] | undefined>(undefined);
   const [initialSport, setInitialSport] = useState<string | undefined>(undefined);
   const [showLanding, setShowLanding] = useState(true);
+  const [isPreview, setIsPreview] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Check for preview mode in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('preview') === 'true') {
+      setIsPreview(true);
+      setIsAuthenticated(true);
+      setShowLanding(false);
+      setIsPro(true);
+    }
+  }, []);
+
+  // Auto-cycle views in preview mode
+  useEffect(() => {
+    if (!isPreview) return;
+
+    const views = [ViewState.HABITS, ViewState.STATS, ViewState.GUIDE, ViewState.CHAT];
+    let currentIndex = 0;
+
+    const interval = setInterval(() => {
+      currentIndex = (currentIndex + 1) % views.length;
+      setView(views[currentIndex]);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isPreview]);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -760,7 +787,7 @@ export default function App() {
     if (showTerms) {
       return <TermsAndConditions onClose={() => setShowTerms(false)} />;
     }
-    if (showLanding) {
+    if (showLanding && !isPreview) {
       return (
         <>
           {showSupport && <SupportChat isOpen={true} onClose={() => setShowSupport(false)} />}
