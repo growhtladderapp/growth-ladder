@@ -1,18 +1,21 @@
 
 export enum ViewState {
   AUTH = 'AUTH',
-  DASHBOARD = 'DASHBOARD',
+  HABITS = 'HABITS', // Replaces DASHBOARD
+  STATS = 'STATS',   // Replaces LOG/ACHIEVEMENTS
+  SHARE = 'SHARE',   // Replaces COMMUNITY
+  SETTINGS = 'SETTINGS',
+  
+  // Vistas ocultas o secundarias
   WORKOUT = 'WORKOUT',
   SCANNER = 'SCANNER',
   GUIDE = 'GUIDE',
   LOG = 'LOG',
   CHAT = 'CHAT',
-  ACHIEVEMENTS = 'ACHIEVEMENTS',
-  SETTINGS = 'SETTINGS',
   SUPPORT = 'SUPPORT',
-  COMMUNITY = 'COMMUNITY',
+  TERMS = 'TERMS',
   RECIPES = 'RECIPES',
-  TERMS = 'TERMS'
+  COMMUNITY = 'COMMUNITY'
 }
 
 export enum MuscleGroup {
@@ -149,4 +152,20 @@ export interface WeeklyGoalOption {
   gradient: string;
   shadow: string;
   isPro?: boolean;
+}
+
+export interface Habit {
+  id: string;
+  title: string;
+  frequency: 'daily' | 'weekly' | 'custom';
+  color: string;
+  icon: string;
+  createdAt: string;
+}
+
+export interface HabitLog {
+  id: string;
+  habitId: string;
+  date: string; // ISO string for the day YYYY-MM-DD
+  completedAt: string; // Full ISO timestamp
 }

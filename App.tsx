@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { ViewState, DailyLogEntry, UserProfile, CalendarEvent, MuscleGroup } from './types';
+import { ViewState, DailyLogEntry, UserProfile, CalendarEvent, MuscleGroup, Habit, HabitLog } from './types';
 import { Navigation } from './components/Navigation';
 import { Dashboard } from './components/Dashboard';
 import { WorkoutAI } from './components/WorkoutAI';
@@ -24,6 +24,10 @@ import { translateUI } from './services/geminiService';
 import { supabase, DatabaseLogEntry } from './services/supabase';
 import { Loader2, Sparkles } from 'lucide-react';
 import { useToast } from './components/ToastContext';
+
+import { DashHabitsView } from './components/DashHabitsView';
+import { StatsView } from './components/StatsView';
+import { ShareView } from './components/ShareView';
 
 const DEFAULT_UI_TEXT = {
   inicio: "Inicio",
@@ -153,7 +157,7 @@ export const GOAL_OPTIONS: WeeklyGoalOption[] = [
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 
 export default function App() {
-  const [view, setView] = useState<ViewState>(ViewState.DASHBOARD);
+  const [view, setView] = useState<ViewState>(ViewState.HABITS);
   const [isPro, setIsPro] = useState(() => {
     return localStorage.getItem('gl_is_pro') === 'true';
   });
@@ -247,6 +251,46 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
+  // TWH Habit System State
+  const [habits, setHabits] = useState<Habit[]>(() => {
+    const saved = localStorage.getItem('twh_habits');
+    return saved ? JSON.parse(saved) : [
+      { id: '1', title: 'Despertar a tiempo', frequency: 'daily', color: '#10b981', icon: '🌞', createdAt: new Date().toISOString() }
+    ];
+  });
+
+  const [habitLogs, setHabitLogs] = useState<HabitLog[]>(() => {
+    const saved = localStorage.getItem('twh_habit_logs');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const saveHabit = (habit: Habit) => {
+    setHabits(prev => {
+      const updated = [...prev, habit];
+      localStorage.setItem('twh_habits', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const toggleHabitDate = (habitId: string, date: string) => {
+    setHabitLogs(prev => {
+      const existingIdx = prev.findIndex(l => l.habitId === habitId && l.date === date);
+      let updated;
+      if (existingIdx >= 0) {
+        updated = prev.filter((_, i) => i !== existingIdx);
+      } else {
+        updated = [...prev, {
+          id: Date.now().toString(),
+          habitId,
+          date,
+          completedAt: new Date().toISOString()
+        }];
+      }
+      localStorage.setItem('twh_habit_logs', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
     const saved = localStorage.getItem('gl_user_profile');
     return saved ? JSON.parse(saved) : null;
@@ -290,6 +334,10 @@ export default function App() {
           setShowOnboarding(true);
         }
       }
+      setLoadingInitial(false);
+    }).catch((err) => {
+      console.error("Supabase connection error:", err);
+      // Even if it fails, we must stop loading so the user sees the app (AuthView)
       setLoadingInitial(false);
     });
 
@@ -564,7 +612,7 @@ export default function App() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setShowLanding(true);
-    setView(ViewState.DASHBOARD);
+    setView(ViewState.HABITS);
   };
 
   const handleSubscribe = (proStatus: boolean) => {
@@ -642,7 +690,7 @@ export default function App() {
 
     // 2. Si es usuario offline/guest, terminar aquí
     if (!userId || userId === 'offline-guest-user') {
-      setView(ViewState.DASHBOARD);
+      setView(ViewState.HABITS);
       return;
     }
 
@@ -665,7 +713,7 @@ export default function App() {
       await saveWorkoutLog(dbEntry);
 
       // Success - local state already updated
-      setView(ViewState.DASHBOARD);
+      setView(ViewState.HABITS);
     } catch (error) {
       console.error("Error syncing log to cloud", error);
       toast("Data saved locally, but cloud sync failed.", 'warning');
@@ -730,6 +778,23 @@ export default function App() {
     return <AuthView onLogin={handleLogin} uiText={uiText} onBack={() => setShowLanding(true)} />;
   }
 
+  const handleToolClick = (targetView: ViewState) => {
+    if (isPro) {
+      setView(targetView);
+      return;
+    }
+    
+    // Calculate days since registration
+    const signupTime = userProfile?.createdAt ? new Date(userProfile.createdAt).getTime() : Date.now();
+    const daysSinceSignup = (Date.now() - signupTime) / (1000 * 60 * 60 * 24);
+    
+    if (daysSinceSignup <= 3) {
+      setView(targetView);
+    } else {
+      setShowPaywall(true);
+    }
+  };
+
   return (
     <div className={`min-h-screen ${mainBgClass} font-sans transition-colors duration-500`} >
       <div className={`max-w-md mx-auto min-h-screen relative shadow-2xl overflow-hidden ${isDarkMode ? (isPro ? 'bg-black' : 'bg-brand-dark') : 'bg-white'}`}>
@@ -770,43 +835,33 @@ export default function App() {
 
         {view !== ViewState.CHAT && view !== ViewState.SUPPORT && (
           <>
-            <button
-              onClick={() => setView(ViewState.CHAT)}
-              className="fixed bottom-36 right-5 z-40 w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center shadow-lg border border-emerald-400 transition-transform active:scale-95 animate-in zoom-in"
-            >
-              <SportyRobotIcon size={28} className="text-white" />
-            </button>
-
+            {/* El botón de IA Sporty Robot se ha ocultado del flujo principal según rediseño */}
           </>
         )}
 
-        <main className="p-5 h-full overflow-y-auto pt-safe pb-32">
-          {view === ViewState.DASHBOARD && (
-            <Dashboard
-              logs={logs}
-              isPro={isPro}
-              togglePro={() => isPro ? setIsPro(false) : setShowPaywall(true)}
-              onDeleteDate={() => { }}
-              onChangeThemeColor={setThemeColor}
-              setView={setView}
-              uiText={uiText}
-              selectedGoalId={selectedGoalId}
-              onSelectGoal={handleSetGoal}
-              customTargets={goalTargets}
-              onUpdateTarget={handleUpdateGoalTarget}
-              userProfile={userProfile}
-              onLogout={handleLogout}
+        {/* Removimos el main text padding style ya que las vistas manejan su propio relleno */}
+        <main className="h-full w-full">
+          {view === ViewState.HABITS && (
+            <DashHabitsView 
+              setView={setView} 
+              uiText={uiText} 
+              habits={habits}
+              habitLogs={habitLogs}
+              onToggleHabit={toggleHabitDate}
+              onAddHabit={saveHabit}
+              onToolClick={handleToolClick}
             />
           )}
-          {view === ViewState.WORKOUT && (
-            <WorkoutAI
-              isPro={isPro}
-              userProfile={userProfile}
-              onUpdateProfile={handleUpdateProfile}
-              onSaveLog={handleSaveLog}
-              initialMuscles={initialMuscles}
-              initialSport={initialSport}
+          {view === ViewState.STATS && (
+            <StatsView 
+              setView={setView} 
+              uiText={uiText} 
+              habits={habits}
+              habitLogs={habitLogs}
             />
+          )}
+          {view === ViewState.SHARE && (
+            <ShareView setView={setView} uiText={uiText} />
           )}
           {view === ViewState.SETTINGS && (
             <SettingsView
@@ -822,30 +877,19 @@ export default function App() {
               uiText={uiText}
               onLogout={handleLogout}
               userId={userId} // Passing ID for avatar upload
+              onRequestPro={() => setShowPaywall(true)}
             />
           )}
-          {view === ViewState.COMMUNITY && (
-            <CommunityView
-              setView={setView}
-              isPro={isPro}
-              uiText={uiText}
-            />
-          )}
+
+          {/* Hidden/Background views still kept in memory if needed */}
+          {view === ViewState.WORKOUT && <WorkoutAI isPro={isPro} userProfile={userProfile} onUpdateProfile={handleUpdateProfile} onSaveLog={handleSaveLog} initialMuscles={initialMuscles} initialSport={initialSport} />}
           {view === ViewState.LOG && <Tracker logs={logs} userProfile={userProfile} onUpdateProfile={handleUpdateProfile} onSave={handleSaveLog} onDeleteLog={handleDeleteLog} isPro={isPro} calendarEvents={calendarEvents} onUpdateEvents={handleUpdateEvents} />}
-          {view === ViewState.GUIDE && (
-            <MuscleWiki
-              isPro={isPro}
-              onStartWorkout={handleStartCustomWorkout}
-              onStartSportWorkout={handleStartSportWorkout}
-              userProfile={userProfile}
-              currentGoal={GOAL_OPTIONS.find(g => g.id === selectedGoalId)}
-            />
-          )}
-          {view === ViewState.ACHIEVEMENTS && <Achievements logs={logs} setView={setView} isPro={isPro} />}
+          {view === ViewState.GUIDE && <MuscleWiki isPro={isPro} onStartWorkout={handleStartCustomWorkout} onStartSportWorkout={handleStartSportWorkout} userProfile={userProfile} currentGoal={GOAL_OPTIONS.find(g => g.id === selectedGoalId)} />}
           {view === ViewState.CHAT && <AICoachChat userProfile={userProfile} isPro={isPro} />}
           {view === ViewState.SCANNER && <FoodScanner onSave={handleSaveLog} isPro={isPro} />}
           {view === ViewState.RECIPES && <ChefChat userProfile={userProfile} />}
-          <SupportChat isOpen={view === ViewState.SUPPORT} onClose={() => setView(ViewState.DASHBOARD)} />
+          {view === ViewState.COMMUNITY && <CommunityView setView={setView} isPro={isPro} uiText={uiText} />}
+          <SupportChat isOpen={view === ViewState.SUPPORT} onClose={() => setView(ViewState.HABITS)} />
         </main>
 
         <Navigation currentView={view} setView={setView} isPro={isPro} uiText={uiText} />

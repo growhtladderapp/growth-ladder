@@ -43,7 +43,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({ setView, isPro, ui
          {/* Header */}
          <div className="flex justify-between items-center">
             <button
-               onClick={() => setView(ViewState.DASHBOARD)}
+               onClick={() => setView(ViewState.HABITS)}
                className="flex items-center gap-2 text-slate-400 font-bold uppercase text-xs tracking-widest hover:text-white transition-colors"
             >
                <ChevronLeft size={16} /> Volver

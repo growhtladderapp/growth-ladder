@@ -11,7 +11,7 @@ interface SubscriptionModalProps {
 
 export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, onSubscribe, isDarkMode }) => {
   const [step, setStep] = useState<'plans' | 'checkout' | 'processing'>('plans');
-  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual' | 'creator'>('annual');
+  const [selectedPlan, setSelectedPlan] = useState<'standard' | 'pro' | 'annual' | 'creator'>('annual');
 
   const handleAction = () => {
     if (step === 'plans') {
@@ -26,7 +26,9 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
   };
 
   const getPriceDisplay = () => {
-    if (selectedPlan === 'monthly') return '$3.99';
+    if (selectedPlan === 'standard') return '$4.99';
+    if (selectedPlan === 'pro') return '$9.99';
+    if (selectedPlan === 'creator') return '$0.00';
     return '$29.90';
   };
 
@@ -67,25 +69,41 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
               </div>
 
               <div className="space-y-4">
-                {/* Plan Mensual */}
+                {/* Plan Estándar */}
                 <button
-                  onClick={() => setSelectedPlan('monthly')}
-                  className={`w-full p-4 rounded-2xl border transition-all text-left relative overflow-hidden group ${selectedPlan === 'monthly' ? 'border-zinc-500 bg-zinc-800/40' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}
+                  onClick={() => setSelectedPlan('standard')}
+                  className={`w-full p-4 rounded-2xl border transition-all text-left relative overflow-hidden group ${selectedPlan === 'standard' ? 'border-zinc-500 bg-zinc-800/40' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}
                 >
-                  <div className="absolute top-0 right-0 bg-white text-black text-[8px] font-black px-2 py-1 uppercase tracking-tighter rounded-bl-lg">7 Días Gratis</div>
-                  <div className="flex justify-between items-center mb-1 mt-1">
+                  <div className="flex justify-between items-center mb-1">
                     <div>
-                      <h3 className="text-sm font-bold text-white">Plan Mensual</h3>
+                      <h3 className="text-sm font-bold text-white">Plan Estándar</h3>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-black text-white">$3.99</p>
+                      <p className="text-lg font-black text-white">$4.99</p>
                     </div>
                   </div>
-                  <p className="text-[10px] text-slate-400 font-medium">Facturación cada mes</p>
-                  {selectedPlan === 'monthly' && <div className="absolute bottom-3 right-3"><div className="w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]" /></div>}
+                  <p className="text-[10px] text-slate-400 font-medium">Facturación mensual</p>
+                  {selectedPlan === 'standard' && <div className="absolute bottom-3 right-3"><div className="w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]" /></div>}
                 </button>
 
-                {/* Plan Anual - MEJOR OPCION */}
+                {/* Plan Pro */}
+                <button
+                  onClick={() => setSelectedPlan('pro')}
+                  className={`w-full p-4 rounded-2xl border transition-all text-left relative overflow-hidden group ${selectedPlan === 'pro' ? 'border-zinc-500 bg-zinc-800/40' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}
+                >
+                  <div className="flex justify-between items-center mb-1">
+                    <div>
+                      <h3 className="text-sm font-bold text-white">Plan PRO</h3>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-black text-white">$9.99</p>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-slate-400 font-medium">Facturación mensual</p>
+                  {selectedPlan === 'pro' && <div className="absolute bottom-3 right-3"><div className="w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]" /></div>}
+                </button>
+
+                {/* Plan Personalizado (Anual) - MEJOR OPCION */}
                 <button
                   onClick={() => setSelectedPlan('annual')}
                   className={`w-full p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden group ${selectedPlan === 'annual' ? 'border-brand-500 bg-brand-500/10' : 'border-brand-500/30 bg-white/5 hover:bg-white/10'}`}
@@ -95,11 +113,11 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
                   <div className="flex justify-between items-start mb-2 mt-1">
                     <div>
                       <p className="text-[10px] font-black text-brand-500 uppercase tracking-widest mb-1">Recomendado</p>
-                      <h3 className="text-lg font-bold text-white">Plan Anual</h3>
+                      <h3 className="text-lg font-bold text-white">Plan Personalizado</h3>
                     </div>
                     <div className="text-right flex flex-col items-end">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-500 line-through decoration-red-500 decoration-2">$50.00</span>
+                        <span className="text-xs font-bold text-slate-500 line-through decoration-red-500 decoration-2">$60.00</span>
                         <p className="text-xl font-black text-white">$29.90</p>
                       </div>
                       <p className="text-[8px] text-brand-500 font-bold uppercase">Pago Único Anual</p>
@@ -179,7 +197,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
 
               <div className="flex justify-between items-center mb-6 pt-4 border-t border-white/5">
                 <span className="text-white font-black uppercase text-xs tracking-widest">Total a pagar</span>
-                <span className="text-brand-500 font-black text-xl">{(selectedPlan as string) === 'creator' ? '$0.00' : (selectedPlan === 'monthly' ? '$3.99' : '$29.90')}</span>
+                <span className="text-brand-500 font-black text-xl">{getPriceDisplay()}</span>
               </div>
 
               <button

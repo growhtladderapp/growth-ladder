@@ -12,6 +12,15 @@ const integrations = [
     { name: "OURA", icon: <CircleDashed size={24} /> }
 ];
 
+const testimonials = [
+    { name: "Mateo Arismendi", country: "España", flag: "🇪🇸", text: "TWH literalmente transformó mi físico. El Coach IA adaptó mi dieta cuando me estanqué bajando de peso y logré mi mejor versión. Nunca más vuelvo a entrenar a ciegas." },
+    { name: "Valentina Rojas", country: "Colombia", flag: "🇨🇴", text: "Simplemente espectacular. Escaneo mi almuerzo, me dice los macros exactos, y la gamificación hace que no pierda mi racha de hábitos. Súper recomendada." },
+    { name: "Lucas Torres", country: "Argentina", flag: "🇦🇷", text: "Como atleta híbrido siempre batallé para equilibrar correr con hipertrofia de alto volumen. Esta aplicación estructuró mis semanas de forma perfecta." },
+    { name: "Sofía Morales", country: "México", flag: "🇲🇽", text: "He probado docenas de apps de fitness, pero ninguna tiene este nivel de inteligencia. El Chef IA me ahorra horas planificando la nutrición los domingos." },
+    { name: "Alejandro Silva", country: "Chile", flag: "🇨🇱", text: "Toda mi vida sentí que las dietas eran aburridas. Aquí soy completamente flexible sin perder el rendimiento. Excelente comunidad Élite de apoyo." },
+    { name: "Diego Fuentes", country: "Perú", flag: "🇵🇪", text: "La app es rapidísima, las gráficas biométricas me motivan a nivel extremo y las notificaciones te hacen responsable y estoico ante todo. Le doy 5 estrellas." },
+];
+
 interface LandingPageProps {
     onGetStarted: () => void;
     onLogin: () => void;
@@ -22,6 +31,14 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin, onPrivacy, onTerms, onSupport }) => {
     const [showDownloadModal, setShowDownloadModal] = useState(false);
+    const [showCookies, setShowCookies] = useState(() => {
+        return localStorage.getItem('gl_cookies_accepted') !== 'true';
+    });
+
+    const handleAcceptCookies = () => {
+        localStorage.setItem('gl_cookies_accepted', 'true');
+        setShowCookies(false);
+    };
 
     return (
         <div className="min-h-screen bg-brand-dark text-white font-sans selection:bg-brand-500/30 selection:text-brand-200 overflow-x-hidden">
@@ -205,6 +222,42 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                 </div>
             </section>
 
+            {/* Testimonials Marquee */}
+            <section className="py-24 bg-brand-dark relative z-10 overflow-hidden">
+                <div className="max-w-6xl mx-auto text-center mb-16 px-6">
+                    <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tighter mb-4">
+                        Únete a millones como tú <br className="hidden sm:block" />y transforma tu vida
+                    </h2>
+                    <p className="text-brand-500 font-bold uppercase tracking-widest text-xs">No confíes en nosotros. Confía en ellos.</p>
+                </div>
+
+                {/* Left/Right Overlays for gradient fade (dark mode) */}
+                <div className="absolute left-0 top-0 bottom-0 w-8 md:w-32 bg-gradient-to-r from-brand-dark to-transparent z-10 pointer-events-none"></div>
+                <div className="absolute right-0 top-0 bottom-0 w-8 md:w-32 bg-gradient-to-l from-brand-dark to-transparent z-10 pointer-events-none"></div>
+
+                <div className="flex w-full overflow-hidden group">
+                    <div className="flex gap-6 whitespace-nowrap animate-scroll w-max pr-6 group-hover:[animation-play-state:paused] transition-all">
+                        {[...testimonials, ...testimonials].map((t, i) => (
+                            <div key={i} className="w-[300px] sm:w-[400px] whitespace-normal bg-zinc-900/40 border border-white/5 hover:border-white/10 hover:bg-zinc-800/40 transition-colors p-8 rounded-[2rem] shrink-0 flex flex-col gap-6 select-none">
+                                <div className="flex gap-1.5">
+                                    {[...Array(5)].map((_, j) => <Star key={j} size={16} className="fill-brand-500 text-brand-500" />)}
+                                </div>
+                                <p className="text-slate-300 italic text-sm leading-relaxed flex-grow">"{t.text}"</p>
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-500 to-orange-400 flex items-center justify-center font-bold text-white shadow-lg text-lg">
+                                        {t.name.charAt(0)}
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-white font-bold text-sm leading-none">{t.name}</span>
+                                        <span className="text-slate-500 text-xs font-semibold mt-1.5">{t.flag} {t.country}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* Social Proof / Stats */}
             <section className="py-20 border-y border-white/5 bg-black/20 backdrop-blur-sm">
                 <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 sm:grid-cols-4 gap-12 text-center">
@@ -241,31 +294,63 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                             <X size={20} />
                         </button>
 
-                        <h2 className="text-2xl font-black text-black mb-2 mt-2">Empezar</h2>
-                        <p className="text-slate-500 text-sm font-medium mb-8">Escanea este código QR para descargar la app</p>
+                        <h2 className="text-2xl font-black text-black mb-2 mt-2">Instalar App</h2>
+                        <p className="text-slate-500 text-xs font-medium mb-6 px-4">
+                            TWH es una aplicación PWA de última generación. Sigue estos 3 rápidos pasos para instalarla en tu celular sin consumir memoria:
+                        </p>
 
-                        <div className="bg-white border-4 border-zinc-100 rounded-3xl p-4 w-fit mx-auto mb-8 shadow-sm">
-                            <img
-                                src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://trainingwithhabits.app"
-                                alt="QR Code TrainingWithHabits"
-                                className="w-48 h-48 mx-auto"
-                            />
+                        <div className="bg-zinc-50 border border-zinc-100 rounded-2xl p-5 mb-6 text-left space-y-4 shadow-inner">
+                            <div className="flex gap-3 items-start">
+                                <div className="w-6 h-6 rounded-full bg-brand-100 text-brand-600 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">1</div>
+                                <p className="text-sm text-slate-700 font-medium leading-snug">Abre <strong>trainingwithhabits.app</strong> en el navegador principal de tu celular (Safari en iPhone o Chrome en Android).</p>
+                            </div>
+                            <div className="flex gap-3 items-start">
+                                <div className="w-6 h-6 rounded-full bg-brand-100 text-brand-600 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">2</div>
+                                <p className="text-sm text-slate-700 font-medium leading-snug">Toca el botón de <strong>Compartir</strong> (📱 iOS) o los <strong>3 puntos</strong> (🤖 Android) en el menú de tu navegador.</p>
+                            </div>
+                            <div className="flex gap-3 items-start">
+                                <div className="w-6 h-6 rounded-full bg-brand-100 text-brand-600 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">3</div>
+                                <p className="text-sm text-slate-700 font-medium leading-snug">Selecciona la opción <strong>"Agregar a inicio"</strong> ➕ y verás el ícono de TWH junto a tus otras apps.</p>
+                            </div>
                         </div>
 
-                        <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">o encuéntrala en Appstore y Google Play</p>
+                        <div className="bg-white border border-zinc-200 rounded-2xl p-3 w-fit mx-auto flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+                            <img
+                                src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://trainingwithhabits.app"
+                                alt="QR Code"
+                                className="w-16 h-16 rounded-lg"
+                            />
+                            <div className="text-left pr-2">
+                                <p className="text-[10px] uppercase font-bold text-brand-500 tracking-wider mb-0.5">Escanea para ir directo</p>
+                                <p className="font-bold text-sm text-slate-800">Abre la cámara web</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
-                        <div className="flex flex-col sm:flex-row justify-center gap-3">
-                            <button className="bg-black text-white px-5 py-3 flex items-center justify-center gap-3 rounded-2xl hover:bg-zinc-800 transition-colors shadow-lg w-full">
-                                <div className="text-left flex flex-col">
-                                    <span className="text-[9px] uppercase tracking-[0.15em] text-slate-400 font-bold leading-none mb-1">Descárgalo en el</span>
-                                    <span className="text-base font-bold leading-none">App Store</span>
-                                </div>
+            {/* Cookie Banner */}
+            {showCookies && (
+                <div className="fixed bottom-0 left-0 right-0 z-[100] p-4 sm:p-6 bg-white border-t border-zinc-200 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom-full duration-500">
+                    <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="text-left flex-1">
+                            <h4 className="text-black font-bold text-base mb-1">Usamos Cookies 🍪</h4>
+                            <p className="text-slate-500 text-xs sm:text-sm leading-relaxed">
+                                Utilizamos cookies propias y de terceros para mejorar tu experiencia, mostrarte contenido personalizado y analizar nuestro tráfico. Al hacer clic en "Aceptar", aceptas el uso de todas las cookies.
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                            <button 
+                                onClick={onPrivacy}
+                                className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl font-bold text-sm text-slate-600 bg-zinc-100 hover:bg-zinc-200 transition-colors text-center"
+                            >
+                                Preferencias
                             </button>
-                            <button className="bg-black text-white px-5 py-3 flex items-center justify-center gap-3 rounded-2xl hover:bg-zinc-800 transition-colors shadow-lg w-full">
-                                <div className="text-left flex flex-col">
-                                    <span className="text-[9px] uppercase tracking-[0.15em] text-slate-400 font-bold leading-none mb-1">Disponible en</span>
-                                    <span className="text-base font-bold leading-none">Google Play</span>
-                                </div>
+                            <button 
+                                onClick={handleAcceptCookies}
+                                className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl font-bold text-sm bg-brand-500 text-white hover:bg-brand-600 transition-colors shadow-lg shadow-brand-500/30 text-center"
+                            >
+                                Aceptar
                             </button>
                         </div>
                     </div>
