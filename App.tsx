@@ -18,6 +18,7 @@ import { OnboardingCarousel } from './components/OnboardingCarousel';
 import { Headphones } from 'lucide-react';
 
 import { LandingPage } from './components/LandingPage';
+import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { TermsAndConditions } from './components/TermsAndConditions';
 import { SubscriptionModal } from './components/SubscriptionModal';
 import { translateUI } from './services/geminiService';

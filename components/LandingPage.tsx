@@ -249,6 +249,59 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 </div>
             </section>
 
+            {/* Trust Section - LeafLeaf */}
+            <section className="py-20 px-6 bg-zinc-50 relative overflow-hidden border-b border-zinc-100">
+                <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
+                    <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Crown className="text-yellow-500 fill-yellow-500" size={24} />
+                            <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400">The #1 Habit Tracker</span>
+                        </div>
+                        <h2 className="text-5xl font-black text-black tracking-tighter mb-4 flex items-center gap-4">
+                            LeafLeaf
+                            <div className="flex gap-0.5">
+                                {[...Array(5)].map((_, i) => <Star key={i} size={20} className="fill-yellow-400 text-yellow-400" />)}
+                            </div>
+                        </h2>
+                        <div className="flex items-center gap-6 mt-4">
+                            <div className="flex flex-col">
+                                <span className="text-3xl font-black text-black">4.9</span>
+                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{t.qualified}</span>
+                            </div>
+                            <div className="w-px h-10 bg-zinc-200"></div>
+                            <div className="flex flex-col">
+                                <span className="text-3xl font-black text-black">1M+</span>
+                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Users</span>
+                            </div>
+                            <div className="w-px h-10 bg-zinc-200"></div>
+                            <div className="flex flex-col">
+                                <span className="text-3xl font-black text-black">10k+</span>
+                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Ratings</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="relative group">
+                        {/* Laurels Effect */}
+                        <div className="absolute -inset-10 flex items-center justify-center opacity-10 group-hover:opacity-20 transition-opacity">
+                            <div className="w-64 h-64 border-[20px] border-emerald-500 rounded-full border-dashed animate-[spin_20s_linear_infinite]"></div>
+                        </div>
+                        <div className="bg-white p-10 rounded-[3rem] shadow-2xl border border-zinc-100 flex flex-col items-center relative z-20">
+                            <div className="w-20 h-20 bg-brand-500 rounded-3xl flex items-center justify-center shadow-xl shadow-brand-500/30 mb-6 rotate-3 group-hover:rotate-0 transition-transform">
+                                <Logo className="w-12 h-12 text-white" />
+                            </div>
+                            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full border border-emerald-100 mb-2">
+                                <Check size={14} className="text-emerald-500 stroke-[3]" />
+                                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">App Store Editor's Choice</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {/* Background Decor */}
+                <div className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-emerald-500/5 blur-[120px] rounded-full"></div>
+            </section>
+
             {/* Trust & Rating Section */}
             <section className="py-16 bg-white border-b border-zinc-100 relative overflow-hidden">
                 <div className="max-w-4xl mx-auto px-6 flex flex-col items-center text-center">

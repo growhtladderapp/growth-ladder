@@ -16,6 +16,12 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
   const [showBottomAction, setShowBottomAction] = useState(true);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [menuTab, setMenuTab] = useState<'sort' | 'groups'>('sort');
+  const [filters, setFilters] = useState({
+    hideCompleted: false,
+    hideFailed: false,
+    hideSkipped: false,
+    sortBy: 'custom' as 'custom' | 'name'
+  });
   const [showNewHabitModal, setShowNewHabitModal] = useState(false);
   const [newHabitTitle, setNewHabitTitle] = useState('');
   const [modalCategory, setModalCategory] = useState<'buenos' | 'salud' | 'malos' | 'tareas'>('buenos');
