@@ -250,7 +250,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </section>
 
             {/* Trust Section - LeafLeaf */}
-            <section className="py-20 px-6 bg-zinc-50 relative overflow-hidden border-b border-zinc-100">
+            <section className="py-24 px-6 bg-zinc-50 relative overflow-hidden border-y border-zinc-100">
                 <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
                     <div className="flex flex-col items-center md:items-start text-center md:text-left">
                         <div className="flex items-center gap-2 mb-4">
@@ -282,13 +282,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     </div>
 
                     <div className="relative group">
-                        {/* Laurels Effect */}
-                        <div className="absolute -inset-10 flex items-center justify-center opacity-10 group-hover:opacity-20 transition-opacity">
-                            <div className="w-64 h-64 border-[20px] border-emerald-500 rounded-full border-dashed animate-[spin_20s_linear_infinite]"></div>
+                        {/* Laurels Effect - Corona y Laureles */}
+                        <div className="absolute -inset-16 flex items-center justify-center opacity-10 group-hover:opacity-20 transition-opacity">
+                            <div className="w-80 h-80 border-[2px] border-emerald-500 rounded-full border-dashed animate-[spin_30s_linear_infinite]"></div>
                         </div>
                         <div className="bg-white p-10 rounded-[3rem] shadow-2xl border border-zinc-100 flex flex-col items-center relative z-20">
-                            <div className="w-20 h-20 bg-brand-500 rounded-3xl flex items-center justify-center shadow-xl shadow-brand-500/30 mb-6 rotate-3 group-hover:rotate-0 transition-transform">
-                                <Logo className="w-12 h-12 text-white" />
+                            <div className="w-24 h-24 bg-brand-500 rounded-3xl flex items-center justify-center shadow-xl shadow-brand-500/30 mb-6 rotate-3 group-hover:rotate-0 transition-transform">
+                                <Logo className="w-14 h-14 text-white" />
                             </div>
                             <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full border border-emerald-100 mb-2">
                                 <Check size={14} className="text-emerald-500 stroke-[3]" />
@@ -302,92 +302,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <div className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-emerald-500/5 blur-[120px] rounded-full"></div>
             </section>
 
-            {/* Trust & Rating Section */}
-            <section className="py-16 bg-white border-b border-zinc-100 relative overflow-hidden">
-                <div className="max-w-4xl mx-auto px-6 flex flex-col items-center text-center">
-                    <div className="flex items-center gap-4 mb-6">
-                        <span className="text-4xl">🌿</span>
-                        <div className="bg-brand-500/10 p-4 rounded-3xl border border-brand-500/20 shadow-lg shadow-brand-500/10">
-                            <Crown size={40} className="text-brand-600 fill-brand-500/20" />
-                        </div>
-                        <span className="text-4xl scale-x-[-1]">🌿</span>
-                    </div>
-                    
-                    <h2 className="text-sm font-black text-brand-600 uppercase tracking-[0.3em] mb-2">The #1 Habit Tracker</h2>
-                    <h3 className="text-5xl sm:text-7xl font-black text-black tracking-tighter mb-4 italic">LeafLeaf</h3>
-                    
-                    <div className="flex flex-col items-center gap-2">
-                        <div className="flex items-center gap-2">
-                            <span className="text-3xl font-black text-black">4.9</span>
-                            <span className="text-slate-400 font-bold text-sm">{t.qualified}</span>
-                        </div>
-                        <div className="flex gap-1.5 mb-3">
-                            {[...Array(5)].map((_, i) => (
-                                <Star key={i} size={24} className="fill-yellow-400 text-yellow-400" />
-                            ))}
-                        </div>
-                        <div className="px-6 py-2 bg-zinc-50 rounded-full border border-zinc-100 shadow-sm">
-                            <p className="text-slate-500 font-bold text-[10px] uppercase tracking-[0.2em]">
-                                10k+ ratings • 1M+ users
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                
-                {/* Decorative Elements */}
-                <div className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-brand-500/5 blur-[100px] rounded-full"></div>
-                <div className="absolute top-1/2 right-0 -translate-y-1/2 w-64 h-64 bg-blue-500/5 blur-[100px] rounded-full"></div>
-            </section>
-
-
-            {/* Testimonials Marquee */}
-            <section className="py-24 bg-brand-dark relative z-10 overflow-hidden">
-                <div className="max-w-6xl mx-auto text-center mb-16 px-6">
-                    <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tighter mb-4">
-                        Únete a millones como tú <br className="hidden sm:block" />y transforma tu vida
-                    </h2>
-                    <p className="text-brand-500 font-bold uppercase tracking-widest text-xs">No confíes en nosotros. Confía en ellos.</p>
-                </div>
-
-                {/* Left/Right Overlays for gradient fade (dark mode) */}
-                <div className="absolute left-0 top-0 bottom-0 w-8 md:w-32 bg-gradient-to-r from-brand-dark to-transparent z-10 pointer-events-none"></div>
-                <div className="absolute right-0 top-0 bottom-0 w-8 md:w-32 bg-gradient-to-l from-brand-dark to-transparent z-10 pointer-events-none"></div>
-
-                <div className="flex w-full overflow-hidden group">
-                    <div className="flex gap-6 whitespace-nowrap animate-scroll w-max pr-6 group-hover:[animation-play-state:paused] transition-all">
-                        {[...testimonials, ...testimonials].map((t, i) => (
-                            <div key={i} className="w-[300px] sm:w-[400px] whitespace-normal bg-zinc-900/40 border border-white/5 hover:border-white/10 hover:bg-zinc-800/40 transition-colors p-8 rounded-[2rem] shrink-0 flex flex-col gap-6 select-none">
-                                <div className="flex gap-1.5">
-                                    {[...Array(5)].map((_, j) => <Star key={j} size={16} className="fill-brand-500 text-brand-500" />)}
-                                </div>
-                                <p className="text-slate-300 italic text-sm leading-relaxed flex-grow">"{t.text}"</p>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-500 to-orange-400 flex items-center justify-center font-bold text-white shadow-lg text-lg">
-                                        {t.name.charAt(0)}
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-white font-bold text-sm leading-none">{t.name}</span>
-                                        <span className="text-slate-500 text-xs font-semibold mt-1.5">{t.flag} {t.country}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Social Proof / Stats */}
-            <section className="py-20 border-y border-white/5 bg-black/20 backdrop-blur-sm">
-                <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 sm:grid-cols-4 gap-12 text-center">
-                    <Stat number="+10k" label="Atletas Activos" />
-                    <Stat number="+150" label="Modos Deportivos" />
-                    <Stat number="+50k" label="Sesiones Finalizadas" />
-                    <Stat number="4.9/5" label="Valoración" icon={<Star size={12} className="text-yellow-400 fill-yellow-400 inline mb-1" />} />
-                </div>
-            </section>
-
             {/* Apple Ecosystem Section */}
-            <section className="py-24 px-6 bg-zinc-50 border-t border-zinc-100 overflow-hidden">
+            <section className="py-24 px-6 bg-white overflow-hidden">
                 <div className="max-w-4xl mx-auto text-center">
                     <div className="flex justify-center gap-8 mb-10 opacity-20 grayscale">
                         <Smartphone size={40} />
@@ -401,9 +317,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                         {t.appleDesc}
                     </p>
                     <div className="mt-12 flex flex-wrap justify-center gap-4">
-                        <div className="px-6 py-2 rounded-full bg-white border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">iPhone</div>
-                        <div className="px-6 py-2 rounded-full bg-white border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">iPad</div>
-                        <div className="px-6 py-2 rounded-full bg-white border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">Apple Watch</div>
+                        <div className="px-6 py-2 rounded-full bg-zinc-50 border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">iPhone</div>
+                        <div className="px-6 py-2 rounded-full bg-zinc-50 border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">iPad</div>
+                        <div className="px-6 py-2 rounded-full bg-zinc-50 border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">Apple Watch</div>
                     </div>
                 </div>
             </section>
