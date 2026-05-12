@@ -177,7 +177,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   <div className="space-y-2 mb-2">
                      <button onClick={onRequestPro} className="w-full flex justify-between items-center bg-black/20 hover:bg-black/40 p-3 rounded-xl border border-white/10 transition-colors">
                         <span className="text-white font-bold text-sm">Plan Estándar</span>
-                        <span className="text-white font-black">$4.99<span className="text-[10px] text-white/50">/mo</span></span>
+                        <span className="text-white font-black">$3.99<span className="text-[10px] text-white/50">/mo</span></span>
                      </button>
                      <button onClick={onRequestPro} className="w-full flex justify-between items-center bg-black/20 hover:bg-black/40 p-3 rounded-xl border border-white/10 transition-colors">
                         <span className="text-white font-bold text-sm">Plan PRO</span>

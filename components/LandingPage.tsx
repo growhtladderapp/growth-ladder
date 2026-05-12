@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Logo } from './Logo';
-import { Trophy, Zap, Activity, Users, ArrowRight, ShieldCheck, Star, X, Map, Compass, Heart, ActivitySquare, Circle, Link2, CircleDashed, ChevronDown, Brain, Camera, TrendingUp, Flame, Dumbbell, PlaySquare, BookOpen, HelpCircle, Watch } from 'lucide-react';
+import { Trophy, Zap, Activity, Users, ArrowRight, ShieldCheck, Star, X, Map, Compass, Heart, ActivitySquare, Circle, Link2, CircleDashed, ChevronDown, Brain, Camera, TrendingUp, Flame, Dumbbell, PlaySquare, BookOpen, HelpCircle, Watch, Smartphone, Tablet, Crown, Check, ChefHat } from 'lucide-react';
 
 const integrations = [
     { name: "STRAVA", icon: <Map size={24} /> },
@@ -21,16 +21,54 @@ const testimonials = [
     { name: "Diego Fuentes", country: "Perú", flag: "🇵🇪", text: "La app es rapidísima, las gráficas biométricas me motivan a nivel extremo y las notificaciones te hacen responsable y estoico ante todo. Le doy 5 estrellas." },
 ];
 
+const MenuItem = ({ icon, title, desc, color }: { icon: React.ReactNode, title: string, desc: string, color: string }) => (
+    <div className="flex items-start gap-4 p-4 rounded-2xl hover:bg-zinc-50 transition-colors cursor-pointer">
+        <div className={`p-3 rounded-xl ${color}`}>{icon}</div>
+        <div>
+            <h4 className="font-bold text-slate-900 text-sm">{title}</h4>
+            <p className="text-slate-500 text-xs">{desc}</p>
+        </div>
+    </div>
+);
+
 interface LandingPageProps {
     onGetStarted: () => void;
     onLogin: () => void;
     onPrivacy: () => void;
     onTerms: () => void;
     onSupport: () => void;
+    currentLangCode?: string;
+    onLanguageChange?: (lang: string) => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin, onPrivacy, onTerms, onSupport }) => {
-    const [showDownloadModal, setShowDownloadModal] = useState(false);
+export const LandingPage: React.FC<LandingPageProps> = ({ 
+    onGetStarted, 
+    onLogin, 
+    onPrivacy, 
+    onTerms, 
+    onSupport,
+    currentLangCode = 'es',
+    onLanguageChange
+}) => {
+    const isEn = currentLangCode === 'en';
+    const t = {
+        login: isEn ? 'Login' : 'Iniciar Sesión',
+        launch: isEn ? 'Launch App' : 'Launch App',
+        heroTitle: isEn ? 'Build Good Habits Break Bad Ones' : 'Build Good Habits Break Bad Ones',
+        heroSubtitle: isEn ? 'Train smart with adaptive routines, nutrition tracking and a 24/7 coach.' : 'Entrena inteligente con rutinas adaptativas, seguimiento de nutrición y un coach disponible 24/7.',
+        terms: isEn ? 'Terms of use' : 'Términos de uso',
+        privacy: isEn ? 'Privacy policy' : 'Privacidad',
+        help: isEn ? 'Help Center' : 'Centro de Ayuda',
+        features: isEn ? 'Features' : 'Funciones',
+        solutions: isEn ? 'Solutions' : 'Soluciones',
+        resources: isEn ? 'Resources' : 'Recursos',
+        sync: isEn ? 'Sync with your favorite apps' : 'Sincroniza con tus aplicaciones favoritas',
+        qualified: isEn ? 'Qualified' : 'Cualificado',
+        moreFeatures: isEn ? 'More features to enjoy' : 'Más funcionalidades por disfrutar',
+        appleTitle: isEn ? 'Available on All Apple Devices' : 'Disponible en todos los dispositivos Apple',
+        appleDesc: isEn ? "Whether you're using your Phone, iPad, or Watch, TWH is available on all devices, ensuring you have access to your habits wherever you are. Sync your habits seamlessly across all your Apple devices with support, ensuring you never miss a beat no matter where you are." : 'Ya sea que uses tu iPhone, iPad o Apple Watch, TWH está disponible en todos los dispositivos, asegurando que tengas acceso a tus hábitos dondequiera que estés. Sincroniza tus hábitos sin problemas en todos tus dispositivos Apple.'
+    };
+
     const [showCookies, setShowCookies] = useState(() => {
         return localStorage.getItem('gl_cookies_accepted') !== 'true';
     });
@@ -102,18 +140,37 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                             </div>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="flex items-center gap-3 sm:gap-6">
+                        {/* Language Switcher */}
+                        <div className="flex items-center bg-zinc-100 rounded-full p-1 mr-2">
+                            <button 
+                                onClick={() => onLanguageChange?.('es')}
+                                className={`px-2 py-1 rounded-full text-[10px] font-black transition-all ${!isEn ? 'bg-white text-black shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                            >
+                                ES
+                            </button>
+                            <button 
+                                onClick={() => onLanguageChange?.('en')}
+                                className={`px-2 py-1 rounded-full text-[10px] font-black transition-all ${isEn ? 'bg-white text-black shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                            >
+                                EN
+                            </button>
+                        </div>
+
+                        <button onClick={onTerms} className="hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">{t.terms}</button>
+                        <button onClick={onPrivacy} className="hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">{t.privacy}</button>
+                        <button onClick={onSupport} className="hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">{t.help}</button>
                         <button
                             onClick={onLogin}
-                            className="px-4 sm:px-6 py-2.5 rounded-full font-bold text-sm text-slate-700 hover:text-black hover:bg-zinc-100 transition-all active:scale-95 hidden sm:block"
+                            className="px-3 sm:px-6 py-2.5 rounded-full font-bold text-xs sm:text-sm text-slate-700 hover:text-black hover:bg-zinc-100 transition-all active:scale-95"
                         >
-                            Iniciar Sesión
+                            {t.login}
                         </button>
                         <button
-                            onClick={() => setShowDownloadModal(true)}
-                            className="px-4 sm:px-6 py-2.5 rounded-full font-bold text-sm bg-black text-white hover:bg-zinc-800 transition-all shadow-lg hover:shadow-xl active:scale-95"
+                            onClick={onGetStarted}
+                            className="px-4 sm:px-6 py-2.5 rounded-full font-bold text-xs sm:text-sm bg-white text-black border border-zinc-200 hover:bg-zinc-50 transition-all shadow-sm active:bg-emerald-500 active:text-white active:scale-95"
                         >
-                            Descargar
+                            {t.launch}
                         </button>
                     </div>
                 </div>
@@ -124,17 +181,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
             {/* Hero Section */}
             <header className="relative pt-20 pb-10 sm:pt-24 sm:pb-16 px-6 overflow-hidden flex flex-col-reverse lg:flex-row justify-center items-center gap-10 lg:gap-20 bg-white">
                 <div className="max-w-xl text-center lg:text-left z-10">
-                    <h1 className="text-4xl sm:text-6xl font-black text-black tracking-tighter mb-6 leading-[0.9]">
-                        TU ENTRENADOR <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-400">PERSONAL IA</span>
+                    <h1 className="text-4xl sm:text-6xl font-black text-black tracking-tighter mb-6 leading-[1.1]">
+                        Build <span className="text-emerald-500">Good Habits</span> Break <span className="text-orange-500">Bad Ones</span> everyday with app good habits
                     </h1>
                     <p className="text-lg text-slate-600 mb-8 font-medium leading-relaxed">
-                        Entrena inteligente con rutinas adaptativas, seguimiento de nutrición y un coach disponible 24/7.
+                        {t.heroSubtitle}
                     </p>
+                    <div className="w-full flex justify-center lg:justify-start mt-8 z-20">
+                        <button
+                            onClick={onGetStarted}
+                            className="px-10 py-4 w-full sm:w-auto rounded-full bg-white text-black font-bold text-lg border-2 border-zinc-100 shadow-xl hover:bg-zinc-50 hover:scale-105 active:bg-emerald-500 active:text-white active:scale-95 transition-all flex items-center justify-center gap-2"
+                        >
+                            <Zap size={20} className="fill-current" /> {t.launch}
+                        </button>
+                    </div>
                 </div>
                 <div className="w-full max-w-md lg:max-w-lg flex flex-col items-center relative z-10">
                     <div className="w-full relative flex justify-center perspective-1000">
                         {/* Glow Behind Phone */}
-                        <div className="absolute inset-0 bg-brand-500/20 blur-3xl rounded-full scale-75"></div>
+                        <div className={`absolute inset-0 bg-brand-500/20 blur-3xl rounded-full transition-all duration-[2000ms] ${activeMockScreen === 0 ? 'scale-110 opacity-40' : 'scale-75 opacity-20'}`}></div>
                         
                         {/* iPhone 15 Pro Frame */}
                         <div className="relative border-[#1c1c1e] bg-black border-[12px] rounded-[3rem] h-[550px] w-[260px] sm:h-[600px] sm:w-[280px] shadow-2xl ring-1 ring-white/10 rotate-y-[-5deg] rotate-x-[5deg] hover:rotate-y-0 hover:rotate-x-0 transition-transform duration-700">
@@ -157,14 +222,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                             </div>
                         </div>
                     </div>
-                    <div className="w-full flex justify-center mt-8 z-20">
-                        <button
-                            onClick={() => setShowDownloadModal(true)}
-                            className="px-10 py-4 w-full sm:w-auto rounded-full bg-brand-600 text-white font-bold text-lg shadow-xl shadow-brand-500/30 hover:bg-brand-500 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
-                        >
-                            <Zap size={20} className="fill-white" /> Empezar Gratis
-                        </button>
-                    </div>
                 </div>
             </header>
 
@@ -172,7 +229,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
             <section className="w-full py-12 relative overflow-hidden bg-white border-y border-zinc-100">
                 <div className="text-center mb-8 relative z-20">
                     <h3 className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">
-                        Sincroniza con tus aplicaciones favoritas
+                        {t.sync}
                     </h3>
                 </div>
 
@@ -192,60 +249,43 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                 </div>
             </section>
 
-            {/* More Features Grid */}
-            <section className="py-20 px-6 bg-[#faf9f6] relative z-10 border-b border-zinc-100">
-                <div className="max-w-6xl mx-auto text-center mb-16">
-                    <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                        Más funcionalidades por disfrutar
-                    </h2>
+            {/* Trust & Rating Section */}
+            <section className="py-16 bg-white border-b border-zinc-100 relative overflow-hidden">
+                <div className="max-w-4xl mx-auto px-6 flex flex-col items-center text-center">
+                    <div className="flex items-center gap-4 mb-6">
+                        <span className="text-4xl">🌿</span>
+                        <div className="bg-brand-500/10 p-4 rounded-3xl border border-brand-500/20 shadow-lg shadow-brand-500/10">
+                            <Crown size={40} className="text-brand-600 fill-brand-500/20" />
+                        </div>
+                        <span className="text-4xl scale-x-[-1]">🌿</span>
+                    </div>
+                    
+                    <h2 className="text-sm font-black text-brand-600 uppercase tracking-[0.3em] mb-2">The #1 Habit Tracker</h2>
+                    <h3 className="text-5xl sm:text-7xl font-black text-black tracking-tighter mb-4 italic">LeafLeaf</h3>
+                    
+                    <div className="flex flex-col items-center gap-2">
+                        <div className="flex items-center gap-2">
+                            <span className="text-3xl font-black text-black">4.9</span>
+                            <span className="text-slate-400 font-bold text-sm">{t.qualified}</span>
+                        </div>
+                        <div className="flex gap-1.5 mb-3">
+                            {[...Array(5)].map((_, i) => (
+                                <Star key={i} size={24} className="fill-yellow-400 text-yellow-400" />
+                            ))}
+                        </div>
+                        <div className="px-6 py-2 bg-zinc-50 rounded-full border border-zinc-100 shadow-sm">
+                            <p className="text-slate-500 font-bold text-[10px] uppercase tracking-[0.2em]">
+                                10k+ ratings • 1M+ users
+                            </p>
+                        </div>
+                    </div>
                 </div>
-
-                <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    <ExtraFeatureCard emoji="📈" title="Gráficos de Progreso" />
-                    <ExtraFeatureCard emoji="📸" title="Fotos de Progreso" />
-                    <ExtraFeatureCard emoji="🥗" title="Lector IA de Alimentos" />
-                    <ExtraFeatureCard emoji="🏋️‍♂️" title="Base de Datos Verificada" />
-                    <ExtraFeatureCard emoji="⌚" title="App para Smartwatch" />
-                    <ExtraFeatureCard emoji="🔄" title="Sincronizar con otras Apps" />
-                    <ExtraFeatureCard emoji="💧" title="Registro de Agua" />
-                    <ExtraFeatureCard emoji="🔥" title="Medidor de Rachas" />
-                    <ExtraFeatureCard emoji="👥" title="Comunidad TWH" />
-                </div>
+                
+                {/* Decorative Elements */}
+                <div className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-brand-500/5 blur-[100px] rounded-full"></div>
+                <div className="absolute top-1/2 right-0 -translate-y-1/2 w-64 h-64 bg-blue-500/5 blur-[100px] rounded-full"></div>
             </section>
 
-            {/* Features Grid */}
-            <section className="py-20 px-6 relative z-10">
-                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <FeatureCard
-                        icon={Trophy}
-                        title="Gamificación Pro"
-                        desc="Convierte cada gota de sudor en XP. Desbloquea niveles, logros y compite en el ranking global."
-                        color="from-yellow-400 to-orange-500"
-                        delay="0"
-                    />
-                    <FeatureCard
-                        icon={Zap}
-                        title="AI Coach"
-                        desc="Un asistente inteligente que analiza tu rendimiento y optimiza tus rutinas en tiempo real."
-                        color="from-brand-400 to-red-500"
-                        delay="100"
-                    />
-                    <FeatureCard
-                        icon={Activity}
-                        title="DataVista"
-                        desc="Visualiza tu progreso con métricas avanzadas de biometría, cargas y recuperación."
-                        color="from-blue-400 to-indigo-500"
-                        delay="200"
-                    />
-                    <FeatureCard
-                        icon={Users}
-                        title="Comunidad Élite"
-                        desc="Conecta con atletas de tu nivel. Comparte récords y motívate con el éxito de otros."
-                        color="from-emerald-400 to-teal-500"
-                        delay="300"
-                    />
-                </div>
-            </section>
 
             {/* Testimonials Marquee */}
             <section className="py-24 bg-brand-dark relative z-10 overflow-hidden">
@@ -290,6 +330,28 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
                     <Stat number="+150" label="Modos Deportivos" />
                     <Stat number="+50k" label="Sesiones Finalizadas" />
                     <Stat number="4.9/5" label="Valoración" icon={<Star size={12} className="text-yellow-400 fill-yellow-400 inline mb-1" />} />
+                </div>
+            </section>
+
+            {/* Apple Ecosystem Section */}
+            <section className="py-24 px-6 bg-zinc-50 border-t border-zinc-100 overflow-hidden">
+                <div className="max-w-4xl mx-auto text-center">
+                    <div className="flex justify-center gap-8 mb-10 opacity-20 grayscale">
+                        <Smartphone size={40} />
+                        <Tablet size={40} />
+                        <Watch size={40} />
+                    </div>
+                    <h2 className="text-3xl sm:text-5xl font-black text-black tracking-tighter mb-6 leading-tight">
+                        {t.appleTitle}
+                    </h2>
+                    <p className="text-lg sm:text-xl text-slate-500 font-medium leading-relaxed max-w-3xl mx-auto">
+                        {t.appleDesc}
+                    </p>
+                    <div className="mt-12 flex flex-wrap justify-center gap-4">
+                        <div className="px-6 py-2 rounded-full bg-white border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">iPhone</div>
+                        <div className="px-6 py-2 rounded-full bg-white border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">iPad</div>
+                        <div className="px-6 py-2 rounded-full bg-white border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">Apple Watch</div>
+                    </div>
                 </div>
             </section>
 
@@ -341,13 +403,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
 
                         <div className="bg-white border border-zinc-200 rounded-2xl p-3 w-fit mx-auto flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
                             <img
-                                src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://trainingwithhabits.app"
+                                src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://trainingwithhabits.app/?login=true"
                                 alt="QR Code"
                                 className="w-16 h-16 rounded-lg"
                             />
                             <div className="text-left pr-2">
-                                <p className="text-[10px] uppercase font-bold text-brand-500 tracking-wider mb-0.5">Escanea para ir directo</p>
-                                <p className="font-bold text-sm text-slate-800">Abre la cámara web</p>
+                                <p className="text-[10px] uppercase font-bold text-brand-500 tracking-wider mb-0.5">Escanea para Iniciar Sesión</p>
+                                <p className="font-bold text-sm text-slate-800">Acceso Directo TWH</p>
                             </div>
                         </div>
                     </div>

@@ -181,6 +181,23 @@ export default function App() {
       setIsAuthenticated(true);
       setShowLanding(false);
       setIsPro(true);
+      setUserId('preview-user-id');
+      setUserProfile({
+        name: 'Atleta Elite',
+        level: 12,
+        xp: 12450,
+        age: 25,
+        weight: 75,
+        height: 180,
+        experience: 'advanced' as any,
+        focus: 'hybrid' as any,
+        daysAvailable: 5,
+        goalsCompleted: 42,
+        createdAt: new Date().toISOString()
+      });
+    }
+    if (params.get('login') === 'true') {
+      setShowLanding(false);
     }
   }, []);
 
@@ -791,12 +808,14 @@ export default function App() {
       return (
         <>
           {showSupport && <SupportChat isOpen={true} onClose={() => setShowSupport(false)} />}
-          <LandingPage
-            onGetStarted={() => setShowLanding(false)}
+          <LandingPage 
+            onGetStarted={() => setShowLanding(false)} 
             onLogin={() => setShowLanding(false)}
             onPrivacy={() => setShowPrivacy(true)}
             onTerms={() => setShowTerms(true)}
-            onSupport={() => setShowSupport(true)}
+            onSupport={() => setView(ViewState.SUPPORT)}
+            currentLangCode={currentLangCode}
+            onLanguageChange={handleLanguageChange}
           />
 
         </>

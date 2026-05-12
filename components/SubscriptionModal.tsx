@@ -26,7 +26,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
   };
 
   const getPriceDisplay = () => {
-    if (selectedPlan === 'standard') return '$4.99';
+    if (selectedPlan === 'standard') return '$3.99';
     if (selectedPlan === 'pro') return '$9.99';
     if (selectedPlan === 'creator') return '$0.00';
     return '$29.90';
@@ -102,7 +102,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
                       <h3 className="text-sm font-bold text-white">Plan Estándar</h3>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-black text-white">$4.99</p>
+                      <p className="text-lg font-black text-white">$3.99</p>
                     </div>
                   </div>
                   <p className="text-[10px] text-slate-400 font-medium">Facturación mensual</p>
