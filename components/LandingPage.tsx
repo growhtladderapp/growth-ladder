@@ -91,45 +91,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                         <span className="font-extrabold tracking-tight text-xl text-black hidden sm:block font-display">TWH</span>
                     </button>
                     <div className="hidden lg:flex items-center gap-8 text-sm font-bold text-slate-800">
-                        {/* Soluciones Menu */}
-                        <div className="relative group py-6">
-                            <button className="hover:text-brand-600 transition-colors uppercase tracking-widest text-xs flex items-center gap-1 focus:outline-none">
-                                Soluciones <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-300" />
-                            </button>
-                            <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[600px] bg-white rounded-2xl shadow-2xl border border-zinc-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 p-6 grid grid-cols-2 gap-x-6 gap-y-2 z-[60]">
-                                <MenuItem icon={<Activity size={20} />} title="Atleta Híbrido" desc="Combina fuerza e hipertrofia con resistencia aeróbica" color="text-orange-600 bg-orange-100" />
-                                <MenuItem icon={<Flame size={20} />} title="Recomposición Corporal" desc="Quema grasa mientras mantienes tu masa muscular" color="text-red-500 bg-red-100" />
-                                <MenuItem icon={<Dumbbell size={20} />} title="Hipertrofia Pura" desc="Gana tamaño y fuerza con rutinas especializadas" color="text-zinc-700 bg-zinc-100" />
-                                <MenuItem icon={<Zap size={20} />} title="Rendimiento Deportivo" desc="Optimiza tu capacidad y bate tus propios récords" color="text-yellow-500 bg-yellow-100" />
-                            </div>
-                        </div>
-
-                        {/* Funciones Menu */}
-                        <div className="relative group py-6">
-                            <button className="hover:text-brand-600 transition-colors uppercase tracking-widest text-xs flex items-center gap-1 focus:outline-none">
-                                Funciones <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-300" />
-                            </button>
-                            <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[650px] bg-white rounded-2xl shadow-2xl border border-zinc-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 p-6 grid grid-cols-2 gap-x-6 gap-y-2 z-[60]">
-                                <MenuItem icon={<Camera size={20} />} title="Chef IA" desc="Análisis visual de alimentos y creación de recetas" color="text-green-600 bg-green-100" />
-                                <MenuItem icon={<Brain size={20} />} title="Coach IA Estoico" desc="Entrenador 24/7 que planifica tu progreso" color="text-blue-600 bg-blue-100" />
-                                <MenuItem icon={<Trophy size={20} />} title="Gamificación" desc="Convierte tu sudor en XP y desbloquea niveles" color="text-yellow-600 bg-yellow-100" />
-                                <MenuItem icon={<TrendingUp size={20} />} title="Tracking Biométrico" desc="Seguimiento de macros, peso y medidas" color="text-purple-600 bg-purple-100" />
-                                <MenuItem icon={<Watch size={20} />} title="Sincronización Total" desc="Conecta con Strava, Garmin y wearables" color="text-brand-600 bg-brand-100" />
-                            </div>
-                        </div>
-
-                        {/* Recursos Menu */}
-                        <div className="relative group py-6">
-                            <button className="hover:text-brand-600 transition-colors uppercase tracking-widest text-xs flex items-center gap-1 focus:outline-none">
-                                Recursos <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-300" />
-                            </button>
-                            <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[600px] bg-white rounded-2xl shadow-2xl border border-zinc-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 p-6 grid grid-cols-2 gap-x-6 gap-y-2 z-[60]">
-                                <MenuItem icon={<PlaySquare size={20} />} title="Biblioteca de Ejercicios" desc="Guías técnicas de más de 300 movimientos" color="text-red-600 bg-red-100" />
-                                <MenuItem icon={<BookOpen size={20} />} title="Blog del Atleta" desc="Ciencia del entrenamiento y filosofía estoica" color="text-zinc-700 bg-zinc-100" />
-                                <MenuItem icon={<Users size={20} />} title="Comunidad Élite" desc="Fórums, grupos y soporte entre atletas" color="text-emerald-600 bg-emerald-100" />
-                                <MenuItem icon={<HelpCircle size={20} />} title="Centro de Ayuda" desc="Tutoriales, configuraciones y asistencia" color="text-blue-500 bg-blue-100" />
-                            </div>
-                        </div>
                     </div>
                     <div className="flex items-center gap-3 sm:gap-6">
                         {/* Language Switcher */}
