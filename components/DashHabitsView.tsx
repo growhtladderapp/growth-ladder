@@ -141,7 +141,7 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
       {/* Header */}
       <div className="flex justify-between items-center px-5 py-4 pt-10 relative">
         <div className="flex items-center gap-3">
-          <button onClick={() => setView(ViewState.SETTINGS)} className="w-10 h-10 bg-[#1c1c1e] rounded-full flex items-center justify-center hover:bg-[#2c2c2e] transition-colors active:scale-95">
+          <button onClick={() => setShowNewHabitModal(true)} className="w-10 h-10 bg-[#1c1c1e] rounded-full flex items-center justify-center hover:bg-[#2c2c2e] transition-colors active:scale-95">
             <Menu size={20} className="text-white" />
           </button>
           <button 
