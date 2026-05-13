@@ -350,7 +350,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <div className="flex justify-center gap-6 text-[10px] uppercase font-bold text-slate-600 tracking-widest">
                     <button onClick={onPrivacy} className="hover:text-white transition-colors">Privacidad</button>
                     <button onClick={onTerms} className="hover:text-white transition-colors">Términos y Condiciones</button>
-                    <button onClick={onSupport} className="hover:text-white transition-colors">Soporte</button>
+                    <button onClick={onSupport} className="hover:text-white transition-colors">Centro de Ayuda</button>
                 </div>
             </footer>
 
