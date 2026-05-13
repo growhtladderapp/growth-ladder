@@ -107,12 +107,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                         <button onClick={onPrivacy} className="hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">{t.privacy}</button>
                         <button onClick={onSupport} className="hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">{t.help}</button>
                         <button
-                            onClick={onLogin}
-                            className="px-3 sm:px-6 py-2.5 rounded-full font-bold text-xs sm:text-sm text-slate-700 hover:text-black hover:bg-zinc-100 transition-all active:scale-95"
-                        >
-                            {t.login}
-                        </button>
-                        <button
                             onClick={onGetStarted}
                             className="px-4 sm:px-6 py-2.5 rounded-full font-bold text-xs sm:text-sm bg-white text-black border border-zinc-200 hover:bg-zinc-50 transition-all shadow-sm active:bg-emerald-500 active:text-white active:scale-95"
                         >
