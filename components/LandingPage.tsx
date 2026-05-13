@@ -230,23 +230,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <div className="flex w-full overflow-hidden">
                     <div className="flex items-center gap-6 whitespace-nowrap animate-scroll-slow w-max pr-6">
                         {[...testimonials, ...testimonials].map((t, i) => (
-                            <div key={i} className="w-[300px] sm:w-[400px] p-6 rounded-3xl bg-zinc-50 border border-zinc-100 flex flex-col gap-4 whitespace-normal shadow-sm">
+                            <div key={i} className="w-[300px] sm:w-[400px] p-6 rounded-3xl bg-zinc-900 border border-zinc-800 flex flex-col gap-4 whitespace-normal shadow-xl">
                                 <div className="flex justify-between items-start">
                                     <div className="flex flex-col">
-                                        <h4 className="font-bold text-black">{t.name}</h4>
-                                        <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">{t.country} {t.flag}</p>
+                                        <h4 className="font-bold text-white">{t.name}</h4>
+                                        <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">{t.country} {t.flag}</p>
                                     </div>
                                     <div className="flex gap-0.5">
                                         {[...Array(5)].map((_, i) => (
                                             <Star 
                                                 key={i} 
                                                 size={14} 
-                                                className={`${i < Math.floor(t.stars) ? 'fill-yellow-400 text-yellow-400' : 'text-zinc-200'} ${i === 4 && t.stars === 4.5 ? 'fill-yellow-400/50 text-yellow-400' : ''}`} 
+                                                className={`${i < Math.floor(t.stars) ? 'fill-yellow-400 text-yellow-400' : 'text-zinc-800'} ${i === 4 && t.stars === 4.5 ? 'fill-yellow-400/50 text-yellow-400' : ''}`} 
                                             />
                                         ))}
                                     </div>
                                 </div>
-                                <p className="text-sm text-slate-600 leading-relaxed italic">"{t.text}"</p>
+                                <p className="text-sm text-zinc-400 leading-relaxed italic">"{t.text}"</p>
                             </div>
                         ))}
                     </div>
