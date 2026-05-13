@@ -55,8 +55,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         sync: isEn ? 'Sync with your favorite apps' : 'Sincroniza con tus aplicaciones favoritas',
         qualified: isEn ? 'Qualified' : 'Cualificado',
         moreFeatures: isEn ? 'More features to enjoy' : 'Más funcionalidades por disfrutar',
-        appleTitle: isEn ? 'Available on All Apple Devices' : 'Disponible en todos los dispositivos Apple',
-        appleDesc: isEn ? "Whether you're using your Phone, iPad, or Watch, TWH is available on all devices, ensuring you have access to your habits wherever you are. Sync your habits seamlessly across all your Apple devices with support, ensuring you never miss a beat no matter where you are." : 'Ya sea que uses tu iPhone, iPad o Apple Watch, TWH está disponible en todos los dispositivos, asegurando que tengas acceso a tus hábitos dondequiera que estés. Sincroniza tus hábitos sin problemas en todos tus dispositivos Apple.'
+        appleTitle: isEn ? 'Available on All Devices' : 'Disponible para todos los dispositivos',
+        appleDesc: isEn ? "Whether you're using your Phone, Tablet, or Watch, TWH is available on all devices, ensuring you have access to your habits wherever you are. Sync your habits seamlessly across all your devices, ensuring you never miss a beat no matter where you are." : 'Ya sea que uses tu celular, tablet o smartwatch, TWH está disponible en todos los dispositivos, asegurando que tengas acceso a tus hábitos dondequiera que estés. Sincroniza tus hábitos sin problemas en todos tus dispositivos.'
     };
 
     const [showCookies, setShowCookies] = useState(() => {
@@ -246,9 +246,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                         {t.appleDesc}
                     </p>
                     <div className="mt-12 flex flex-wrap justify-center gap-4">
-                        <div className="px-6 py-2 rounded-full bg-zinc-50 border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">iPhone</div>
-                        <div className="px-6 py-2 rounded-full bg-zinc-50 border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">iPad</div>
-                        <div className="px-6 py-2 rounded-full bg-zinc-50 border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">Apple Watch</div>
+                        <div className="px-6 py-2 rounded-full bg-zinc-50 border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">{isEn ? 'Mobile' : 'Celular'}</div>
+                        <div className="px-6 py-2 rounded-full bg-zinc-50 border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">Tablet</div>
+                        <div className="px-6 py-2 rounded-full bg-zinc-50 border border-zinc-200 text-zinc-400 text-xs font-bold uppercase tracking-widest">{isEn ? 'Smartwatch' : 'Reloj Inteligente'}</div>
                     </div>
                 </div>
             </section>
