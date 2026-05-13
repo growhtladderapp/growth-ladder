@@ -116,7 +116,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView }) 
               </>
             )}
             
-            <div className={`w-16 h-16 rounded-full bg-brand-500 flex items-center justify-center shadow-2xl shadow-brand-500/40 border-2 border-white/20 relative z-10 transition-transform ${isHolding ? 'rotate-12' : ''}`}>
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl relative z-10 transition-all duration-500 border-2 ${isHolding ? 'bg-gradient-to-br from-emerald-400/40 to-orange-500/40 backdrop-blur-xl border-white/40 rotate-12 shadow-brand-500/60' : 'bg-brand-500 border-white/20 shadow-brand-500/40'}`}>
               <Logo className="w-10 h-10 text-white" />
             </div>
 
