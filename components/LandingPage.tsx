@@ -62,6 +62,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     const [showCookies, setShowCookies] = useState(() => {
         return localStorage.getItem('gl_cookies_accepted') !== 'true';
     });
+    const [showDownloadModal, setShowDownloadModal] = useState(false);
     const [activeMockScreen, setActiveMockScreen] = useState(0);
 
     React.useEffect(() => {

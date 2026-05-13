@@ -809,16 +809,20 @@ export default function App() {
       return (
         <>
           {showSupport && <SupportChat isOpen={true} onClose={() => setShowSupport(false)} />}
-          <LandingPage 
-            onGetStarted={() => setShowLanding(false)} 
-            onLogin={() => setShowLanding(false)}
-            onPrivacy={() => setShowPrivacy(true)}
-            onTerms={() => setShowTerms(true)}
-            onSupport={() => setView(ViewState.SUPPORT)}
-            currentLangCode={currentLangCode}
-            onLanguageChange={handleLanguageChange}
-          />
-
+          {(() => {
+            const currentLangCode = currentLangName === 'English' ? 'en' : 'es';
+            return (
+              <LandingPage 
+                onGetStarted={() => setShowLanding(false)} 
+                onLogin={() => setShowLanding(false)}
+                onPrivacy={() => setShowPrivacy(true)}
+                onTerms={() => setShowTerms(true)}
+                onSupport={() => setView(ViewState.SUPPORT)}
+                currentLangCode={currentLangCode}
+                onLanguageChange={handleLanguageChange}
+              />
+            );
+          })()}
         </>
       );
     }
