@@ -261,9 +261,8 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
             </button>
           )
         })}
-      </div>...
-      {/* Horizontal Calendar */}
-...
+      </div>
+
       {/* Habit Cards */}
       <div className="px-5 flex-1 overflow-y-auto pb-72">
         {filteredHabits.length === 0 ? (
