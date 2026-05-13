@@ -254,7 +254,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </section>
 
             {/* Trust Section */}
-            <section className="py-24 px-6 bg-zinc-50 relative overflow-hidden border-y border-zinc-100">
+            <section className="py-24 px-6 bg-zinc-950 relative overflow-hidden border-y border-zinc-800">
                 <div className="max-w-5xl mx-auto flex flex-col items-center justify-center gap-12 relative z-10 text-center">
                     <div className="flex flex-col items-center text-center">
                         <div className="flex items-center gap-2 mb-4">
@@ -266,18 +266,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                         </div>
                         <div className="flex items-center gap-8 sm:gap-12 mt-4">
                             <div className="flex flex-col">
-                                <span className="text-3xl sm:text-4xl font-black text-black">4.9</span>
-                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{t.qualified}</span>
+                                <span className="text-3xl sm:text-4xl font-black text-white">4.9</span>
+                                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{t.qualified}</span>
                             </div>
-                            <div className="w-px h-12 bg-zinc-200"></div>
+                            <div className="w-px h-12 bg-zinc-700"></div>
                             <div className="flex flex-col">
-                                <span className="text-3xl sm:text-4xl font-black text-black">1M+</span>
-                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{isEn ? 'Users' : 'Usuarios'}</span>
+                                <span className="text-3xl sm:text-4xl font-black text-white">1M+</span>
+                                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{isEn ? 'Users' : 'Usuarios'}</span>
                             </div>
-                            <div className="w-px h-12 bg-zinc-200"></div>
+                            <div className="w-px h-12 bg-zinc-700"></div>
                             <div className="flex flex-col">
-                                <span className="text-3xl sm:text-4xl font-black text-black">10k+</span>
-                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{isEn ? 'Ratings' : 'Reseñas'}</span>
+                                <span className="text-3xl sm:text-4xl font-black text-white">10k+</span>
+                                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{isEn ? 'Ratings' : 'Reseñas'}</span>
                             </div>
                         </div>
                     </div>
@@ -290,7 +290,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </section>
 
             {/* Testimonials Sliding Section */}
-            <section className="py-20 bg-white overflow-hidden border-b border-zinc-100">
+            <section className="py-20 bg-zinc-950 overflow-hidden border-b border-zinc-800">
                 <div className="flex w-full overflow-hidden">
                     <div className="flex items-center gap-6 whitespace-nowrap animate-scroll-slow w-max pr-6">
                         {[...testimonials, ...testimonials].map((t, i) => (
