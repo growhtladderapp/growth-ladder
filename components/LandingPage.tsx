@@ -63,7 +63,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         return localStorage.getItem('gl_cookies_accepted') !== 'true';
     });
     const [showDownloadModal, setShowDownloadModal] = useState(false);
+    const [showTranslatePrompt, setShowTranslatePrompt] = useState(false);
     const [activeMockScreen, setActiveMockScreen] = useState(0);
+
+    React.useEffect(() => {
+        const browserLang = navigator.language.split('-')[0];
+        const hasDismissed = localStorage.getItem('twh_translate_prompt_dismissed');
+        if (browserLang === 'en' && currentLangCode === 'es' && !hasDismissed) {
+            setShowTranslatePrompt(true);
+        }
+    }, [currentLangCode]);
 
     React.useEffect(() => {
         const interval = setInterval(() => {
@@ -93,21 +102,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <div className="hidden lg:flex items-center gap-8 text-sm font-bold text-slate-800">
                     </div>
                     <div className="flex items-center gap-3 sm:gap-6">
-                        {/* Language Switcher */}
-                        <div className="flex items-center bg-zinc-100 rounded-full p-1 mr-2">
-                            <button 
-                                onClick={() => onLanguageChange?.('es')}
-                                className={`px-2 py-1 rounded-full text-[10px] font-black transition-all ${!isEn ? 'bg-white text-black shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-                            >
-                                ES
-                            </button>
-                            <button 
-                                onClick={() => onLanguageChange?.('en')}
-                                className={`px-2 py-1 rounded-full text-[10px] font-black transition-all ${isEn ? 'bg-white text-black shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-                            >
-                                EN
-                            </button>
-                        </div>
 
                         <button onClick={onTerms} className="hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">{t.terms}</button>
                         <button onClick={onPrivacy} className="hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">{t.privacy}</button>
@@ -359,6 +353,43 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                                 className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl font-bold text-sm bg-brand-500 text-white hover:bg-brand-600 transition-colors shadow-lg shadow-brand-500/30 text-center"
                             >
                                 Aceptar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Translation Prompt */}
+            {showTranslatePrompt && (
+                <div className="fixed bottom-24 left-6 right-6 z-[110] max-w-sm mx-auto sm:mx-0 sm:left-6 animate-in slide-in-from-bottom-10 duration-500">
+                    <div className="bg-white rounded-3xl p-6 shadow-2xl border border-zinc-100 flex flex-col gap-4">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                                <Sparkles size={24} />
+                            </div>
+                            <div>
+                                <h4 className="text-black font-bold text-sm">Switch to English?</h4>
+                                <p className="text-slate-500 text-xs">We noticed your browser is in English.</p>
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <button 
+                                onClick={() => {
+                                    onLanguageChange?.('en');
+                                    setShowTranslatePrompt(false);
+                                }}
+                                className="flex-1 bg-black text-white font-bold py-3 rounded-xl text-xs hover:bg-zinc-800 transition-colors"
+                            >
+                                Yes, translate
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    setShowTranslatePrompt(false);
+                                    localStorage.setItem('twh_translate_prompt_dismissed', 'true');
+                                }}
+                                className="px-4 py-3 text-slate-400 font-bold text-xs hover:text-black transition-colors"
+                            >
+                                No thanks
                             </button>
                         </div>
                     </div>
