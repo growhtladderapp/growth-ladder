@@ -97,7 +97,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                         className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity active:scale-95 group focus:outline-none"
                     >
                         <Logo className="w-10 h-10 text-black group-hover:scale-110 transition-transform" />
-                        <span className="font-extrabold tracking-tight text-xl text-black hidden sm:block font-display">TWH</span>
                     </button>
                     <div className="hidden lg:flex items-center gap-8 text-sm font-bold text-slate-800">
                     </div>
