@@ -43,8 +43,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     const isEn = currentLangCode === 'en';
     const t = {
         login: isEn ? 'Login' : 'Iniciar Sesión',
-        launch: isEn ? 'Launch App' : 'Launch App',
-        heroTitle: isEn ? 'Build Good Habits Break Bad Ones' : 'Build Good Habits Break Bad Ones',
+        launch: isEn ? 'Launch App' : 'Entrar a la App',
+        heroTitle: isEn ? 'Build Good Habits, Break Bad Ones' : 'Crea Buenos Hábitos, Rompe los Malos',
         heroSubtitle: isEn ? 'Train smart with adaptive routines, nutrition tracking and a 24/7 coach.' : 'Entrena inteligente con rutinas adaptativas, seguimiento de nutrición y un coach disponible 24/7.',
         terms: isEn ? 'Terms of use' : 'Términos de uso',
         privacy: isEn ? 'Privacy policy' : 'Privacidad',
@@ -122,7 +122,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <header className="relative pt-20 pb-10 sm:pt-24 sm:pb-16 px-6 overflow-hidden flex flex-col-reverse lg:flex-row justify-center items-center gap-10 lg:gap-20 bg-white">
                 <div className="max-w-xl text-center lg:text-left z-10">
                     <h1 className="text-4xl sm:text-6xl font-black text-black tracking-tighter mb-6 leading-[1.1]">
-                        Build <span className="text-emerald-500">Good Habits</span> Break <span className="text-orange-500">Bad Ones</span> everyday with app good habits
+                        Crea <span className="text-emerald-500">Buenos Hábitos</span> Rompe <span className="text-orange-500">los Malos</span> cada día con TrainingWithHabits
                     </h1>
                 </div>
                 <div className="w-full max-w-md lg:max-w-lg flex flex-col items-center relative z-10">
@@ -184,7 +184,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <div className="flex flex-col items-center md:items-start text-center md:text-left">
                         <div className="flex items-center gap-2 mb-4">
                             <Crown className="text-yellow-500 fill-yellow-500" size={24} />
-                            <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400">The #1 Habit Tracker</span>
+                            <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400">{isEn ? 'The #1 Habit Tracker' : 'El Rastreador de Hábitos #1'}</span>
                         </div>
                         <h2 className="text-5xl font-black text-black tracking-tighter mb-4 flex items-center gap-4">
                             LeafLeaf
@@ -200,12 +200,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                             <div className="w-px h-10 bg-zinc-200"></div>
                             <div className="flex flex-col">
                                 <span className="text-3xl font-black text-black">1M+</span>
-                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Users</span>
+                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{isEn ? 'Users' : 'Usuarios'}</span>
                             </div>
                             <div className="w-px h-10 bg-zinc-200"></div>
                             <div className="flex flex-col">
                                 <span className="text-3xl font-black text-black">10k+</span>
-                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Ratings</span>
+                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{isEn ? 'Ratings' : 'Reseñas'}</span>
                             </div>
                         </div>
                     </div>
@@ -221,7 +221,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                             </div>
                             <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full border border-emerald-100 mb-2">
                                 <Check size={14} className="text-emerald-500 stroke-[3]" />
-                                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">App Store Editor's Choice</span>
+                                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{isEn ? "App Store Editor's Choice" : 'Selección de los Editores'}</span>
                             </div>
                         </div>
                     </div>
