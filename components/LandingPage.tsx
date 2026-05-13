@@ -13,12 +13,12 @@ const integrations = [
 ];
 
 const testimonials = [
-    { name: "Mateo Arismendi", country: "España", flag: "🇪🇸", text: "TWH literalmente transformó mi físico. El Coach IA adaptó mi dieta cuando me estanqué bajando de peso y logré mi mejor versión. Nunca más vuelvo a entrenar a ciegas." },
-    { name: "Valentina Rojas", country: "Colombia", flag: "🇨🇴", text: "Simplemente espectacular. Escaneo mi almuerzo, me dice los macros exactos, y la gamificación hace que no pierda mi racha de hábitos. Súper recomendada." },
-    { name: "Lucas Torres", country: "Argentina", flag: "🇦🇷", text: "Como atleta híbrido siempre batallé para equilibrar correr con hipertrofia de alto volumen. Esta aplicación estructuró mis semanas de forma perfecta." },
-    { name: "Sofía Morales", country: "México", flag: "🇲🇽", text: "He probado docenas de apps de fitness, pero ninguna tiene este nivel de inteligencia. El Chef IA me ahorra horas planificando la nutrición los domingos." },
-    { name: "Alejandro Silva", country: "Chile", flag: "🇨🇱", text: "Toda mi vida sentí que las dietas eran aburridas. Aquí soy completamente flexible sin perder el rendimiento. Excelente comunidad Élite de apoyo." },
-    { name: "Diego Fuentes", country: "Perú", flag: "🇵🇪", text: "La app es rapidísima, las gráficas biométricas me motivan a nivel extremo y las notificaciones te hacen responsable y estoico ante todo. Le doy 5 estrellas." },
+    { name: "James Wilson", country: "USA", flag: "🇺🇸", text: "TrainingWithHabits literalmente transformó mi físico. El Coach IA adaptó mi dieta cuando me estanqué bajando de peso y logré mi mejor versión.", stars: 5 },
+    { name: "Sarah Parker", country: "USA", flag: "🇺🇸", text: "Simplemente espectacular. Escaneo mi almuerzo, me dice los macros exactos, y la gamificación hace que no pierda mi racha de hábitos.", stars: 4.5 },
+    { name: "Michael Thompson", country: "USA", flag: "🇺🇸", text: "Como atleta híbrido siempre batallé para equilibrar correr con hipertrofia. Esta aplicación estructuró mis semanas de forma perfecta.", stars: 5 },
+    { name: "Emily Davis", country: "USA", flag: "🇺🇸", text: "He probado docenas de apps de fitness, pero ninguna tiene este nivel de inteligencia. El Chef IA me ahorra horas cada semana.", stars: 4.5 },
+    { name: "Robert Miller", country: "USA", flag: "🇺🇸", text: "Toda mi vida sentí que las dietas eran aburridas. Aquí soy completamente flexible sin perder el rendimiento. Excelente comunidad.", stars: 5 },
+    { name: "Jennifer Brown", country: "USA", flag: "🇺🇸", text: "La app es rapidísima, las gráficas me motivan a nivel extremo y las notificaciones te hacen responsable de tus metas.", stars: 4.5 },
 ];
 
 interface LandingPageProps {
@@ -227,16 +227,40 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                             <div className="w-24 h-24 bg-brand-500 rounded-3xl flex items-center justify-center shadow-xl shadow-brand-500/30 mb-6 rotate-3 group-hover:rotate-0 transition-transform">
                                 <Logo className="w-14 h-14 text-white" />
                             </div>
-                            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full border border-emerald-100 mb-2">
-                                <Check size={14} className="text-emerald-500 stroke-[3]" />
-                                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{isEn ? "App Store Editor's Choice" : 'Selección de los Editores'}</span>
-                            </div>
                         </div>
                     </div>
                 </div>
                 
                 {/* Background Decor */}
                 <div className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-emerald-500/5 blur-[120px] rounded-full"></div>
+            </section>
+
+            {/* Testimonials Sliding Section */}
+            <section className="py-20 bg-white overflow-hidden border-b border-zinc-100">
+                <div className="flex w-full overflow-hidden">
+                    <div className="flex items-center gap-6 whitespace-nowrap animate-scroll-slow w-max pr-6">
+                        {[...testimonials, ...testimonials].map((t, i) => (
+                            <div key={i} className="w-[300px] sm:w-[400px] p-6 rounded-3xl bg-zinc-50 border border-zinc-100 flex flex-col gap-4 whitespace-normal shadow-sm">
+                                <div className="flex justify-between items-start">
+                                    <div className="flex flex-col">
+                                        <h4 className="font-bold text-black">{t.name}</h4>
+                                        <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">{t.country} {t.flag}</p>
+                                    </div>
+                                    <div className="flex gap-0.5">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star 
+                                                key={i} 
+                                                size={14} 
+                                                className={`${i < Math.floor(t.stars) ? 'fill-yellow-400 text-yellow-400' : 'text-zinc-200'} ${i === 4 && t.stars === 4.5 ? 'fill-yellow-400/50 text-yellow-400' : ''}`} 
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                                <p className="text-sm text-slate-600 leading-relaxed italic">"{t.text}"</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </section>
 
             {/* Apple Ecosystem Section */}
