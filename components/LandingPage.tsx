@@ -141,13 +141,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                             <div className="absolute -left-[14px] top-[200px] w-[2px] h-[50px] bg-[#2c2c2e] rounded-l-md"></div>
                             <div className="absolute -right-[14px] top-[160px] w-[2px] h-[70px] bg-[#2c2c2e] rounded-r-md"></div>
 
-                            {/* Screen Content - Real App Iframe */}
+                            {/* Screen Content - Sliding Mockups */}
                             <div className="rounded-[2.2rem] overflow-hidden w-full h-full bg-black relative border border-zinc-800/50">
-                                <iframe 
-                                    src={`${window.location.origin}/?preview=true`}
-                                    className="w-full h-full border-none pointer-events-none select-none"
-                                    title="App Preview"
-                                />
+                                <div 
+                                    className="flex h-full w-full transition-transform duration-700 ease-in-out" 
+                                    style={{ transform: `translateX(-${activeMockScreen * 100}%)` }}
+                                >
+                                    <div className="w-full h-full shrink-0">
+                                        <img src="/mock-1.png" className="w-full h-full object-cover" alt="Habits Dashboard" />
+                                    </div>
+                                    <div className="w-full h-full shrink-0">
+                                        <img src="/mock-2.png" className="w-full h-full object-cover" alt="Statistics View" />
+                                    </div>
+                                    <div className="w-full h-full shrink-0">
+                                        <img src="/mock-3.png" className="w-full h-full object-cover" alt="AI Coach Chat" />
+                                    </div>
+                                </div>
+                                
+                                {/* Overlay Gradient for Premium Look */}
+                                <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                             </div>
                         </div>
                     </div>

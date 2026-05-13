@@ -1,12 +1,12 @@
 
 import React from 'react';
 
-export const Logo: React.FC<{ className?: string }> = ({ className = "w-11 h-11" }) => {
+export const Logo: React.FC<{ className?: string }> = ({ className = "w-14 h-14" }) => {
   return (
     <img
-      src="/twh-logo.png"
+      src="/logo-new.png"
       alt="TWH Logo"
-      className={`${className} object-contain drop-shadow-lg transform scale-110 mx-auto block`}
+      className={`${className} object-contain drop-shadow-lg transform scale-125 mx-auto block`}
     />
   );
 };
