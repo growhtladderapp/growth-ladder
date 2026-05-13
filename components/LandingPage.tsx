@@ -218,17 +218,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                         </div>
                     </div>
 
-                    <div className="relative group">
-                        {/* Laurels Effect - Corona y Laureles */}
-                        <div className="absolute -inset-16 flex items-center justify-center opacity-10 group-hover:opacity-20 transition-opacity">
-                            <div className="w-80 h-80 border-[2px] border-emerald-500 rounded-full border-dashed animate-[spin_30s_linear_infinite]"></div>
-                        </div>
-                        <div className="bg-white p-10 rounded-[3rem] shadow-2xl border border-zinc-100 flex flex-col items-center relative z-20">
-                            <div className="w-24 h-24 bg-brand-500 rounded-3xl flex items-center justify-center shadow-xl shadow-brand-500/30 mb-6 rotate-3 group-hover:rotate-0 transition-transform">
-                                <Logo className="w-14 h-14 text-white" />
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
                 
                 {/* Background Decor */}
