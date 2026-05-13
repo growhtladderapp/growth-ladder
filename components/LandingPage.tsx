@@ -190,33 +190,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 </div>
             </section>
 
-            {/* Trust Section - LeafLeaf */}
+            {/* Trust Section */}
             <section className="py-24 px-6 bg-zinc-50 relative overflow-hidden border-y border-zinc-100">
-                <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
-                    <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                <div className="max-w-5xl mx-auto flex flex-col items-center justify-center gap-12 relative z-10 text-center">
+                    <div className="flex flex-col items-center text-center">
                         <div className="flex items-center gap-2 mb-4">
                             <Crown className="text-yellow-500 fill-yellow-500" size={24} />
                             <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400">{isEn ? 'The #1 Habit Tracker' : 'El Rastreador de Hábitos #1'}</span>
                         </div>
-                        <h2 className="text-5xl font-black text-black tracking-tighter mb-4 flex items-center gap-4">
-                            LeafLeaf
-                            <div className="flex gap-0.5">
-                                {[...Array(5)].map((_, i) => <Star key={i} size={20} className="fill-yellow-400 text-yellow-400" />)}
-                            </div>
-                        </h2>
-                        <div className="flex items-center gap-6 mt-4">
+                        <div className="flex gap-1 mb-6">
+                            {[...Array(5)].map((_, i) => <Star key={i} size={24} className="fill-yellow-400 text-yellow-400" />)}
+                        </div>
+                        <div className="flex items-center gap-8 sm:gap-12 mt-4">
                             <div className="flex flex-col">
-                                <span className="text-3xl font-black text-black">4.9</span>
+                                <span className="text-3xl sm:text-4xl font-black text-black">4.9</span>
                                 <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{t.qualified}</span>
                             </div>
-                            <div className="w-px h-10 bg-zinc-200"></div>
+                            <div className="w-px h-12 bg-zinc-200"></div>
                             <div className="flex flex-col">
-                                <span className="text-3xl font-black text-black">1M+</span>
+                                <span className="text-3xl sm:text-4xl font-black text-black">1M+</span>
                                 <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{isEn ? 'Users' : 'Usuarios'}</span>
                             </div>
-                            <div className="w-px h-10 bg-zinc-200"></div>
+                            <div className="w-px h-12 bg-zinc-200"></div>
                             <div className="flex flex-col">
-                                <span className="text-3xl font-black text-black">10k+</span>
+                                <span className="text-3xl sm:text-4xl font-black text-black">10k+</span>
                                 <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{isEn ? 'Ratings' : 'Reseñas'}</span>
                             </div>
                         </div>
