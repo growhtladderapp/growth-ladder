@@ -166,9 +166,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     </div>
                     <div className="flex items-center gap-3 sm:gap-6">
 
-                        <button onClick={onTerms} className="hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">{t.terms}</button>
-                        <button onClick={onPrivacy} className="hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">{t.privacy}</button>
-                        <button onClick={onSupport} className="hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">{t.help}</button>
+                        <button onClick={onTerms} className="nav-star-link hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">
+                            {t.terms}
+                            <span className="star-underline">
+                                <span className="star-line-left"></span>
+                                <span className="star-icon">★</span>
+                                <span className="star-line-right"></span>
+                            </span>
+                        </button>
+                        <button onClick={onPrivacy} className="nav-star-link hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">
+                            {t.privacy}
+                            <span className="star-underline">
+                                <span className="star-line-left"></span>
+                                <span className="star-icon">★</span>
+                                <span className="star-line-right"></span>
+                            </span>
+                        </button>
+                        <button onClick={onSupport} className="nav-star-link hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">
+                            {t.help}
+                            <span className="star-underline">
+                                <span className="star-line-left"></span>
+                                <span className="star-icon">★</span>
+                                <span className="star-line-right"></span>
+                            </span>
+                        </button>
                         <button
                             onClick={onGetStarted}
                             className="px-4 sm:px-6 py-2.5 rounded-full font-bold text-xs sm:text-sm bg-white text-black border border-zinc-200 hover:bg-zinc-50 transition-all shadow-sm active:bg-emerald-500 active:text-white active:scale-95"

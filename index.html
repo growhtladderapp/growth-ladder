@@ -64,11 +64,24 @@
             scroll: {
               '0%': { transform: 'translateX(0)' },
               '100%': { transform: 'translateX(-50%)' },
-            }
+            },
+            'star-pop': {
+              '0%':   { opacity: '0', transform: 'scale(0) rotate(-30deg)' },
+              '25%':  { opacity: '1', transform: 'scale(1.3) rotate(0deg)' },
+              '60%':  { opacity: '1', transform: 'scale(1) rotate(10deg)' },
+              '100%': { opacity: '0', transform: 'scale(0.5) rotate(20deg)' },
+            },
+            'star-line': {
+              '0%':   { opacity: '1', transform: 'scaleX(0)' },
+              '30%':  { opacity: '1', transform: 'scaleX(1)' },
+              '100%': { opacity: '0', transform: 'scaleX(1)' },
+            },
           },
           animation: {
             'scroll': 'scroll 30s linear infinite',
             'scroll-slow': 'scroll 60s linear infinite',
+            'star-pop': 'star-pop 0.8s ease forwards',
+            'star-line': 'star-line 0.8s ease forwards',
           },
           colors: {
             brand: {
@@ -155,6 +168,57 @@
     .light-mode .bg-white\/5,
     .light-mode .bg-white\/10 {
       background-color: rgba(0, 0, 0, 0.05) !important;
+    }
+
+    /* Star underline hover effect for navbar links */
+    .nav-star-link {
+      position: relative;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .nav-star-link .star-underline {
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0;
+      pointer-events: none;
+      opacity: 0;
+      width: max-content;
+    }
+    .nav-star-link:hover .star-underline {
+      opacity: 1;
+    }
+    .nav-star-link:hover .star-icon {
+      animation: star-pop 0.8s ease forwards;
+    }
+    .nav-star-link:hover .star-line-left {
+      animation: star-line 0.8s ease forwards;
+      transform-origin: right center;
+    }
+    .nav-star-link:hover .star-line-right {
+      animation: star-line 0.8s ease forwards;
+      transform-origin: left center;
+    }
+    .star-line-left,
+    .star-line-right {
+      display: block;
+      height: 1.5px;
+      width: 32px;
+      background: linear-gradient(to left, #10b981, transparent);
+      transform: scaleX(0);
+    }
+    .star-line-right {
+      background: linear-gradient(to right, #10b981, transparent);
+    }
+    .star-icon {
+      font-size: 9px;
+      line-height: 1;
+      opacity: 0;
+      color: #10b981;
     }
 
     /* Custom scrollbar for webkit */
