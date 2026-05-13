@@ -65,6 +65,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     const [showDownloadModal, setShowDownloadModal] = useState(false);
     const [showTranslatePrompt, setShowTranslatePrompt] = useState(false);
     const [activeMockScreen, setActiveMockScreen] = useState(0);
+    const [showInstallBanner, setShowInstallBanner] = useState(() => {
+        return localStorage.getItem('twh_install_banner_dismissed') !== 'true';
+    });
 
     React.useEffect(() => {
         const browserLang = navigator.language.split('-')[0];
@@ -86,8 +89,69 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         setShowCookies(false);
     };
 
+    const handleDismissInstallBanner = () => {
+        localStorage.setItem('twh_install_banner_dismissed', 'true');
+        setShowInstallBanner(false);
+    };
+
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
     return (
         <div className="min-h-screen bg-brand-dark text-white font-sans selection:bg-brand-500/30 selection:text-brand-200 overflow-x-hidden">
+
+            {/* PWA Install Banner */}
+            {showInstallBanner && (
+                <div className="fixed bottom-6 left-4 right-4 z-[200] animate-in slide-in-from-bottom-8 duration-500">
+                    <div className="bg-zinc-950 border border-white/10 rounded-3xl p-5 shadow-2xl shadow-black/60 backdrop-blur-xl max-w-md mx-auto">
+                        <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <img src="/twh-logo-v2.png" alt="TWH" className="w-12 h-12 rounded-2xl object-contain border border-white/10" />
+                                <div>
+                                    <p className="text-white font-black text-sm">Instala TrainingWithHabits</p>
+                                    <p className="text-zinc-500 text-xs">Acceso rápido desde tu pantalla de inicio</p>
+                                </div>
+                            </div>
+                            <button onClick={handleDismissInstallBanner} className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors shrink-0">
+                                <X size={14} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-3">
+                            {isIOS ? (
+                                <>
+                                    <div className="flex items-center gap-3 bg-white/5 rounded-2xl p-3">
+                                        <div className="w-7 h-7 rounded-full bg-brand-500 flex items-center justify-center shrink-0 text-black font-black text-xs">1</div>
+                                        <p className="text-zinc-300 text-xs">Toca el botón <span className="text-white font-bold">Compartir</span> <span className="text-brand-400">⎙</span> en la barra de Safari</p>
+                                    </div>
+                                    <div className="flex items-center gap-3 bg-white/5 rounded-2xl p-3">
+                                        <div className="w-7 h-7 rounded-full bg-brand-500 flex items-center justify-center shrink-0 text-black font-black text-xs">2</div>
+                                        <p className="text-zinc-300 text-xs">Desplázate y selecciona <span className="text-white font-bold">"Añadir a pantalla de inicio"</span> <span>＋</span></p>
+                                    </div>
+                                    <div className="flex items-center gap-3 bg-white/5 rounded-2xl p-3">
+                                        <div className="w-7 h-7 rounded-full bg-brand-500 flex items-center justify-center shrink-0 text-black font-black text-xs">3</div>
+                                        <p className="text-zinc-300 text-xs">Toca <span className="text-white font-bold">"Agregar"</span> y listo — el icono aparecerá en tu inicio</p>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="flex items-center gap-3 bg-white/5 rounded-2xl p-3">
+                                        <div className="w-7 h-7 rounded-full bg-brand-500 flex items-center justify-center shrink-0 text-black font-black text-xs">1</div>
+                                        <p className="text-zinc-300 text-xs">Toca el menú <span className="text-white font-bold">⋮</span> en la esquina superior derecha de Chrome</p>
+                                    </div>
+                                    <div className="flex items-center gap-3 bg-white/5 rounded-2xl p-3">
+                                        <div className="w-7 h-7 rounded-full bg-brand-500 flex items-center justify-center shrink-0 text-black font-black text-xs">2</div>
+                                        <p className="text-zinc-300 text-xs">Selecciona <span className="text-white font-bold">"Añadir a pantalla de inicio"</span> o <span className="text-white font-bold">"Instalar app"</span></p>
+                                    </div>
+                                    <div className="flex items-center gap-3 bg-white/5 rounded-2xl p-3">
+                                        <div className="w-7 h-7 rounded-full bg-brand-500 flex items-center justify-center shrink-0 text-black font-black text-xs">3</div>
+                                        <p className="text-zinc-300 text-xs">Confirma tocando <span className="text-white font-bold">"Instalar"</span> — aparecerá en tu pantalla de inicio</p>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Navbar */}
             <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-b border-zinc-200">

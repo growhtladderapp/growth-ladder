@@ -1,21 +1,23 @@
 {
     "name": "TrainingWithHabits",
-    "short_name": "TrainingWithHabits",
+    "short_name": "TWH",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#000000",
-    "theme_color": "#f97316",
+    "theme_color": "#10b981",
     "description": "Elite Performance System - Entrena, mide y evoluciona.",
     "icons": [
         {
-            "src": "/logo-new.png",
+            "src": "/twh-logo-v2.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         },
         {
-            "src": "/logo-new.png",
+            "src": "/twh-logo-v2.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         }
     ]
-}
+}
