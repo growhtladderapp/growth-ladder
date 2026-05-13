@@ -21,16 +21,6 @@ const testimonials = [
     { name: "Diego Fuentes", country: "Perú", flag: "🇵🇪", text: "La app es rapidísima, las gráficas biométricas me motivan a nivel extremo y las notificaciones te hacen responsable y estoico ante todo. Le doy 5 estrellas." },
 ];
 
-const MenuItem = ({ icon, title, desc, color }: { icon: React.ReactNode, title: string, desc: string, color: string }) => (
-    <div className="flex items-start gap-4 p-4 rounded-2xl hover:bg-zinc-50 transition-colors cursor-pointer">
-        <div className={`p-3 rounded-xl ${color}`}>{icon}</div>
-        <div>
-            <h4 className="font-bold text-slate-900 text-sm">{title}</h4>
-            <p className="text-slate-500 text-xs">{desc}</p>
-        </div>
-    </div>
-);
-
 interface LandingPageProps {
     onGetStarted: () => void;
     onLogin: () => void;
