@@ -835,15 +835,8 @@ export default function App() {
       return;
     }
     
-    // Calculate days since registration
-    const signupTime = userProfile?.createdAt ? new Date(userProfile.createdAt).getTime() : Date.now();
-    const daysSinceSignup = (Date.now() - signupTime) / (1000 * 60 * 60 * 24);
-    
-    if (daysSinceSignup <= 3) {
-      setView(targetView);
-    } else {
-      setShowPaywall(true);
-    }
+    // Mostramos los planes inmediatamente al intentar usar una función pro
+    setShowPaywall(true);
   };
 
   return (
