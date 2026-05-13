@@ -130,17 +130,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <h1 className="text-4xl sm:text-6xl font-black text-black tracking-tighter mb-6 leading-[1.1]">
                         Build <span className="text-emerald-500">Good Habits</span> Break <span className="text-orange-500">Bad Ones</span> everyday with app good habits
                     </h1>
-                    <p className="text-lg text-slate-600 mb-8 font-medium leading-relaxed">
-                        {t.heroSubtitle}
-                    </p>
-                    <div className="w-full flex justify-center lg:justify-start mt-8 z-20">
-                        <button
-                            onClick={onGetStarted}
-                            className="px-10 py-4 w-full sm:w-auto rounded-full bg-white text-black font-bold text-lg border-2 border-zinc-100 shadow-xl hover:bg-zinc-50 hover:scale-105 active:bg-emerald-500 active:text-white active:scale-95 transition-all flex items-center justify-center gap-2"
-                        >
-                            <Zap size={20} className="fill-current" /> {t.launch}
-                        </button>
-                    </div>
                 </div>
                 <div className="w-full max-w-md lg:max-w-lg flex flex-col items-center relative z-10">
                     <div className="w-full relative flex justify-center perspective-1000">
@@ -398,37 +387,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
     );
 };
-
-const FeatureCard = ({ icon: Icon, title, desc, color, delay }: { icon: any, title: string, desc: string, color: string, delay: string }) => (
-    <div
-        className="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 hover:border-white/10 hover:bg-zinc-800/50 transition-all duration-300 group animate-in fade-in slide-in-from-bottom-4 fill-mode-backwards"
-        style={{ animationDelay: `${delay}ms` }}
-    >
-        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center text-white shadow-lg mb-6 group-hover:scale-110 transition-transform duration-300`}>
-            <Icon size={28} />
-        </div>
-        <h3 className="text-xl font-bold text-white mb-3 uppercase tracking-tight">{title}</h3>
-        <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
-    </div>
-);
-
-const Stat = ({ number, label, icon }: { number: string, label: string, icon?: React.ReactNode }) => (
-    <div>
-        <h4 className="text-3xl sm:text-4xl font-black text-white italic tracking-tighter mb-1 flex justify-center items-center gap-1">
-            {number} {icon}
-        </h4>
-        <p className="text-[10px] font-bold text-brand-500 uppercase tracking-widest">{label}</p>
-    </div>
-);
-
-const ExtraFeatureCard = ({ emoji, title }: { emoji: string, title: string }) => (
-    <div className="p-8 pb-10 rounded-[2rem] bg-white border border-zinc-100 hover:border-zinc-200 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-lg flex flex-col items-center justify-center gap-6 group cursor-pointer">
-        <div className="text-[4rem] leading-none group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 drop-shadow-sm filter">
-            {emoji}
-        </div>
-        <h4 className="text-slate-800 font-bold text-base tracking-tight">{title}</h4>
-    </div>
-);
 
 const MenuItem = ({ icon, title, desc, color }: { icon: React.ReactNode, title: string, desc: string, color: string }) => (
     <div className="flex gap-4 items-start hover:bg-zinc-50 p-3 rounded-xl transition-colors cursor-pointer group/item">
