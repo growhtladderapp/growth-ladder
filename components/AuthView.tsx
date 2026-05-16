@@ -23,7 +23,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false); // Toggle between Login and Signup
+  const [isSignUp, setIsSignUp] = useState(true); // Toggle between Login and Signup, default to Register
   const [showPassword, setShowPassword] = useState(false);
 
   const [phone, setPhone] = useState('');
@@ -333,7 +333,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin, uiText, onBack }) =
               onClick={() => { setShowEmailInput(false); setMessage(null); }}
               className="w-full text-xs text-slate-500 hover:text-slate-300 py-3 mt-2"
             >
-              Volver atrás
+              Ver otras opciones
             </button>
 
             {message && <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl"><p className="text-emerald-400 text-xs text-center font-medium">{message}</p></div>}

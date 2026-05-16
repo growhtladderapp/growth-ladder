@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Menu, Plus, Check, CloudMoon, ListTodo, X, Dumbbell, ScanLine, Brain, MessageSquare, ChefHat, Users, Lock, ListFilter, ArrowDownWideNarrow, EyeOff, XCircle, CornerUpRight } from 'lucide-react';
+import { Menu, Plus, Check, CloudMoon, ListTodo, X, Dumbbell, ScanLine, Brain, MessageSquare, ChefHat, Users, Lock, ListFilter, ArrowDownWideNarrow, EyeOff, XCircle, CornerUpRight, Trash2, Search } from 'lucide-react';
 import { ViewState, Habit, HabitLog } from '../types';
 
 interface Props {
@@ -9,10 +9,121 @@ interface Props {
   habitLogs: HabitLog[];
   onToggleHabit: (habitId: string, date: string) => void;
   onAddHabit: (habit: Habit) => void;
+  onDeleteHabit: (habitId: string) => void;
   onToolClick: (view: ViewState) => void;
+  isPro: boolean;
 }
 
-export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs, onToggleHabit, onAddHabit, onToolClick }) => {
+const HabitItem = ({ habit, isCompleted, onToggle, onDelete }: { habit: Habit, isCompleted: boolean, onToggle: () => void, onDelete: () => void }) => {
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartX === null) return;
+    const currentX = e.touches[0].clientX;
+    const diff = currentX - touchStartX;
+    if (diff < 0) {
+      setSwipeOffset(Math.max(-80, diff));
+    } else if (diff > 0 && swipeOffset < 0) {
+      setSwipeOffset(Math.min(0, swipeOffset + diff));
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (swipeOffset < -40) {
+      setSwipeOffset(-80);
+    } else {
+      setSwipeOffset(0);
+    }
+    setTouchStartX(null);
+  };
+
+  return (
+    <div className="relative w-full mb-4 rounded-3xl bg-red-500 overflow-hidden">
+      <div className="absolute right-0 top-0 bottom-0 w-[80px] flex items-center justify-center text-white">
+        <button onClick={onDelete} className="w-full h-full flex flex-col items-center justify-center opacity-80 hover:opacity-100 transition-opacity bg-red-500">
+          <Trash2 size={24} />
+          <span className="text-[10px] font-bold mt-1">Borrar</span>
+        </button>
+      </div>
+      
+      <button 
+        onClick={() => {
+          if (swipeOffset < 0) setSwipeOffset(0);
+          else onToggle();
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{ transform: `translateX(${swipeOffset}px)` }}
+        className={`w-full h-full relative z-10 text-left border rounded-3xl p-4 flex items-center justify-between transition-transform ${isCompleted ? 'bg-[#1c1c1e] border-brand-500/30 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'bg-[#1c1c1e] border-[#2c2c2e]'}`}
+      >
+        <div className="flex items-center gap-4">
+          <span className="text-2xl">{habit.icon}</span>
+          <div>
+            <h3 className={`font-semibold transition-colors ${isCompleted ? 'text-brand-400' : 'text-white'}`}>{habit.title}</h3>
+            <p className="text-xs text-zinc-400">Cada día</p>
+          </div>
+        </div>
+        <div className="relative">
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isCompleted ? 'bg-brand-500 text-black' : 'bg-[#121212] border border-[#2c2c2e]'}`}>
+            {isCompleted ? <Check size={20} className="stroke-[3]" /> : <Plus size={20} className="text-brand-500/50" />}
+          </div>
+        </div>
+      </button>
+    </div>
+  );
+};
+
+const ProToolButton = ({ title, icon, colorName, isPro, onClick }: { title: string, icon: React.ReactNode, colorName: 'brand' | 'blue' | 'purple' | 'orange' | 'emerald' | 'pink', isPro: boolean, onClick: () => void }) => {
+  const colors = {
+    brand: { hoverBg: 'group-hover:bg-brand-500/10', iconBg: 'bg-brand-500/20', iconText: 'text-brand-500' },
+    blue: { hoverBg: 'group-hover:bg-blue-500/10', iconBg: 'bg-blue-500/20', iconText: 'text-blue-500' },
+    purple: { hoverBg: 'group-hover:bg-purple-500/10', iconBg: 'bg-purple-500/20', iconText: 'text-purple-500' },
+    orange: { hoverBg: 'group-hover:bg-orange-500/10', iconBg: 'bg-orange-500/20', iconText: 'text-orange-500' },
+    emerald: { hoverBg: 'group-hover:bg-emerald-500/10', iconBg: 'bg-emerald-500/20', iconText: 'text-emerald-500' },
+    pink: { hoverBg: 'group-hover:bg-pink-500/10', iconBg: 'bg-pink-500/20', iconText: 'text-pink-500' },
+  }[colorName];
+
+  if (isPro) {
+    return (
+      <button onClick={onClick} className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e] flex flex-row items-center gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-sm relative overflow-hidden group">
+        <div className={`absolute -right-2 -top-2 w-12 h-12 bg-white/5 rounded-full blur-xl ${colors.hoverBg} transition-colors`}></div>
+        <div className={`w-8 h-8 rounded-full ${colors.iconBg} ${colors.iconText} flex items-center justify-center shrink-0`}>
+          {icon}
+        </div>
+        <div className="text-left">
+          <h3 className="font-bold text-white text-xs leading-none">{title}</h3>
+        </div>
+      </button>
+    );
+  }
+
+  // Locked State
+  return (
+    <button onClick={onClick} className="bg-gradient-to-br from-[#1c1c1e] to-black p-3 rounded-2xl border border-yellow-500/20 flex flex-row items-center gap-3 hover:border-yellow-500/40 transition-all active:scale-95 shadow-lg shadow-yellow-500/5 relative overflow-hidden group">
+      <div className="absolute inset-0 bg-yellow-500/5 group-hover:bg-yellow-500/10 transition-colors"></div>
+      <div className="absolute -right-2 -top-2 w-12 h-12 bg-yellow-500/10 rounded-full blur-xl group-hover:bg-yellow-500/20 transition-colors"></div>
+      
+      <div className="absolute top-2 right-2 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.8)] animate-pulse">
+        <Lock size={12} className="fill-yellow-500/20" />
+      </div>
+
+      <div className="w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center shrink-0 relative z-10 border border-yellow-500/30">
+        {icon}
+      </div>
+      <div className="text-left relative z-10">
+        <h3 className="font-bold text-yellow-50 text-xs leading-none">{title}</h3>
+      </div>
+    </button>
+  );
+};
+
+export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs, onToggleHabit, onAddHabit, onDeleteHabit, onToolClick, isPro }) => {
   const [showBottomAction, setShowBottomAction] = useState(true);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [menuTab, setMenuTab] = useState<'sort' | 'groups'>('sort');
@@ -84,11 +195,13 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
   // Date logic
   const todayDateObj = new Date();
   const [selectedDateObj, setSelectedDateObj] = useState(todayDateObj);
+  
+  const todayStr = todayDateObj.toISOString().split('T')[0];
+  const [selectedDates, setSelectedDates] = useState<string[]>([todayStr]);
 
   const selectedDateStr = selectedDateObj.toISOString().split('T')[0];
-  const todayStr = todayDateObj.toISOString().split('T')[0];
 
-  // Generate 7 days (3 days before, today, 3 days after)
+  // Generate 7 days (3 days before, today, 3 days after) based on the center selectedDateObj
   const days = useMemo(() => {
     const list = [];
     for (let i = -3; i <= 3; i++) {
@@ -104,6 +217,28 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
     }
     return list;
   }, [selectedDateObj, todayStr]);
+
+  const handleDayClick = (fullDate: Date, dateStr: string) => {
+    setSelectedDateObj(fullDate);
+    
+    // Logic for multiple adjacent selection
+    if (selectedDates.includes(dateStr)) {
+      if (selectedDates.length > 1) {
+        setSelectedDates(selectedDates.filter(d => d !== dateStr));
+      }
+    } else {
+      // Check if it's adjacent to any already selected date
+      const isAdjacent = selectedDates.some(selDate => {
+        const diff = Math.abs(new Date(selDate).getTime() - new Date(dateStr).getTime());
+        return diff <= 86400000 * 1.5; // Account for daylight saving time
+      });
+      if (isAdjacent) {
+        setSelectedDates([...selectedDates, dateStr].sort());
+      } else {
+        setSelectedDates([dateStr]);
+      }
+    }
+  };
 
   const handleCreateHabit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,11 +265,14 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
     }
     
     return result.filter(habit => {
-      const isCompleted = habitLogs.some(log => log.habitId === habit.id && log.date === selectedDateStr);
+      // Check if the habit is completed on ALL selected dates
+      const isCompleted = selectedDates.every(date => 
+        habitLogs.some(log => log.habitId === habit.id && log.date === date)
+      );
       if (filters.hideCompleted && isCompleted) return false;
       return true;
     });
-  }, [habits, filters, habitLogs, selectedDateStr]);
+  }, [habits, filters, habitLogs, selectedDates]);
 
   return (
     <div className="flex flex-col h-full bg-black text-white relative font-sans">
@@ -152,9 +290,14 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
           </button>
         </div>
         <h1 className="text-xl font-bold">{selectedDateStr === todayStr ? 'Hoy' : selectedDateObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short'})}</h1>
-        <button onClick={() => setShowNewHabitModal(true)} className="w-10 h-10 bg-brand-500 rounded-full flex items-center justify-center hover:bg-brand-600 transition-colors active:scale-95 shadow-lg shadow-brand-500/20">
-          <Plus size={24} className="text-white" />
-        </button>
+        <div className="flex items-center gap-3">
+          <button onClick={() => {}} className="w-10 h-10 bg-[#1c1c1e] rounded-full flex items-center justify-center hover:bg-[#2c2c2e] transition-colors active:scale-95">
+            <Search size={20} className="text-white" />
+          </button>
+          <button onClick={() => setShowNewHabitModal(true)} className="w-10 h-10 bg-brand-500 rounded-full flex items-center justify-center hover:bg-brand-600 transition-colors active:scale-95 shadow-lg shadow-brand-500/20">
+            <Plus size={24} className="text-white" />
+          </button>
+        </div>
 
         {/* Filter Dropdown */}
         {showFilterMenu && (
@@ -245,20 +388,69 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
       </div>
 
       {/* Horizontal Calendar */}
-      <div className="flex justify-between items-center px-4 mt-2 mb-6">
+      <div className="flex justify-between items-center px-2 mt-2 mb-6">
         {days.map((d, i) => {
-          const isActive = d.date === selectedDateStr;
+          const isPrimarySelected = d.date === selectedDateStr;
+          const isActive = selectedDates.includes(d.date);
+          
+          const dayHabits = habits.length;
+          const completedDayHabits = habitLogs.filter(log => log.date === d.date).length;
+          const progress = dayHabits === 0 ? 0 : completedDayHabits / dayHabits;
+
+          const nextDayCompletedHabits = i < days.length - 1 ? habitLogs.filter(log => log.date === days[i+1].date).length : 0;
+          const hasNextStreak = progress > 0 && nextDayCompletedHabits > 0;
+
           return (
-            <button 
-              key={i} 
-              onClick={() => setSelectedDateObj(d.fullDate)}
-              className="flex flex-col items-center group transition-transform active:scale-90"
-            >
-              <span className={`text-xs mb-2 capitalize transition-colors ${isActive ? 'text-white font-semibold' : 'text-zinc-500 group-hover:text-zinc-300'}`}>{d.dayName}</span>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all ${isActive ? 'bg-brand-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-[#121212] border border-[#1c1c1e] text-zinc-400 group-hover:bg-[#1c1c1e] group-hover:text-white'}`}>
-                {d.dayNumber}
-              </div>
-            </button>
+            <div key={i} className="relative flex flex-col items-center justify-start" style={{ width: '14.28%', height: '85px' }}>
+              {hasNextStreak && (
+                 <div className="absolute top-[52px] left-1/2 w-full h-[3px] bg-brand-500 -translate-y-1/2 z-0" style={{ boxShadow: '0 0 10px rgba(16,185,129,0.3)' }} />
+              )}
+              
+              <button 
+                onClick={() => handleDayClick(d.fullDate, d.date)}
+                className={`flex flex-col items-center justify-center w-[90%] max-w-[48px] transition-transform active:scale-90 ${isPrimarySelected ? 'bg-brand-500 rounded-full pt-3 pb-3 z-20 shadow-[0_4px_20px_rgba(16,185,129,0.4)] scale-110' : 'group z-10 pt-4 pb-2'}`}
+              >
+                <span className={`text-[11px] mb-2 capitalize font-bold transition-colors ${isPrimarySelected ? 'text-white' : isActive ? 'text-white' : 'text-zinc-500 group-hover:text-zinc-300'}`}>
+                   {d.dayName}
+                </span>
+
+                {isPrimarySelected ? (
+                   progress === 1 ? (
+                     <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-sm font-black text-brand-500 shadow-inner">
+                       {d.dayNumber}
+                     </div>
+                   ) : progress > 0 ? (
+                     <div className="w-9 h-9 rounded-full relative flex items-center justify-center text-white bg-black/20" style={{ backgroundImage: `conic-gradient(white ${progress * 100}%, transparent 0)` }}>
+                       <div className="absolute inset-[3px] bg-brand-500 rounded-full flex items-center justify-center">
+                         <span className="text-sm font-bold text-white">{d.dayNumber}</span>
+                       </div>
+                     </div>
+                   ) : (
+                     <div className="w-9 h-9 rounded-full bg-transparent flex items-center justify-center text-sm font-black text-white">
+                       {d.dayNumber}
+                     </div>
+                   )
+                ) : isActive ? (
+                   <div className="w-9 h-9 rounded-full bg-brand-500 flex items-center justify-center text-sm font-black text-black shadow-md">
+                     {d.dayNumber}
+                   </div>
+                ) : progress === 1 ? (
+                   <div className="w-9 h-9 rounded-full bg-brand-500 flex items-center justify-center text-sm font-black text-black shadow-md">
+                     {d.dayNumber}
+                   </div>
+                ) : progress > 0 ? (
+                   <div className="w-9 h-9 rounded-full relative flex items-center justify-center text-brand-500 bg-[#2c2c2e]" style={{ backgroundImage: `conic-gradient(currentColor ${progress * 100}%, transparent 0)` }}>
+                     <div className="absolute inset-[3px] bg-[#121212] rounded-full flex items-center justify-center">
+                       <span className="text-sm font-bold text-zinc-300">{d.dayNumber}</span>
+                     </div>
+                   </div>
+                ) : (
+                   <div className="w-9 h-9 rounded-full bg-transparent flex items-center justify-center text-sm font-bold text-zinc-500 group-hover:bg-[#1c1c1e] group-hover:text-white transition-colors border border-transparent group-hover:border-[#2c2c2e]">
+                     {d.dayNumber}
+                   </div>
+                )}
+              </button>
+            </div>
           )
         })}
       </div>
@@ -275,26 +467,22 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
           </div>
         ) : (
           filteredHabits.map(habit => {
-            const isCompleted = habitLogs.some(log => log.habitId === habit.id && log.date === selectedDateStr);
+            const isCompleted = selectedDates.every(date => 
+              habitLogs.some(log => log.habitId === habit.id && log.date === date)
+            );
             return (
-              <button 
+              <HabitItem
                 key={habit.id}
-                onClick={() => onToggleHabit(habit.id, selectedDateStr)}
-                className={`w-full text-left border rounded-3xl p-4 flex items-center justify-between mb-4 transition-all duration-300 active:scale-95 ${isCompleted ? 'bg-[#1c1c1e] border-brand-500/30 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'bg-[#1c1c1e] border-[#2c2c2e] opacity-80'}`}
-              >
-                <div className="flex items-center gap-4">
-                  <span className="text-2xl">{habit.icon}</span>
-                  <div>
-                    <h3 className={`font-semibold transition-colors ${isCompleted ? 'text-brand-400' : 'text-white'}`}>{habit.title}</h3>
-                    <p className="text-xs text-zinc-400">Cada día</p>
-                  </div>
-                </div>
-                <div className="relative">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isCompleted ? 'bg-brand-500 text-black' : 'bg-[#121212] border border-[#2c2c2e]'}`}>
-                    {isCompleted ? <Check size={20} className="stroke-[3]" /> : <Plus size={20} className="text-brand-500/50" />}
-                  </div>
-                </div>
-              </button>
+                habit={habit}
+                isCompleted={isCompleted}
+                onToggle={() => {
+                  // Toggle for all selected dates
+                  selectedDates.forEach((date, idx) => {
+                     setTimeout(() => onToggleHabit(habit.id, date), idx * 2);
+                  });
+                }}
+                onDelete={() => onDeleteHabit(habit.id)}
+              />
             )
           })
         )}
@@ -307,83 +495,12 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
         <div className="mt-8 mb-6 px-1">
           <h2 className="text-lg font-bold text-white mb-4">Herramientas PRO</h2>
           <div className="grid grid-cols-2 gap-3">
-            <button onClick={() => onToolClick(ViewState.GUIDE)} className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e] flex flex-row items-center gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-sm relative overflow-hidden group">
-              <div className="absolute -right-2 -top-2 w-12 h-12 bg-white/5 rounded-full blur-xl group-hover:bg-brand-500/10 transition-colors"></div>
-              <div className="absolute top-2 right-2 text-zinc-600">
-                <Lock size={10} />
-              </div>
-              <div className="w-8 h-8 rounded-full bg-brand-500/20 text-brand-500 flex items-center justify-center shrink-0">
-                <Dumbbell size={16} />
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-white text-xs leading-none">Musculación</h3>
-              </div>
-            </button>
-            
-            <button onClick={() => onToolClick(ViewState.SCANNER)} className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e] flex flex-row items-center gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-sm relative overflow-hidden group">
-              <div className="absolute -right-2 -top-2 w-12 h-12 bg-white/5 rounded-full blur-xl group-hover:bg-blue-500/10 transition-colors"></div>
-              <div className="absolute top-2 right-2 text-zinc-600">
-                <Lock size={10} />
-              </div>
-              <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center shrink-0">
-                <ScanLine size={16} />
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-white text-xs leading-none">Escáner IA</h3>
-              </div>
-            </button>
-
-            <button onClick={() => onToolClick(ViewState.WORKOUT)} className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e] flex flex-row items-center gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-sm relative overflow-hidden group">
-              <div className="absolute -right-2 -top-2 w-12 h-12 bg-white/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition-colors"></div>
-              <div className="absolute top-2 right-2 text-zinc-600">
-                <Lock size={10} />
-              </div>
-              <div className="w-8 h-8 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center shrink-0">
-                <Brain size={16} />
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-white text-xs leading-none">Rutinas IA</h3>
-              </div>
-            </button>
-
-            <button onClick={() => onToolClick(ViewState.CHAT)} className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e] flex flex-row items-center gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-sm relative overflow-hidden group">
-              <div className="absolute -right-2 -top-2 w-12 h-12 bg-white/5 rounded-full blur-xl group-hover:bg-orange-500/10 transition-colors"></div>
-              <div className="absolute top-2 right-2 text-zinc-600">
-                <Lock size={10} />
-              </div>
-              <div className="w-8 h-8 rounded-full bg-orange-500/20 text-orange-500 flex items-center justify-center shrink-0">
-                <MessageSquare size={16} />
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-white text-xs leading-none">Coach AI</h3>
-              </div>
-            </button>
-
-            <button onClick={() => onToolClick(ViewState.RECIPES)} className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e] flex flex-row items-center gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-sm relative overflow-hidden group">
-              <div className="absolute -right-2 -top-2 w-12 h-12 bg-white/5 rounded-full blur-xl group-hover:bg-emerald-500/10 transition-colors"></div>
-              <div className="absolute top-2 right-2 text-zinc-600">
-                <Lock size={10} />
-              </div>
-              <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0">
-                <ChefHat size={16} />
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-white text-xs leading-none">Chef AI</h3>
-              </div>
-            </button>
-
-            <button onClick={() => onToolClick(ViewState.COMMUNITY)} className="bg-[#1c1c1e] p-3 rounded-2xl border border-[#2c2c2e] flex flex-row items-center gap-3 hover:bg-[#2c2c2e] transition-colors active:scale-95 shadow-sm relative overflow-hidden group">
-              <div className="absolute -right-2 -top-2 w-12 h-12 bg-white/5 rounded-full blur-xl group-hover:bg-pink-500/10 transition-colors"></div>
-              <div className="absolute top-2 right-2 text-zinc-600">
-                <Lock size={10} />
-              </div>
-              <div className="w-8 h-8 rounded-full bg-pink-500/20 text-pink-500 flex items-center justify-center shrink-0">
-                <Users size={16} />
-              </div>
-              <div className="text-left">
-                <h3 className="font-bold text-white text-xs leading-none">Trainers</h3>
-              </div>
-            </button>
+            <ProToolButton title="Musculación" icon={<Dumbbell size={16} />} colorName="brand" isPro={isPro} onClick={() => onToolClick(ViewState.GUIDE)} />
+            <ProToolButton title="Escáner IA" icon={<ScanLine size={16} />} colorName="blue" isPro={isPro} onClick={() => onToolClick(ViewState.SCANNER)} />
+            <ProToolButton title="Rutinas IA" icon={<Brain size={16} />} colorName="purple" isPro={isPro} onClick={() => onToolClick(ViewState.WORKOUT)} />
+            <ProToolButton title="Coach AI" icon={<MessageSquare size={16} />} colorName="orange" isPro={isPro} onClick={() => onToolClick(ViewState.CHAT)} />
+            <ProToolButton title="Chef AI" icon={<ChefHat size={16} />} colorName="emerald" isPro={isPro} onClick={() => onToolClick(ViewState.RECIPES)} />
+            <ProToolButton title="Trainers" icon={<Users size={16} />} colorName="pink" isPro={isPro} onClick={() => onToolClick(ViewState.COMMUNITY)} />
           </div>
         </div>
       </div>

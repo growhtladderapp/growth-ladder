@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Flame, Medal, Target, Flag, TrendingUp, Calendar, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Flame, Medal, Target, Flag, TrendingUp, Calendar, CheckCircle2, ChevronLeft, ChevronRight, Lock } from 'lucide-react';
 import { ViewState, Habit, HabitLog } from '../types';
 
 interface Props {
@@ -7,6 +7,9 @@ interface Props {
   uiText: Record<string, string>;
   habits: Habit[];
   habitLogs: HabitLog[];
+  isPro?: boolean;
+  onRequestPro?: () => void;
+  onActivateTrial?: () => void;
 }
 
 // Mini bar chart component - pure SVG, no deps
@@ -63,10 +66,13 @@ const DonutChart: React.FC<{ pct: number; color: string; label: string; value: s
   );
 };
 
-export const StatsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs }) => {
+export const StatsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs, isPro, onRequestPro, onActivateTrial }) => {
   const [calendarMonth, setCalendarMonth] = useState(() => new Date());
+  
+  const trialUsed = localStorage.getItem('gl_free_trial_used') === 'true';
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
   // ─── Core Calculations ────────────────────────────────────────────────────
   const stats = useMemo(() => {
@@ -82,19 +88,22 @@ export const StatsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs 
     for (let i = 0; i < datesCompleted.length; i++) {
       if (i === 0) { temp = 1; }
       else {
-        const diff = (new Date(datesCompleted[i]).getTime() - new Date(datesCompleted[i - 1]).getTime()) / 86400000;
+        // Parse dates correctly assuming local timezone YYYY-MM-DD
+        const d1 = new Date(datesCompleted[i] + 'T00:00:00');
+        const d2 = new Date(datesCompleted[i - 1] + 'T00:00:00');
+        const diff = (d1.getTime() - d2.getTime()) / 86400000;
         temp = diff === 1 ? temp + 1 : 1;
       }
       if (temp > best) best = temp;
     }
     const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-    const yStr = yesterday.toISOString().split('T')[0];
+    const yStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
     const last = datesCompleted[datesCompleted.length - 1];
     cur = (last === todayStr || last === yStr) ? temp : 0;
 
     // Success rate
-    const firstDate = new Date(datesCompleted[0]);
-    const daysSinceStart = Math.max(1, Math.floor((Date.now() - firstDate.getTime()) / 86400000) + 1);
+    const firstDate = new Date(datesCompleted[0] + 'T00:00:00');
+    const daysSinceStart = Math.max(1, Math.floor((new Date().setHours(0,0,0,0) - firstDate.getTime()) / 86400000) + 1);
     const rate = Math.min(100, Math.round((datesCompleted.length / daysSinceStart) * 100));
 
     // Last 14 days bar chart data
@@ -102,7 +111,7 @@ export const StatsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs 
     for (let i = 13; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
-      const ds = d.toISOString().split('T')[0];
+      const ds = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       const label = d.toLocaleDateString('es-ES', { weekday: 'short' }).slice(0, 2).toUpperCase();
       const value = habitLogs.filter(l => l.date === ds).length;
       last14.push({ label, value, max: Math.max(habits.length, 1) });
@@ -162,7 +171,8 @@ export const StatsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs 
       )}
 
       {habitLogs.length > 0 && (
-        <>
+        <div className="relative flex-1">
+          <div className={!isPro ? "blur-md pointer-events-none select-none opacity-40 transition-all duration-500" : ""}>
           {/* Donut Row — key metrics */}
           <div className="flex justify-around bg-[#1c1c1e] rounded-3xl p-5 mb-4">
             <DonutChart pct={stats.successRate} color="#10b981" label="Tasa de Éxito" value={`${stats.successRate}%`} />
@@ -260,7 +270,36 @@ export const StatsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs 
               ))}
             </div>
           </div>
-        </>
+          </div>
+
+          {!isPro && (
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-6 text-center bg-black/20">
+              <div className="w-24 h-24 bg-[#1c1c1e] rounded-full flex items-center justify-center mb-6 shadow-2xl border border-[#2c2c2e]">
+                <Lock size={40} className="text-brand-500" />
+              </div>
+              <h2 className="text-3xl font-black text-white mb-3 tracking-tight">Estadísticas Bloqueadas</h2>
+              <p className="text-zinc-400 text-sm mb-10 px-2 font-medium">
+                Desbloquea el análisis detallado de tus hábitos, descubre tendencias ocultas y mantén el control de tu progreso con TWH Pro.
+              </p>
+              
+              {!trialUsed && (
+                <button 
+                  onClick={onActivateTrial}
+                  className="w-full bg-brand-500 text-black font-black py-4 rounded-2xl mb-4 hover:bg-brand-400 active:scale-95 transition-all shadow-lg shadow-brand-500/20 text-lg uppercase tracking-widest"
+                >
+                  Prueba Gratuita (7 Días)
+                </button>
+              )}
+              
+              <button 
+                onClick={onRequestPro}
+                className="w-full bg-[#1c1c1e] text-white font-bold py-4 rounded-2xl hover:bg-[#2c2c2e] active:scale-95 transition-all border border-[#2c2c2e]"
+              >
+                Ver Planes PRO
+              </button>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

@@ -9,9 +9,10 @@ interface SubscriptionModalProps {
 }
 
 
-export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, onSubscribe, isDarkMode }) => {
+export const SubscriptionModal: React.FC<SubscriptionModalProps & { userName?: string }> = ({ onClose, onSubscribe, isDarkMode, userName }) => {
   const [step, setStep] = useState<'plans' | 'checkout' | 'processing'>('plans');
-  const [selectedPlan, setSelectedPlan] = useState<'standard' | 'pro' | 'annual' | 'creator'>('annual');
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'lifetime'>('monthly');
+  const [freeTrialActive, setFreeTrialActive] = useState(false);
 
   const handleAction = () => {
     if (step === 'plans') {
@@ -26,10 +27,8 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
   };
 
   const getPriceDisplay = () => {
-    if (selectedPlan === 'standard') return '$3.99';
-    if (selectedPlan === 'pro') return '$9.99';
-    if (selectedPlan === 'creator') return '$0.00';
-    return '$29.90';
+    if (selectedPlan === 'lifetime') return '$24.99';
+    return freeTrialActive ? '$0.00 (luego $2.99/mes)' : '$2.99/mes';
   };
 
   return (
@@ -50,110 +49,74 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
                 <div className="inline-flex p-3 rounded-2xl bg-brand-500/10 border border-brand-500/20 mb-4">
                   <Crown className="text-brand-500" size={32} />
                 </div>
-                <h2 className="text-2xl font-black text-white uppercase tracking-tighter italic">Desbloquea el <span className="text-brand-500">Nivel Pro</span></h2>
-                <p className="text-slate-400 text-xs mt-2 mb-6">Elige tu plan y comienza tu transformación.</p>
+                <h2 className="text-2xl font-black text-white tracking-tight leading-tight">
+                  Hola {userName || 'atleta'}, es la hora de tener el acceso completo a TWH
+                </h2>
 
-                {/* Beneficios Dinámicos */}
-                <div className="mb-6 bg-white/5 p-4 rounded-xl border border-white/5 text-left">
-                  <h4 className="text-[10px] font-bold text-brand-500 uppercase tracking-widest mb-3">
-                    Incluido en {selectedPlan === 'standard' ? 'Estándar' : 'Pro / Personalizado'}:
-                  </h4>
+                {/* Beneficios */}
+                <div className="mt-6 bg-white/5 p-4 rounded-xl border border-white/5 text-left">
                   <ul className="space-y-3">
-                    {selectedPlan === 'standard' ? (
-                      <>
-                        <li className="flex items-center gap-3 text-sm text-slate-300 font-medium">
-                          <Check size={16} className="text-brand-500 shrink-0" /> Coach IA (10 msg/día)
-                        </li>
-                        <li className="flex items-center gap-3 text-sm text-slate-300 font-medium">
-                          <Check size={16} className="text-brand-500 shrink-0" /> Guía de Musculación
-                        </li>
-                        <li className="flex items-center gap-3 text-sm text-slate-300 font-medium">
-                          <Check size={16} className="text-brand-500 shrink-0" /> Sincronización Básica
-                        </li>
-                      </>
-                    ) : (
-                      <>
-                        <li className="flex items-center gap-3 text-sm text-white font-bold">
-                          <Sparkles size={16} className="text-brand-500 shrink-0" /> Coach IA Ilimitado 24/7
-                        </li>
-                        <li className="flex items-center gap-3 text-sm text-white font-bold">
-                          <Check size={16} className="text-brand-500 shrink-0" /> Chef IA y Escáner de Comida
-                        </li>
-                        <li className="flex items-center gap-3 text-sm text-white font-bold">
-                          <Check size={16} className="text-brand-500 shrink-0" /> Rutinas IA Adaptativas
-                        </li>
-                        <li className="flex items-center gap-3 text-sm text-white font-bold">
-                          <Check size={16} className="text-brand-500 shrink-0" /> Comunidad Élite Privada
-                        </li>
-                      </>
-                    )}
+                    <li className="flex items-center gap-3 text-sm text-white font-medium">
+                      <Check size={16} className="text-brand-500 shrink-0" /> Desbloquea estadísticas precisas
+                    </li>
+                    <li className="flex items-center gap-3 text-sm text-white font-medium">
+                      <Check size={16} className="text-brand-500 shrink-0" /> Sigue Hábitos ilimitados
+                    </li>
+                    <li className="flex items-center gap-3 text-sm text-white font-medium">
+                      <Check size={16} className="text-brand-500 shrink-0" /> Recibe recordatorios personalizados
+                    </li>
+                    <li className="flex items-center gap-3 text-sm text-white font-medium">
+                      <Check size={16} className="text-brand-500 shrink-0" /> Disfruta de hábitos personalizados
+                    </li>
+                    <li className="flex items-center gap-3 text-sm text-white font-medium">
+                      <Check size={16} className="text-brand-500 shrink-0" /> Apoyo a los desarrolladores
+                    </li>
                   </ul>
                 </div>
               </div>
 
               <div className="space-y-4">
-                {/* Plan Estándar */}
                 <button
-                  onClick={() => setSelectedPlan('standard')}
-                  className={`w-full p-4 rounded-2xl border transition-all text-left relative overflow-hidden group ${selectedPlan === 'standard' ? 'border-zinc-500 bg-zinc-800/40' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}
+                  onClick={() => setFreeTrialActive(!freeTrialActive)}
+                  className="w-full text-center text-xs font-bold text-zinc-400 underline uppercase tracking-widest hover:text-white transition-colors"
                 >
-                  <div className="flex justify-between items-center mb-1">
-                    <div>
-                      <h3 className="text-sm font-bold text-white">Plan Estándar</h3>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-black text-white">$3.99</p>
-                    </div>
-                  </div>
-                  <p className="text-[10px] text-slate-400 font-medium">Facturación mensual</p>
-                  {selectedPlan === 'standard' && <div className="absolute bottom-3 right-3"><div className="w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]" /></div>}
+                  ¿No estás seguro? Activa la prueba gratuita
                 </button>
 
-                {/* Plan Pro */}
+                {/* Plan Mensual */}
                 <button
-                  onClick={() => setSelectedPlan('pro')}
-                  className={`w-full p-4 rounded-2xl border transition-all text-left relative overflow-hidden group ${selectedPlan === 'pro' ? 'border-zinc-500 bg-zinc-800/40' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}
+                  onClick={() => setSelectedPlan('monthly')}
+                  className={`w-full p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden group ${selectedPlan === 'monthly' ? 'border-[#10b981] bg-[#10b981]/10' : 'border-zinc-800 bg-zinc-900/50'}`}
                 >
-                  <div className="flex justify-between items-center mb-1">
-                    <div>
-                      <h3 className="text-sm font-bold text-white">Plan PRO</h3>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-black text-white">$9.99</p>
-                    </div>
+                  <div className="flex flex-col gap-1 mt-1">
+                    <h3 className="text-lg font-black text-white uppercase italic tracking-tighter">Mensual</h3>
+                    <p className={`text-xs font-bold ${selectedPlan === 'monthly' ? 'text-[#10b981]' : 'text-zinc-400'} uppercase tracking-widest`}>
+                      {freeTrialActive && selectedPlan === 'monthly' ? 'Prueba gratuita de 7 días, luego USD 2.99/mes' : 'USD 2.99/mes'}
+                    </p>
                   </div>
-                  <p className="text-[10px] text-slate-400 font-medium">Facturación mensual</p>
-                  {selectedPlan === 'pro' && <div className="absolute bottom-3 right-3"><div className="w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]" /></div>}
                 </button>
 
-                {/* Plan Personalizado (Anual) - MEJOR OPCION */}
+                {/* Plan de por vida */}
                 <button
-                  onClick={() => setSelectedPlan('annual')}
-                  className={`w-full p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden group ${selectedPlan === 'annual' ? 'border-brand-500 bg-brand-500/10' : 'border-brand-500/30 bg-white/5 hover:bg-white/10'}`}
+                  onClick={() => setSelectedPlan('lifetime')}
+                  className={`w-full p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden group ${selectedPlan === 'lifetime' ? 'border-brand-500 bg-brand-500/10' : 'border-zinc-800 bg-zinc-900/50'}`}
                 >
-                  <div className="absolute top-0 right-0 bg-brand-500 text-white text-[8px] font-black px-3 py-1 uppercase tracking-tighter rounded-bl-xl">Ahorra 50%</div>
-
-                  <div className="flex justify-between items-start mb-2 mt-1">
-                    <div>
-                      <p className="text-[10px] font-black text-brand-500 uppercase tracking-widest mb-1">Recomendado</p>
-                      <h3 className="text-lg font-bold text-white">Plan Personalizado</h3>
-                    </div>
-                    <div className="text-right flex flex-col items-end">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-500 line-through decoration-red-500 decoration-2">$60.00</span>
-                        <p className="text-xl font-black text-white">$29.90</p>
-                      </div>
-                      <p className="text-[8px] text-brand-500 font-bold uppercase">Pago Único Anual</p>
-                    </div>
+                  <div className={`absolute top-0 right-0 ${selectedPlan === 'lifetime' ? 'bg-brand-500' : 'bg-zinc-700'} text-black text-[8px] font-black px-3 py-1 uppercase tracking-tighter rounded-bl-xl`}>Más Popular</div>
+                  <div className="flex flex-col gap-1 mt-1">
+                    <h3 className="text-lg font-black text-white uppercase italic tracking-tighter">De por vida</h3>
+                    <p className={`text-xs font-bold ${selectedPlan === 'lifetime' ? 'text-brand-500' : 'text-zinc-400'} uppercase tracking-widest`}>
+                      {freeTrialActive && selectedPlan === 'lifetime' ? 'Prueba gratuita de 7 días, luego USD 24.99' : 'USD 24.99 pago único'}
+                    </p>
+                    <p className="text-sm font-bold text-slate-300">Acceso para siempre a todo el contenido</p>
                   </div>
                 </button>
               </div>
 
               <button
                 onClick={handleAction}
-                className="w-full mt-8 py-4 bg-brand-500 text-white font-black rounded-2xl shadow-xl shadow-brand-500/20 active:scale-95 transition-all uppercase tracking-widest text-sm flex items-center justify-center gap-2"
+                className={`w-full mt-8 py-4 ${freeTrialActive ? 'bg-[#10b981]' : 'bg-brand-500'} text-black font-black rounded-2xl shadow-xl active:scale-95 transition-all uppercase tracking-widest text-sm flex items-center justify-center gap-2`}
               >
-                Continuar con {selectedPlan === 'annual' ? 'Anual' : 'Prueba Gratis'} <Sparkles size={18} />
+                {freeTrialActive ? 'Activar Prueba' : `Continuar con ${selectedPlan === 'lifetime' ? 'De por vida' : 'Mensual'}`} <Sparkles size={18} />
               </button>
             </div>
           )}
@@ -195,7 +158,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ onClose, o
                 {/* Promo Code Bypass */}
                 <div className="pt-2">
                   <button
-                    onClick={() => setSelectedPlan(selectedPlan === 'creator' ? 'annual' : 'creator' as any)}
+                    onClick={() => setSelectedPlan(selectedPlan === 'lifetime' ? 'monthly' : 'lifetime')}
                     className="text-[10px] text-brand-500 font-bold uppercase underline mb-2 cursor-pointer"
                   >
                     ¿Tienes código promocional?

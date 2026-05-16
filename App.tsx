@@ -155,8 +155,6 @@ export const GOAL_OPTIONS: WeeklyGoalOption[] = [
   },
 ];
 
-import { PrivacyPolicy } from './components/PrivacyPolicy';
-
 export default function App() {
   const [view, setView] = useState<ViewState>(ViewState.HABITS);
   const [isPro, setIsPro] = useState(() => {
@@ -331,6 +329,19 @@ export default function App() {
           completedAt: new Date().toISOString()
         }];
       }
+      localStorage.setItem('twh_habit_logs', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const deleteHabit = (habitId: string) => {
+    setHabits(prev => {
+      const updated = prev.filter(h => h.id !== habitId);
+      localStorage.setItem('twh_habits', JSON.stringify(updated));
+      return updated;
+    });
+    setHabitLogs(prev => {
+      const updated = prev.filter(l => l.habitId !== habitId);
       localStorage.setItem('twh_habit_logs', JSON.stringify(updated));
       return updated;
     });
@@ -858,6 +869,7 @@ export default function App() {
             onClose={() => setShowPaywall(false)}
             onSubscribe={handleSubscribe}
             isDarkMode={isDarkMode}
+            userName={userProfile?.name}
           />
         )}
 
@@ -893,7 +905,9 @@ export default function App() {
               habitLogs={habitLogs}
               onToggleHabit={toggleHabitDate}
               onAddHabit={saveHabit}
+              onDeleteHabit={deleteHabit}
               onToolClick={handleToolClick}
+              isPro={isPro}
             />
           )}
           {view === ViewState.STATS && (
@@ -902,6 +916,13 @@ export default function App() {
               uiText={uiText} 
               habits={habits}
               habitLogs={habitLogs}
+              isPro={isPro}
+              onRequestPro={() => setShowPaywall(true)}
+              onActivateTrial={() => {
+                setIsPro(true);
+                localStorage.setItem('gl_is_pro', 'true');
+                localStorage.setItem('gl_free_trial_used', 'true');
+              }}
             />
           )}
           {view === ViewState.SHARE && (

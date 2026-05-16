@@ -103,19 +103,19 @@
       --brand-500: #10b981; /* Verde esmeralda (Acento) */
       --brand-600: #059669; /* Verde oscuro */
       --bg-main: #000000;   /* Negro puro OLED */
-      --bg-card: #1c1c1e;   /* Gris muy oscuro para las tarjetas */
+      --bg-card: #141414;   /* Gris muy oscuro para las tarjetas */
       --text-main: #ffffff;
       --text-muted: #8e8e93;
       --border-main: #2c2c2e;
     }
 
     .light-mode {
-      /* Colores para Modo Claro Invertido */
-      --bg-main: #f8fafc; /* Fondo gris muy claro */
-      --bg-card: #ffffff; /* Tarjetas blancas */
-      --text-main: #0f172a; /* Texto oscuro principal */
-      --text-muted: #64748b; /* Texto gris suave */
-      --border-main: #e2e8f0; /* Bordes claros */
+      /* Colores Premium para Modo Claro */
+      --bg-main: #f3f4f6; /* Fondo gris claro suave */
+      --bg-card: #ffffff; /* Tarjetas blancas puras */
+      --text-main: #111827; /* Texto oscuro principal (casi negro) */
+      --text-muted: #6b7280; /* Texto gris intermedio */
+      --border-main: #e5e7eb; /* Bordes suaves */
     }
 
     body {
@@ -129,9 +129,12 @@
       border-color: var(--border-main) !important;
     }
 
+    /* Mapeo Inteligente de Textos */
+    /* NO invertimos text-white si el elemento es un botón de color (brand, red, etc) */
     .light-mode .text-slate-100,
     .light-mode .text-zinc-100,
-    .light-mode .text-white {
+    .light-mode :not(.bg-brand-500):not(.bg-brand-600):not(.bg-red-500):not(.bg-red-600):not(.bg-blue-500):not(.bg-indigo-600) > .text-white,
+    .light-mode .text-white:not(.bg-brand-500):not(.bg-brand-600):not(.bg-red-500):not(.bg-red-600):not(.bg-blue-500):not(.bg-indigo-600) {
       color: var(--text-main) !important;
     }
 
@@ -144,30 +147,46 @@
       color: var(--text-muted) !important;
     }
 
+    /* Fondos Principales (Negro -> Gris Claro) */
     .light-mode .bg-black,
+    .light-mode .bg-\[\#0a0a0a\],
+    .light-mode .bg-\[\#000000\] {
+      background-color: var(--bg-main) !important;
+    }
+
+    /* Tarjetas y Elementos Elevados (Zinc-900 -> Blanco Puro) */
     .light-mode .bg-zinc-900,
     .light-mode .bg-zinc-950,
-    .light-mode .bg-\[\#0a0a0a\] {
+    .light-mode .bg-\[\#1c1c1e\] {
       background-color: var(--bg-card) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important; /* Sombra sutil en modo claro */
     }
 
+    /* Botones/Elementos Secundarios (Zinc-800 -> Gris muy suave) */
     .light-mode .bg-zinc-800,
     .light-mode .bg-slate-800,
-    .light-mode .bg-slate-900 {
-      background-color: #f1f5f9 !important;
+    .light-mode .bg-slate-900,
+    .light-mode .bg-\[\#2c2c2e\] {
+      background-color: #f3f4f6 !important;
     }
 
+    /* Bordes (Zinc-800/White-10 -> Gris claro) */
     .light-mode .border-zinc-800,
     .light-mode .border-slate-800,
     .light-mode .border-slate-700,
     .light-mode .border-white\/5,
-    .light-mode .border-white\/10 {
+    .light-mode .border-white\/10,
+    .light-mode .border-\[\#2c2c2e\] {
       border-color: var(--border-main) !important;
     }
 
+    /* Efectos de Hover y Transparencias */
     .light-mode .bg-white\/5,
     .light-mode .bg-white\/10 {
-      background-color: rgba(0, 0, 0, 0.05) !important;
+      background-color: rgba(0, 0, 0, 0.04) !important;
+    }
+    .light-mode .hover\:bg-white\/10:hover {
+      background-color: rgba(0, 0, 0, 0.08) !important;
     }
 
     /* Star underline hover effect for navbar links */

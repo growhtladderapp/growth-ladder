@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { ViewState, UserProfile } from '../types';
-import { Moon, Palette, AppWindow, AlignJustify, MoreHorizontal, Bell, Clock, Globe, Calendar, CalendarClock, Volume2, CheckCircle2, ChevronRight, Settings, MessageCircle, Crown, Upload, Edit2, LogOut, Check, X } from 'lucide-react';
+import { Moon, Sun, Palette, AppWindow, AlignJustify, MoreHorizontal, Bell, Clock, Globe, Calendar, CalendarClock, Volume2, CheckCircle2, ChevronRight, Settings, MessageCircle, Crown, Upload, Edit2, LogOut, Check, X, Trophy, Flame, Flag, ListFilter, ChevronLeft, CalendarRange, Folder, Umbrella, Archive, RefreshCw, Trash2, Star, Gift, HelpCircle, Share } from 'lucide-react';
 
 interface SettingsViewProps {
    userProfile: UserProfile | null;
@@ -83,6 +83,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
          localStorage.setItem('gl_week_start', val);
       } else if (activeModal.id === 'icon') {
          // Placeholder
+      } else if (activeModal.id === 'appearance') {
+         if (val === 'Modo Oscuro' && !isDarkMode) toggleDarkMode();
+         if (val === 'Modo Claro' && isDarkMode) toggleDarkMode();
       }
       setActiveModal(null);
    };
@@ -112,6 +115,51 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       e.preventDefault();
       // Handle file upload UI
       if (userProfile) onUpdateProfile({...userProfile, profilePicture: 'uploaded'});
+   };
+
+   const [showNameEditModal, setShowNameEditModal] = useState(false);
+   const [newName, setNewName] = useState('');
+   const [showSortModal, setShowSortModal] = useState(false);
+   const [showLogrosModal, setShowLogrosModal] = useState(false);
+
+   const handleEditNameClick = () => {
+      // nameChangeHistory is an array of ISO date strings
+      const history = (userProfile as any)?.nameChangeHistory || [];
+      const now = new Date();
+      
+      let validHistory = history.filter((d: string) => {
+         const date = new Date(d);
+         const daysDiff = (now.getTime() - date.getTime()) / (1000 * 3600 * 24);
+         return isPro ? daysDiff <= 15 : daysDiff <= 30;
+      });
+
+      const maxChanges = isPro ? 3 : 1;
+
+      if (validHistory.length >= maxChanges) {
+         validHistory.sort((a: string, b: string) => new Date(a).getTime() - new Date(b).getTime());
+         const oldestDate = new Date(validHistory[0]);
+         const waitDays = isPro ? 15 : 30;
+         oldestDate.setDate(oldestDate.getDate() + waitDays);
+         
+         const daysLeft = Math.ceil((oldestDate.getTime() - now.getTime()) / (1000 * 3600 * 24));
+         alert(`Límite alcanzado. Podrás cambiar tu nombre en ${daysLeft} días.\n\n${isPro ? '(PRO: 3 cambios cada 15 días)' : '(Estándar: 1 cambio cada 30 días, obtén PRO para más flexibilidad)'}`);
+         return;
+      }
+
+      setNewName(userProfile?.name || '');
+      setShowNameEditModal(true);
+   };
+
+   const saveNewName = () => {
+      if (!newName.trim()) return;
+      const history = (userProfile as any)?.nameChangeHistory || [];
+      const nowStr = new Date().toISOString();
+      const newHistory = [...history, nowStr];
+      
+      if (userProfile) {
+         onUpdateProfile({ ...userProfile, name: newName.trim(), nameChangeHistory: newHistory } as any);
+      }
+      setShowNameEditModal(false);
    };
 
    return (
@@ -152,55 +200,52 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   Nivel {userProfile?.level || 1} • {userProfile?.xp || 0} XP
                </p>
             </div>
-            <button className="w-10 h-10 rounded-full bg-[#2c2c2e] flex items-center justify-center text-white hover:bg-zinc-700 transition-colors">
+            <button onClick={handleEditNameClick} className="w-10 h-10 rounded-full bg-[#2c2c2e] flex items-center justify-center text-white hover:bg-zinc-700 transition-colors">
                <Edit2 size={16} />
             </button>
          </div>
 
-         {/* --- TWH Premium Banner Restaurado --- */}
-         {!isPro && (
-            <div className="bg-gradient-to-r from-brand-600 to-[#022c22] rounded-[2rem] p-6 mb-10 relative overflow-hidden shadow-[0_0_40px_rgba(16,185,129,0.3)]">
-               <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-               
-               <div className="relative z-10">
-                  <div className="flex items-center gap-3 mb-3">
-                     <div className="w-10 h-10 bg-black/30 rounded-xl flex items-center justify-center backdrop-blur-md">
-                     <Crown size={24} className="text-brand-400" />
-                     </div>
-                     <span className="font-black italic text-2xl tracking-tighter text-white">TWH Premium</span>
+         {/* --- TWH Premium Banner --- */}
+         <div className="bg-gradient-to-r from-brand-600 to-[#022c22] rounded-[2rem] p-6 mb-10 relative overflow-hidden shadow-[0_0_40px_rgba(16,185,129,0.3)]">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+            
+            <div className="relative z-10">
+               <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 bg-black/30 rounded-xl flex items-center justify-center backdrop-blur-md">
+                  <Crown size={24} className="text-brand-400" />
                   </div>
-                  
-                  <p className="text-white/90 text-sm mb-4 pr-8 leading-relaxed font-medium">
-                     Desbloquea rutinas IA, historial infinito y análisis avanzado. Únete al 1% hoy.
-                  </p>
-                  
+                  <span className="font-black italic text-2xl tracking-tighter text-white">TWH Premium</span>
+                  {isPro && <span className="ml-auto bg-brand-500 text-black text-[10px] font-black px-3 py-1 rounded-full">ACTIVO ✓</span>}
+               </div>
+               
+               <p className="text-white/90 text-sm mb-4 pr-8 leading-relaxed font-medium">
+                  {isPro ? 'Tienes acceso completo a todas las funciones premium.' : 'Desbloquea rutinas IA, historial infinito y análisis avanzado. Únete al 1% hoy.'}
+               </p>
+               
+               {!isPro && (
                   <div className="space-y-2 mb-2">
                      <button onClick={onRequestPro} className="w-full flex justify-between items-center bg-black/20 hover:bg-black/40 p-3 rounded-xl border border-white/10 transition-colors">
-                        <span className="text-white font-bold text-sm">Plan Estándar</span>
-                        <span className="text-white font-black">$3.99<span className="text-[10px] text-white/50">/mo</span></span>
-                     </button>
-                     <button onClick={onRequestPro} className="w-full flex justify-between items-center bg-black/20 hover:bg-black/40 p-3 rounded-xl border border-white/10 transition-colors">
-                        <span className="text-white font-bold text-sm">Plan PRO</span>
-                        <span className="text-white font-black">$9.99<span className="text-[10px] text-white/50">/mo</span></span>
+                        <span className="text-white font-bold text-sm">Plan Mensual</span>
+                        <span className="text-white font-black">USD 2.99<span className="text-[10px] text-white/50">/mes</span></span>
                      </button>
                      <button onClick={onRequestPro} className="w-full flex justify-between items-center bg-brand-500/20 hover:bg-brand-500/30 p-3 rounded-xl border border-brand-500/50 transition-colors relative overflow-hidden">
-                        <div className="absolute top-0 right-0 bg-brand-500 text-black text-[8px] font-black px-2 py-0.5 rounded-bl-lg">50% DTO</div>
-                        <span className="text-white font-bold text-sm">Plan Personalizado</span>
-                        <span className="text-brand-400 font-black">$29.90<span className="text-[10px] text-brand-400/50">/año</span></span>
+                        <div className="absolute top-0 right-0 bg-brand-500 text-black text-[8px] font-black px-2 py-0.5 rounded-bl-lg">¡ÚNICO PAGO!</div>
+                        <span className="text-white font-bold text-sm">Plan De Por Vida</span>
+                        <span className="text-brand-400 font-black">USD 24.99</span>
                      </button>
                   </div>
-               </div>
+               )}
             </div>
-         )}
+         </div>
 
          {/* Apariencia Section */}
          <h3 className="text-white font-bold ml-4 mb-3 text-lg">Apariencia</h3>
          <div className="rounded-[2rem] overflow-hidden mb-10 border border-[#2c2c2e] shadow-lg">
             <SettingCellWithIcon 
-              icon={Moon} iconBg="bg-zinc-700" 
-              title="Modo Oscuro" 
-              trailingElement={<Moon size={16}/>} 
-              onClick={toggleDarkMode}
+              icon={isDarkMode ? Moon : Sun} iconBg={isDarkMode ? "bg-zinc-700" : "bg-amber-500"} 
+              title="Apariencia" 
+              valueText={isDarkMode ? "Modo Oscuro" : "Modo Claro"} 
+              onClick={() => setActiveModal({ id: 'appearance', title: 'Apariencia', options: ['Modo Claro', 'Modo Oscuro'], current: isDarkMode ? 'Modo Oscuro' : 'Modo Claro' })}
             />
             <SettingCellWithIcon 
               icon={AppWindow} iconBg="bg-purple-500" 
@@ -216,9 +261,95 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             />
          </div>
 
+         {/* Fechas Futuras */}
+         <div className="rounded-[2rem] overflow-hidden mb-10 border border-[#2c2c2e] shadow-lg bg-[#1c1c1e]">
+            <div className="flex items-center justify-between p-4 pb-2">
+               <div className="flex items-center gap-4">
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white bg-teal-500 relative">
+                     <CalendarRange size={20} />
+                     <div className="absolute -bottom-1 -right-1 bg-red-500 w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-[#1c1c1e]">!</div>
+                  </div>
+                  <span className="text-white font-semibold">Activar fechas futuras</span>
+               </div>
+               <button onClick={() => setActivarFechas(!activarFechas)} className={`w-14 h-7 rounded-full relative transition-colors ${activarFechas ? 'bg-brand-500' : 'bg-zinc-600'}`}>
+                  <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${activarFechas ? 'left-8' : 'left-1'}`} />
+               </button>
+            </div>
+            <p className="px-4 pb-4 text-sm text-zinc-400">Activar el registro de hábitos para fechas futuras</p>
+         </div>
+
+         {/* Sonidos */}
+         <h3 className="text-white font-bold ml-4 mb-3 text-lg">Sonidos</h3>
+         <div className="rounded-[2rem] overflow-hidden mb-10 border border-[#2c2c2e] shadow-lg bg-[#1c1c1e]">
+            <div className="flex items-center justify-between p-4 border-b border-[#2c2c2e]">
+               <div className="flex items-center gap-4">
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white bg-cyan-500"><Volume2 size={20} /></div>
+                  <span className="text-white font-semibold">Sonidos</span>
+               </div>
+               <button onClick={() => setSonidos(!sonidos)} className={`w-14 h-7 rounded-full relative transition-colors ${sonidos ? 'bg-red-500' : 'bg-zinc-600'}`}>
+                  <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${sonidos ? 'left-8' : 'left-1'}`} />
+               </button>
+            </div>
+            <SettingCellWithIcon 
+               icon={CheckCircle2} iconBg="bg-green-500" 
+               title="Finalizado" valueText="Predeterminado" 
+               onClick={() => {}}
+            />
+            <SettingCellWithIcon 
+               icon={Bell} iconBg="bg-orange-500" 
+               title="Notificaciones" valueText="Predeterminado" 
+               onClick={() => {}}
+            />
+         </div>
+
+         {/* Datos Section */}
+         <h3 className="text-white font-bold ml-4 mb-3 text-lg">Datos</h3>
+         <div className="rounded-[2rem] overflow-hidden mb-10 border border-[#2c2c2e] shadow-lg bg-[#1c1c1e]">
+            <SettingCellWithIcon 
+               icon={Folder} iconBg="bg-blue-500" 
+               title="Grupos" 
+               onClick={() => {}}
+            />
+            <SettingCellWithIcon 
+               icon={Umbrella} iconBg="bg-green-500" 
+               title="Vacaciones" 
+               onClick={() => {}}
+            />
+            <SettingCellWithIcon 
+               icon={Trophy} iconBg="bg-yellow-500" 
+               title="Logros" 
+               onClick={() => setShowLogrosModal(true)}
+            />
+            <SettingCellWithIcon 
+               icon={Archive} iconBg="bg-fuchsia-500" 
+               title="Hábitos archivados" 
+               onClick={() => {}}
+            />
+            <SettingCellWithIcon 
+               icon={RefreshCw} iconBg="bg-orange-500" 
+               title="Comienzo nuevo" 
+               onClick={() => {}}
+            />
+            <SettingCellWithIcon 
+               icon={Trash2} iconBg="bg-red-500" 
+               title="Borrar todos los datos" 
+               onClick={() => {}}
+            />
+         </div>
+
          {/* General Section */}
          <h3 className="text-white font-bold ml-4 mb-3 text-lg">General</h3>
          <div className="rounded-[2rem] overflow-hidden mb-10 border border-[#2c2c2e] shadow-lg bg-[#1c1c1e]">
+            <SettingCellWithIcon 
+               icon={ListFilter} iconBg="bg-brand-500 text-black" 
+               title="Ordenar" valueText="Completados al final" 
+               onClick={() => setShowSortModal(true)}
+            />
+            <SettingCellWithIcon 
+               icon={MoreHorizontal} iconBg="bg-purple-600" 
+               title="Más" 
+               onClick={() => {}}
+            />
             <div className="flex items-center justify-between p-4 border-b border-[#2c2c2e]">
                <div className="flex items-center gap-4">
                   <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white bg-yellow-500">
@@ -233,7 +364,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${globos ? 'left-8' : 'left-1'}`} />
                </button>
             </div>
-            
             <SettingCellWithIcon 
               icon={Clock} iconBg="bg-blue-500" 
               title="El día comienza a las" 
@@ -252,23 +382,33 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             />
          </div>
 
-         {/* Sonidos y Otros */}
-         <h3 className="text-white font-bold ml-4 mb-3 text-lg">Experiencia</h3>
+         {/* Ayuda y Asistencia */}
+         <h3 className="text-white font-bold ml-4 mb-3 text-lg">Ayuda y asistencia</h3>
          <div className="rounded-[2rem] overflow-hidden mb-10 border border-[#2c2c2e] shadow-lg bg-[#1c1c1e]">
-            <div className="flex items-center justify-between p-4 border-b border-[#2c2c2e]">
-               <div className="flex items-center gap-4">
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white bg-cyan-500"><Volume2 size={20} /></div>
-                  <span className="text-white font-semibold">Efectos de sonido</span>
-               </div>
-               <button onClick={() => setSonidos(!sonidos)} className={`w-14 h-7 rounded-full relative transition-colors ${sonidos ? 'bg-brand-500' : 'bg-zinc-600'}`}>
-                  <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${sonidos ? 'left-8' : 'left-1'}`} />
-               </button>
-            </div>
-
             <SettingCellWithIcon 
-              icon={MessageCircle} iconBg="bg-indigo-600" 
-              title="Contactar Asistente IA" 
-              onClick={() => setView(ViewState.SUPPORT)}
+               icon={Star} iconBg="bg-yellow-500" 
+               title="Reseña en App Store" 
+               onClick={() => {}}
+            />
+            <SettingCellWithIcon 
+               icon={Gift} iconBg="bg-red-500" 
+               title="Canjear código de oferta" 
+               onClick={() => {}}
+            />
+            <SettingCellWithIcon 
+               icon={MessageCircle} iconBg="bg-indigo-600" 
+               title="Contactar Asistente IA" 
+               onClick={() => setView(ViewState.SUPPORT)}
+            />
+            <SettingCellWithIcon 
+               icon={HelpCircle} iconBg="bg-blue-500" 
+               title="Obtener ayuda" 
+               onClick={() => {}}
+            />
+            <SettingCellWithIcon 
+               icon={Share} iconBg="bg-green-500" 
+               title="Comparte la aplicación" 
+               onClick={() => {}}
             />
             <button onClick={onLogout} className="w-full text-left p-5 bg-[#1c1c1e] hover:bg-[#2c2c2e] transition-colors border-t border-[#2c2c2e] flex items-center gap-3 active:scale-95">
                <LogOut size={20} className="text-red-500" />
@@ -296,6 +436,135 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                            <span className="font-medium">{opt}</span>
                            {opt === activeModal.current && <Check size={18} className="text-brand-500" />}
                         </button>
+                     ))}
+                  </div>
+               </div>
+            </div>
+         )}
+
+         {/* --- Name Edit Modal --- */}
+         {showNameEditModal && (
+            <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center animate-in fade-in duration-200">
+               <div className="w-full max-w-md bg-[#1c1c1e] sm:rounded-3xl rounded-t-3xl border border-[#2c2c2e] shadow-2xl overflow-hidden animate-in sm:zoom-in-95 slide-in-from-bottom-10">
+                  <div className="px-6 py-4 flex justify-between items-center border-b border-[#2c2c2e] bg-[#2c2c2e]/50">
+                     <h3 className="font-bold text-white text-lg">Cambiar Nombre</h3>
+                     <button onClick={() => setShowNameEditModal(false)} className="w-8 h-8 rounded-full bg-black/20 flex items-center justify-center hover:bg-black/40 text-zinc-400 hover:text-white transition-colors">
+                        <X size={16} />
+                     </button>
+                  </div>
+                  <div className="p-6">
+                     <input
+                        type="text"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        placeholder="Escribe tu nuevo nombre"
+                        className="w-full bg-black/50 border border-[#2c2c2e] text-white p-4 rounded-xl outline-none focus:border-brand-500 transition-colors mb-6"
+                        autoFocus
+                        maxLength={20}
+                     />
+                     <button 
+                        onClick={saveNewName}
+                        disabled={!newName.trim() || newName.trim() === userProfile?.name}
+                        className="w-full bg-brand-500 text-black font-bold py-4 rounded-xl hover:bg-brand-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                     >
+                        Guardar Cambios
+                     </button>
+                  </div>
+               </div>
+            </div>
+         )}
+
+         {/* --- Ordenar Modal --- */}
+         {showSortModal && (
+            <div className="fixed inset-0 z-[300] bg-black text-white overflow-y-auto animate-in slide-in-from-right-full pb-10">
+               <div className="px-5 py-4 flex items-center border-b border-[#2c2c2e] sticky top-0 bg-black/80 backdrop-blur-md z-10">
+                  <button onClick={() => setShowSortModal(false)} className="w-10 h-10 bg-[#1c1c1e] rounded-full flex items-center justify-center hover:bg-[#2c2c2e] transition-colors">
+                     <ChevronLeft size={20} />
+                  </button>
+                  <h2 className="text-xl font-bold ml-4">Ordenar hábitos</h2>
+               </div>
+               <div className="p-5 space-y-4">
+                  <p className="text-zinc-500 text-sm mb-4">Ordenar los hábitos según el orden definido por el usuario</p>
+                  
+                  <div className="bg-[#1c1c1e] rounded-2xl p-4 flex items-center gap-4 border border-[#2c2c2e]">
+                     <AlignJustify className="text-red-500" />
+                     <div className="flex-1">
+                        <h4 className="font-bold">Por progreso</h4>
+                     </div>
+                  </div>
+                  <p className="text-zinc-500 text-sm ml-2">Ordenar hábitos por progreso actual</p>
+
+                  <div className="bg-[#1c1c1e] rounded-2xl p-4 flex items-center gap-4 border border-[#2c2c2e]">
+                     <AlignJustify className="text-red-500" />
+                     <div className="flex-1">
+                        <h4 className="font-bold">Completados al final</h4>
+                     </div>
+                     <Check size={20} className="text-red-500" />
+                  </div>
+                  <p className="text-zinc-500 text-sm ml-2">Mantener los hábitos no completados por encima de los completados</p>
+
+                  <div className="bg-[#1c1c1e] rounded-2xl p-4 flex items-center justify-between border border-[#2c2c2e] mt-4">
+                     <div className="flex items-center gap-4">
+                        <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center"><Check size={14} className="text-white"/></div>
+                        <h4 className="font-bold text-[15px]">Ocultar completadas</h4>
+                     </div>
+                     <div className="w-12 h-6 rounded-full bg-zinc-600 relative"><div className="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5"></div></div>
+                  </div>
+                  <p className="text-zinc-500 text-sm ml-2">Ocultar hábitos completados de la lista del día</p>
+
+                  <div className="bg-[#1c1c1e] rounded-2xl p-4 flex items-center justify-between border border-[#2c2c2e] mt-4">
+                     <div className="flex items-center gap-4">
+                        <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center"><X size={14} className="text-white"/></div>
+                        <h4 className="font-bold text-[15px]">Ocultar hábitos fallidos</h4>
+                     </div>
+                     <div className="w-12 h-6 rounded-full bg-zinc-600 relative"><div className="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5"></div></div>
+                  </div>
+                  <p className="text-zinc-500 text-sm ml-2">Ocultar hábitos fallidos de la lista del día</p>
+                  
+                  <div className="bg-[#1c1c1e] rounded-2xl p-4 flex items-center justify-between border border-[#2c2c2e] mt-4">
+                     <div className="flex items-center gap-4">
+                        <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center"><ChevronRight size={14} className="text-white"/></div>
+                        <h4 className="font-bold text-[15px]">Ocultar saltados</h4>
+                     </div>
+                     <div className="w-12 h-6 rounded-full bg-zinc-600 relative"><div className="w-5 h-5 bg-white rounded-full absolute left-0.5 top-0.5"></div></div>
+                  </div>
+                  <p className="text-zinc-500 text-sm ml-2">Ocultar los hábitos saltados de la lista del día</p>
+               </div>
+            </div>
+         )}
+
+         {/* --- Logros Modal --- */}
+         {showLogrosModal && (
+            <div className="fixed inset-0 z-[300] bg-black text-white overflow-y-auto animate-in slide-in-from-right-full pb-20">
+               <div className="px-5 py-4 flex items-center mb-6 sticky top-0 bg-black/80 backdrop-blur-md z-10">
+                  <button onClick={() => setShowLogrosModal(false)} className="w-10 h-10 bg-[#1c1c1e] rounded-full flex items-center justify-center hover:bg-[#2c2c2e] transition-colors">
+                     <ChevronLeft size={20} />
+                  </button>
+                  <h2 className="text-xl font-bold ml-4 mx-auto -translate-x-5">Logros</h2>
+               </div>
+               
+               <div className="px-5">
+                  <h3 className="text-center font-bold text-lg mb-8 tracking-wide">Racha más larga</h3>
+                  <div className="grid grid-cols-3 gap-y-10 gap-x-4 mb-16">
+                     {[2,5,7,14,30,60,90,180,365].map((d, i) => (
+                        <div key={d} className="flex flex-col items-center gap-3">
+                           <div className={`w-[80px] h-[90px] flex items-center justify-center [clip-path:polygon(50%_0%,_100%_25%,_100%_75%,_50%_100%,_0%_75%,_0%_25%)] ${i === 0 ? 'bg-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.4)] scale-110' : 'bg-zinc-800'} transition-transform`}>
+                              <Flame size={32} className="text-white" />
+                           </div>
+                           <span className={`text-sm font-black ${i === 0 ? 'text-white' : 'text-zinc-500'}`}>{d} días</span>
+                        </div>
+                     ))}
+                  </div>
+
+                  <h3 className="text-center font-bold text-lg mb-8 tracking-wide">Objetivos</h3>
+                  <div className="grid grid-cols-3 gap-y-10 gap-x-4">
+                     {[100,200,300,400,500,600].map((d, i) => (
+                        <div key={d} className="flex flex-col items-center gap-3">
+                           <div className={`w-[80px] h-[90px] flex items-center justify-center [clip-path:polygon(50%_0%,_100%_25%,_100%_75%,_50%_100%,_0%_75%,_0%_25%)] ${i < 3 ? 'bg-cyan-500 shadow-[0_0_20px_rgba(6,182,212,0.4)] scale-110' : 'bg-zinc-800'} transition-transform`}>
+                              <Flag size={32} className="text-white" />
+                           </div>
+                           <span className={`text-sm font-black ${i < 3 ? 'text-white' : 'text-zinc-500'}`}>{d}%</span>
+                        </div>
                      ))}
                   </div>
                </div>

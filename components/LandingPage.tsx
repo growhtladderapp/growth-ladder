@@ -43,7 +43,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     const isEn = currentLangCode === 'en';
     const t = {
         login: isEn ? 'Login' : 'Iniciar Sesión',
-        launch: isEn ? 'Launch App' : 'Entrar a la App',
+        launch: isEn ? 'Register' : 'Registrarse',
         heroTitle: isEn ? 'Build Good Habits, Break Bad Ones' : 'Crea Buenos Hábitos, Rompe los Malos',
         heroSubtitle: isEn ? 'Train smart with adaptive routines, nutrition tracking and a 24/7 coach.' : 'Entrena inteligente con rutinas adaptativas, seguimiento de nutrición y un coach disponible 24/7.',
         terms: isEn ? 'Terms of use' : 'Términos de uso',
