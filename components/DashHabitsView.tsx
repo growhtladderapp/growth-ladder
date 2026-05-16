@@ -136,6 +136,8 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
   const [showNewHabitModal, setShowNewHabitModal] = useState(false);
   const [newHabitTitle, setNewHabitTitle] = useState('');
   const [modalCategory, setModalCategory] = useState<'buenos' | 'salud' | 'malos' | 'tareas'>('buenos');
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const popularHabits = {
     buenos: [
@@ -263,6 +265,11 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
     if (filters.sortBy === 'name') {
       result.sort((a, b) => a.title.localeCompare(b.title));
     }
+
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(habit => habit.title.toLowerCase().includes(term));
+    }
     
     return result.filter(habit => {
       // Check if the habit is completed on ALL selected dates
@@ -278,22 +285,43 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
     <div className="flex flex-col h-full bg-black text-white relative font-sans">
       {/* Header */}
       <div className="flex justify-between items-center px-5 py-4 pt-10 relative">
+        {!isSearchVisible ? (
+          <>
+            <div className="flex items-center gap-3">
+              <button onClick={() => setShowNewHabitModal(true)} className="w-10 h-10 bg-[#1c1c1e] rounded-full flex items-center justify-center hover:bg-[#2c2c2e] transition-colors active:scale-95">
+                <Menu size={20} className="text-white" />
+              </button>
+              <button 
+                onClick={() => setShowFilterMenu(!showFilterMenu)} 
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors active:scale-95 ${showFilterMenu ? 'bg-brand-500 text-black' : 'bg-[#1c1c1e] text-white hover:bg-[#2c2c2e]'}`}
+              >
+                <ListFilter size={20} />
+              </button>
+            </div>
+            <h1 className="text-xl font-bold">{selectedDateStr === todayStr ? 'Hoy' : selectedDateObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short'})}</h1>
+          </>
+        ) : (
+          <div className="flex-1 flex items-center gap-3 pr-2 animate-in fade-in slide-in-from-left-4 duration-200">
+            <button onClick={() => { setIsSearchVisible(false); setSearchTerm(''); }} className="w-10 h-10 bg-[#1c1c1e] rounded-full flex items-center justify-center">
+              <ChevronLeft size={20} className="text-white" />
+            </button>
+            <input 
+              type="text" 
+              autoFocus
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar..."
+              className="flex-1 bg-[#1c1c1e] border border-[#2c2c2e] rounded-2xl py-2 px-4 text-white focus:outline-none focus:border-brand-500 transition-all font-semibold"
+            />
+          </div>
+        )}
+        
         <div className="flex items-center gap-3">
-          <button onClick={() => setShowNewHabitModal(true)} className="w-10 h-10 bg-[#1c1c1e] rounded-full flex items-center justify-center hover:bg-[#2c2c2e] transition-colors active:scale-95">
-            <Menu size={20} className="text-white" />
-          </button>
-          <button 
-            onClick={() => setShowFilterMenu(!showFilterMenu)} 
-            className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors active:scale-95 ${showFilterMenu ? 'bg-brand-500 text-black' : 'bg-[#1c1c1e] text-white hover:bg-[#2c2c2e]'}`}
-          >
-            <ListFilter size={20} />
-          </button>
-        </div>
-        <h1 className="text-xl font-bold">{selectedDateStr === todayStr ? 'Hoy' : selectedDateObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short'})}</h1>
-        <div className="flex items-center gap-3">
-          <button onClick={() => {}} className="w-10 h-10 bg-[#1c1c1e] rounded-full flex items-center justify-center hover:bg-[#2c2c2e] transition-colors active:scale-95">
-            <Search size={20} className="text-white" />
-          </button>
+          {!isSearchVisible && (
+            <button onClick={() => setIsSearchVisible(true)} className="w-10 h-10 bg-[#1c1c1e] rounded-full flex items-center justify-center hover:bg-[#2c2c2e] transition-colors active:scale-95">
+              <Search size={20} className="text-white" />
+            </button>
+          )}
           <button onClick={() => setShowNewHabitModal(true)} className="w-10 h-10 bg-brand-500 rounded-full flex items-center justify-center hover:bg-brand-600 transition-colors active:scale-95 shadow-lg shadow-brand-500/20">
             <Plus size={24} className="text-white" />
           </button>
