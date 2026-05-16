@@ -86,29 +86,47 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps & { userName?: s
                 {/* Plan Mensual */}
                 <button
                   onClick={() => setSelectedPlan('monthly')}
-                  className={`w-full p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden group ${selectedPlan === 'monthly' ? 'border-[#10b981] bg-[#10b981]/10' : 'border-zinc-800 bg-zinc-900/50'}`}
+                  className={`w-full p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden group active:scale-[0.98] ${selectedPlan === 'monthly' ? 'border-[#10b981] bg-[#10b981]/10 shadow-[0_0_20px_rgba(16,185,129,0.1)]' : 'border-zinc-800 bg-zinc-900/50 hover:border-zinc-700'}`}
                 >
-                  <div className="flex flex-col gap-1 mt-1">
-                    <h3 className="text-lg font-black text-white uppercase italic tracking-tighter">Mensual</h3>
-                    <p className={`text-xs font-bold ${selectedPlan === 'monthly' ? 'text-[#10b981]' : 'text-zinc-400'} uppercase tracking-widest`}>
-                      {freeTrialActive && selectedPlan === 'monthly' ? 'Prueba gratuita de 7 días, luego USD 2.99/mes' : 'USD 2.99/mes'}
-                    </p>
+                  <div className="flex justify-between items-start">
+                    <div className="flex flex-col gap-1 mt-1">
+                      <h3 className="text-lg font-black text-white uppercase italic tracking-tighter">Mensual</h3>
+                      <p className={`text-xs font-bold ${selectedPlan === 'monthly' ? 'text-[#10b981]' : 'text-zinc-400'} uppercase tracking-widest`}>
+                        {freeTrialActive && selectedPlan === 'monthly' ? '7 días gratis, luego USD 2.99/mes' : 'Acceso total mensual'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xl font-black text-white leading-none">USD 2.99</p>
+                      <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">por mes</p>
+                    </div>
                   </div>
                 </button>
 
                 {/* Plan de por vida */}
                 <button
                   onClick={() => setSelectedPlan('lifetime')}
-                  className={`w-full p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden group ${selectedPlan === 'lifetime' ? 'border-brand-500 bg-brand-500/10' : 'border-zinc-800 bg-zinc-900/50'}`}
+                  className={`w-full p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden group active:scale-[0.98] ${selectedPlan === 'lifetime' ? 'border-brand-500 bg-brand-500/10 shadow-[0_0_30px_rgba(16,185,129,0.2)]' : 'border-zinc-800 bg-zinc-900/50 hover:border-zinc-700'}`}
                 >
-                  <div className={`absolute top-0 right-0 ${selectedPlan === 'lifetime' ? 'bg-brand-500' : 'bg-zinc-700'} text-black text-[8px] font-black px-3 py-1 uppercase tracking-tighter rounded-bl-xl`}>Más Popular</div>
-                  <div className="flex flex-col gap-1 mt-1">
-                    <h3 className="text-lg font-black text-white uppercase italic tracking-tighter">De por vida</h3>
-                    <p className={`text-xs font-bold ${selectedPlan === 'lifetime' ? 'text-brand-500' : 'text-zinc-400'} uppercase tracking-widest`}>
-                      {freeTrialActive && selectedPlan === 'lifetime' ? 'Prueba gratuita de 7 días, luego USD 24.99' : 'USD 24.99 pago único'}
-                    </p>
-                    <p className="text-sm font-bold text-slate-300">Acceso para siempre a todo el contenido</p>
+                  <div className={`absolute top-0 right-0 ${selectedPlan === 'lifetime' ? 'bg-brand-500' : 'bg-zinc-700'} text-black text-[9px] font-black px-4 py-1.5 uppercase tracking-tighter rounded-bl-2xl shadow-lg z-20`}>MÁS POPULAR</div>
+                  
+                  <div className="flex justify-between items-start">
+                    <div className="flex flex-col gap-1 mt-1">
+                      <h3 className="text-lg font-black text-white uppercase italic tracking-tighter">De por vida</h3>
+                      <p className={`text-xs font-bold ${selectedPlan === 'lifetime' ? 'text-brand-400' : 'text-zinc-400'} uppercase tracking-widest`}>
+                        {freeTrialActive && selectedPlan === 'lifetime' ? '7 días gratis, luego USD 24.99' : 'Pago único • 100% tuyo'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xl font-black text-brand-400 leading-none">USD 24.99</p>
+                      <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">para siempre</p>
+                    </div>
                   </div>
+                  
+                  {selectedPlan === 'lifetime' && (
+                    <div className="mt-3 pt-3 border-t border-brand-500/10 animate-in fade-in slide-in-from-top-1">
+                      <p className="text-[11px] font-bold text-slate-300">✓ Actualizaciones gratuitas de por vida</p>
+                    </div>
+                  )}
                 </button>
               </div>
 

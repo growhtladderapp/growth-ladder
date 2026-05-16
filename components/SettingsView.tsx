@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { ViewState, UserProfile } from '../types';
-import { Moon, Sun, Palette, AppWindow, AlignJustify, MoreHorizontal, Bell, Clock, Globe, Calendar, CalendarClock, Volume2, CheckCircle2, ChevronRight, Settings, MessageCircle, Crown, Upload, Edit2, LogOut, Check, X, Trophy, Flame, Flag, ListFilter, ChevronLeft, CalendarRange, Folder, Umbrella, Archive, RefreshCw, Trash2, Star, Gift, HelpCircle, Share } from 'lucide-react';
+import { Moon, Sun, Palette, AppWindow, AlignJustify, MoreHorizontal, Bell, Clock, Globe, Calendar, CalendarClock, Volume2, CheckCircle2, ChevronRight, Settings, MessageCircle, Crown, Upload, Edit2, LogOut, Check, X, Trophy, Flame, Flag, ListFilter, ChevronLeft, CalendarRange, Folder, Umbrella, Archive, RefreshCw, Trash2, Star, Gift, HelpCircle, Share, Zap } from 'lucide-react';
 
 interface SettingsViewProps {
    userProfile: UserProfile | null;
@@ -223,15 +223,26 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                </p>
                
                {!isPro && (
-                  <div className="space-y-2 mb-2">
-                     <button onClick={onRequestPro} className="w-full flex justify-between items-center bg-black/20 hover:bg-black/40 p-3 rounded-xl border border-white/10 transition-colors">
-                        <span className="text-white font-bold text-sm">Plan Mensual</span>
-                        <span className="text-white font-black">USD 2.99<span className="text-[10px] text-white/50">/mes</span></span>
+                  <div className="space-y-3 mb-2">
+                     <button onClick={onRequestPro} className="w-full flex justify-between items-center bg-white/5 hover:bg-white/10 p-4 rounded-2xl border border-white/10 transition-all active:scale-[0.98] group">
+                        <div className="flex items-center gap-3">
+                           <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                              <Zap size={16} className="text-white" />
+                           </div>
+                           <span className="text-white font-bold text-sm">Plan Mensual</span>
+                        </div>
+                        <span className="text-white font-black text-lg">USD 2.99<span className="text-[10px] text-white/50 ml-1">/mes</span></span>
                      </button>
-                     <button onClick={onRequestPro} className="w-full flex justify-between items-center bg-brand-500/20 hover:bg-brand-500/30 p-3 rounded-xl border border-brand-500/50 transition-colors relative overflow-hidden">
-                        <div className="absolute top-0 right-0 bg-brand-500 text-black text-[8px] font-black px-2 py-0.5 rounded-bl-lg">¡ÚNICO PAGO!</div>
-                        <span className="text-white font-bold text-sm">Plan De Por Vida</span>
-                        <span className="text-brand-400 font-black">USD 24.99</span>
+                     
+                     <button onClick={onRequestPro} className="w-full flex justify-between items-center bg-brand-500/10 hover:bg-brand-500/20 p-4 rounded-2xl border border-brand-500/30 transition-all active:scale-[0.98] relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 bg-brand-500 text-black text-[9px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-tighter">Mejor Valor</div>
+                        <div className="flex items-center gap-3">
+                           <div className="w-8 h-8 rounded-full bg-brand-500/20 flex items-center justify-center">
+                              <Crown size={16} className="text-brand-500" />
+                           </div>
+                           <span className="text-white font-bold text-sm">Plan De Por Vida</span>
+                        </div>
+                        <span className="text-brand-400 font-black text-lg">USD 24.99</span>
                      </button>
                   </div>
                )}
