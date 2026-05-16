@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Menu, Plus, Check, CloudMoon, ListTodo, X, Dumbbell, ScanLine, Brain, MessageSquare, ChefHat, Users, Lock, ListFilter, ArrowDownWideNarrow, EyeOff, XCircle, CornerUpRight, Trash2, Search } from 'lucide-react';
+import { Menu, Plus, Check, CloudMoon, ListTodo, X, Dumbbell, ScanLine, Brain, MessageSquare, ChefHat, Users, Lock, ListFilter, ArrowDownWideNarrow, EyeOff, XCircle, CornerUpRight, Trash2, Search, Crown, ChevronRight } from 'lucide-react';
 import { ViewState, Habit, HabitLog } from '../types';
 
 interface Props {
@@ -485,6 +485,24 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
               />
             )
           })
+        )}
+        
+        {!isPro && (
+          <button 
+            onClick={() => onToolClick(ViewState.SETTINGS)} 
+            className="w-full mt-4 mb-4 p-5 rounded-[2rem] bg-[#1c1c1e] border border-zinc-800 flex items-center justify-between group active:scale-95 transition-all shadow-xl"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-yellow-500/10 flex items-center justify-center">
+                <Crown size={24} className="text-yellow-500 fill-yellow-500/20" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-black text-[#a78bfa] text-lg leading-none mb-1">Desbloquear todo</h3>
+                <p className="text-zinc-400 text-sm font-bold">Con TWH Premium</p>
+              </div>
+            </div>
+            <ChevronRight size={24} className="text-white opacity-50 group-hover:opacity-100 transition-opacity" />
+          </button>
         )}
 
         <div className="text-center mt-6">
