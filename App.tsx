@@ -401,6 +401,14 @@ export default function App() {
     });
   };
 
+  const toggleArchiveHabit = (habitId: string) => {
+    setHabits(prev => {
+      const updated = prev.map(h => h.id === habitId ? { ...h, isArchived: !h.isArchived } : h);
+      localStorage.setItem('twh_habits', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
     const saved = localStorage.getItem('gl_user_profile');
     return saved ? JSON.parse(saved) : null;
@@ -962,6 +970,7 @@ export default function App() {
               onDecrementHabit={decrementHabitDate}
               onAddHabit={saveHabit}
               onDeleteHabit={deleteHabit}
+              onArchiveHabit={toggleArchiveHabit}
               onToolClick={handleToolClick}
               isPro={isPro}
             />

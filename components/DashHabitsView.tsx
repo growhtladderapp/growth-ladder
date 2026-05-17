@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Menu, Plus, Check, CloudMoon, ListTodo, X, Dumbbell, ScanLine, Brain, MessageSquare, ChefHat, Users, Lock, ListFilter, ArrowDownWideNarrow, EyeOff, XCircle, CornerUpRight, Trash2, Search, Crown, ChevronRight, ChevronLeft, Trophy, Sparkles, Star, Frown, BadgeCheck, Activity, Ban, Minus, Flame } from 'lucide-react';
+import { Menu, Plus, Check, CloudMoon, ListTodo, X, Dumbbell, ScanLine, Brain, MessageSquare, ChefHat, Users, Lock, ListFilter, ArrowDownWideNarrow, EyeOff, XCircle, CornerUpRight, Trash2, Search, Crown, ChevronRight, ChevronLeft, Trophy, Sparkles, Star, Frown, BadgeCheck, Activity, Ban, Minus, Flame, Archive } from 'lucide-react';
 import { ViewState, Habit, HabitLog } from '../types';
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
   onDecrementHabit: (habitId: string, date: string) => void;
   onAddHabit: (habit: Habit) => void;
   onDeleteHabit: (habitId: string) => void;
+  onArchiveHabit: (habitId: string) => void;
   onToolClick: (view: ViewState) => void;
   isPro: boolean;
 }
@@ -21,13 +22,15 @@ const HabitItem = ({
   completedCount, 
   onIncrement, 
   onDecrement, 
-  onDelete 
+  onDelete,
+  onArchive
 }: { 
   habit: Habit, 
   completedCount: number, 
   onIncrement: () => void, 
   onDecrement: () => void, 
-  onDelete: () => void 
+  onDelete: () => void,
+  onArchive: () => void
 }) => {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -41,15 +44,15 @@ const HabitItem = ({
     const currentX = e.touches[0].clientX;
     const diff = currentX - touchStartX;
     if (diff < 0) {
-      setSwipeOffset(Math.max(-80, diff));
+      setSwipeOffset(Math.max(-160, diff));
     } else if (diff > 0 && swipeOffset < 0) {
       setSwipeOffset(Math.min(0, swipeOffset + diff));
     }
   };
 
   const handleTouchEnd = () => {
-    if (swipeOffset < -40) {
-      setSwipeOffset(-80);
+    if (swipeOffset < -60) {
+      setSwipeOffset(-160);
     } else {
       setSwipeOffset(0);
     }
@@ -59,10 +62,31 @@ const HabitItem = ({
   const isCompleted = completedCount > 0;
 
   return (
-    <div className="relative w-full mb-4 rounded-3xl bg-red-500 overflow-hidden select-none">
-      <div className="absolute right-0 top-0 bottom-0 w-[80px] flex items-center justify-center text-white">
-        <button onClick={onDelete} className="w-full h-full flex flex-col items-center justify-center opacity-80 hover:opacity-100 transition-opacity bg-red-500">
-          <Trash2 size={24} />
+    <div className="relative w-full mb-4 rounded-3xl bg-[#1c1c1e] overflow-hidden select-none">
+      {/* Background Buttons */}
+      <div className="absolute right-0 top-0 bottom-0 w-[160px] flex text-white">
+        {/* Archive Button */}
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            onArchive();
+            setSwipeOffset(0);
+          }} 
+          className="w-1/2 h-full flex flex-col items-center justify-center opacity-90 hover:opacity-100 transition-opacity bg-amber-600 border-r border-[#1c1c1e]/20"
+        >
+          <Archive size={20} />
+          <span className="text-[10px] font-bold mt-1">{habit.isArchived ? 'Activar' : 'Archivar'}</span>
+        </button>
+        {/* Delete Button */}
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+            setSwipeOffset(0);
+          }} 
+          className="w-1/2 h-full flex flex-col items-center justify-center opacity-90 hover:opacity-100 transition-opacity bg-red-500"
+        >
+          <Trash2 size={20} />
           <span className="text-[10px] font-bold mt-1">Borrar</span>
         </button>
       </div>
@@ -181,17 +205,19 @@ const ProToolButton = ({ title, icon, colorName, isPro, onClick }: { title: stri
   );
 };
 
-export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs, onToggleHabit, onIncrementHabit, onDecrementHabit, onAddHabit, onDeleteHabit, onToolClick, isPro }) => {
+export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs, onToggleHabit, onIncrementHabit, onDecrementHabit, onAddHabit, onDeleteHabit, onArchiveHabit, onToolClick, isPro }) => {
   const [showBottomAction, setShowBottomAction] = useState(true);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [menuTab, setMenuTab] = useState<'sort' | 'groups'>('sort');
   const [filters, setFilters] = useState(() => {
     const saved = localStorage.getItem('twh_habit_sort_prefs');
-    return saved ? JSON.parse(saved) : {
-      hideCompleted: false,
-      hideFailed: false,
-      hideSkipped: false,
-      sortBy: 'default'
+    const parsed = saved ? JSON.parse(saved) : null;
+    return {
+      hideCompleted: parsed?.hideCompleted ?? false,
+      hideFailed: parsed?.hideFailed ?? false,
+      hideSkipped: parsed?.hideSkipped ?? false,
+      sortBy: parsed?.sortBy ?? 'default',
+      showArchived: parsed?.showArchived ?? false
     };
   });
 
@@ -460,6 +486,15 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
   const filteredHabits = useMemo(() => {
     let result = [...habits];
     
+    // Filtrado de archivados
+    result = result.filter(habit => {
+      if (filters.showArchived) {
+        return habit.isArchived === true;
+      } else {
+        return !habit.isArchived;
+      }
+    });
+    
     // Filtrado de estados
     result = result.filter(habit => {
       const isCompleted = selectedDates.every(date => 
@@ -668,6 +703,19 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
                   </div>
                   {filters.hideSkipped && <div className="w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" />}
                 </button>
+
+                <button 
+                  onClick={() => { setFilters({...filters, showArchived: !filters.showArchived}); setShowFilterMenu(false); }}
+                  className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-white/5 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500">
+                      <Archive size={16} />
+                    </div>
+                    <span className="text-sm font-semibold text-zinc-400">Mostrar archivados</span>
+                  </div>
+                  {filters.showArchived && <div className="w-2 h-2 rounded-full bg-brand-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" />}
+                </button>
               </div>
             ) : (
               <div className="py-8 text-center">
@@ -799,6 +847,7 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
                   });
                 }}
                 onDelete={() => onDeleteHabit(habit.id)}
+                onArchive={() => onArchiveHabit(habit.id)}
               />
             )
           })

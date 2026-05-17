@@ -161,6 +161,7 @@ export interface Habit {
   color: string;
   icon: string;
   createdAt: string;
+  isArchived?: boolean;
 }
 
 export interface HabitLog {
