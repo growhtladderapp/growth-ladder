@@ -23,7 +23,7 @@ import { TermsAndConditions } from './components/TermsAndConditions';
 import { SubscriptionModal } from './components/SubscriptionModal';
 import { translateUI } from './services/geminiService';
 import { supabase, DatabaseLogEntry } from './services/supabase';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles, Flame } from 'lucide-react';
 import { useToast } from './components/ToastContext';
 
 import { DashHabitsView } from './components/DashHabitsView';
@@ -311,6 +311,13 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [streakAchievement, setStreakAchievement] = useState<{
+    show: boolean;
+    title: string;
+    desc: string;
+    symbol: string;
+  } | null>(null);
+
   const saveHabit = (habit: Habit) => {
     setHabits(prev => {
       const updated = [...prev, habit];
@@ -340,6 +347,9 @@ export default function App() {
 
   const incrementHabitDate = (habitId: string, date: string) => {
     setHabitLogs(prev => {
+      const todayLogs = prev.filter(l => l.date === date);
+      const isFirstOfToday = todayLogs.length === 0;
+
       const updated = [...prev, {
         id: Date.now().toString(),
         habitId,
@@ -347,6 +357,16 @@ export default function App() {
         completedAt: new Date().toISOString()
       }];
       localStorage.setItem('twh_habit_logs', JSON.stringify(updated));
+
+      if (isFirstOfToday) {
+        setStreakAchievement({
+          show: true,
+          title: "Racha Iniciada",
+          desc: "¡Excelente! Has registrado tu primer hábito del día y asegurado tu racha activa.",
+          symbol: "🔥"
+        });
+      }
+
       return updated;
     });
   };
@@ -987,6 +1007,45 @@ export default function App() {
         </main>
 
         <Navigation currentView={view} setView={setView} isPro={isPro} uiText={uiText} />
+
+        {/* Streak Achievement Unlock Alert */}
+        {streakAchievement && streakAchievement.show && (
+          <div className="fixed inset-0 z-[1000] flex flex-col justify-end items-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+            <div 
+              className="w-full max-w-sm bg-gradient-to-b from-[#1c1c1e] to-black border border-orange-500/30 rounded-[2.5rem] p-6 shadow-[0_15px_40px_rgba(249,115,22,0.3)] flex flex-col items-center text-center pointer-events-auto transform translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] animate-in slide-in-from-bottom-full"
+            >
+              {/* Top notch */}
+              <div className="mx-auto mb-3.5 w-12 h-1 bg-zinc-800 rounded-full" />
+              
+              {/* Pulsing Flame Icon */}
+              <div className="relative mt-2 mb-4">
+                <div className="absolute inset-0 rounded-full bg-orange-500/25 blur-2xl animate-pulse scale-150" />
+                <div className="w-20 h-20 rounded-full bg-orange-500/10 border border-orange-500/30 flex items-center justify-center relative z-10 animate-bounce">
+                  <Flame size={44} className="text-orange-500 fill-orange-500/25 animate-pulse" />
+                </div>
+              </div>
+
+              <h3 className="text-xs font-black text-orange-500 uppercase tracking-[0.2em] mb-1">
+                ¡LOGRO DESBLOQUEADO!
+              </h3>
+              
+              <h2 className="text-xl font-black text-white uppercase italic tracking-tight leading-none mb-2">
+                {streakAchievement.title}
+              </h2>
+              
+              <p className="text-zinc-400 text-xs font-bold leading-normal max-w-[85%] mb-5">
+                {streakAchievement.desc}
+              </p>
+
+              <button
+                onClick={() => setStreakAchievement(null)}
+                className="w-full py-4 bg-orange-500 hover:bg-orange-600 active:scale-95 text-white font-black rounded-full uppercase tracking-widest text-[12.5px] transition-all shadow-[0_4px_12px_rgba(249,115,22,0.35)]"
+              >
+                Confirmar Racha
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div >
   );
