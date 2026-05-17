@@ -19,14 +19,15 @@ const BarChart: React.FC<{ data: { label: string; value: number; max: number }[]
     <div className="flex items-end gap-1 h-20 w-full">
       {data.map((d, i) => {
         const pct = d.max === 0 ? 0 : Math.round((d.value / d.max) * 100);
+        const heightPct = Math.min(pct, 100);
         return (
           <div key={i} className="flex-1 flex flex-col items-center gap-1">
             <div className="w-full relative flex items-end justify-center" style={{ height: '64px' }}>
               <div
                 className="w-full rounded-t-lg transition-all duration-700"
                 style={{
-                  height: `${Math.max(pct, 4)}%`,
-                  background: pct === 100
+                  height: `${Math.max(heightPct, 4)}%`,
+                  background: pct >= 100
                     ? 'linear-gradient(to top, #059669, #10b981)'
                     : pct >= 50
                       ? 'linear-gradient(to top, #0369a1, #38bdf8)'
