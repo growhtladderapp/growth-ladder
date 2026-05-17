@@ -198,6 +198,10 @@ export default function App() {
     if (params.get('login') === 'true') {
       setShowLanding(false);
     }
+    if (params.get('free') === 'true') {
+      setIsPro(false);
+      localStorage.setItem('gl_is_pro', 'false');
+    }
   }, []);
 
   // Auto-cycle views in preview mode
@@ -329,6 +333,29 @@ export default function App() {
           completedAt: new Date().toISOString()
         }];
       }
+      localStorage.setItem('twh_habit_logs', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const incrementHabitDate = (habitId: string, date: string) => {
+    setHabitLogs(prev => {
+      const updated = [...prev, {
+        id: Date.now().toString(),
+        habitId,
+        date,
+        completedAt: new Date().toISOString()
+      }];
+      localStorage.setItem('twh_habit_logs', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const decrementHabitDate = (habitId: string, date: string) => {
+    setHabitLogs(prev => {
+      const idx = prev.findIndex(l => l.habitId === habitId && l.date === date);
+      if (idx === -1) return prev;
+      const updated = prev.filter((_, i) => i !== idx);
       localStorage.setItem('twh_habit_logs', JSON.stringify(updated));
       return updated;
     });
@@ -904,6 +931,8 @@ export default function App() {
               habits={habits}
               habitLogs={habitLogs}
               onToggleHabit={toggleHabitDate}
+              onIncrementHabit={incrementHabitDate}
+              onDecrementHabit={decrementHabitDate}
               onAddHabit={saveHabit}
               onDeleteHabit={deleteHabit}
               onToolClick={handleToolClick}

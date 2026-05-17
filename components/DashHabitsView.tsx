@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Menu, Plus, Check, CloudMoon, ListTodo, X, Dumbbell, ScanLine, Brain, MessageSquare, ChefHat, Users, Lock, ListFilter, ArrowDownWideNarrow, EyeOff, XCircle, CornerUpRight, Trash2, Search, Crown, ChevronRight } from 'lucide-react';
+import { Menu, Plus, Check, CloudMoon, ListTodo, X, Dumbbell, ScanLine, Brain, MessageSquare, ChefHat, Users, Lock, ListFilter, ArrowDownWideNarrow, EyeOff, XCircle, CornerUpRight, Trash2, Search, Crown, ChevronRight, ChevronLeft, Trophy, Sparkles, Star, Frown, BadgeCheck, Activity, Ban, Minus, Flame } from 'lucide-react';
 import { ViewState, Habit, HabitLog } from '../types';
 
 interface Props {
@@ -8,13 +8,27 @@ interface Props {
   habits: Habit[];
   habitLogs: HabitLog[];
   onToggleHabit: (habitId: string, date: string) => void;
+  onIncrementHabit: (habitId: string, date: string) => void;
+  onDecrementHabit: (habitId: string, date: string) => void;
   onAddHabit: (habit: Habit) => void;
   onDeleteHabit: (habitId: string) => void;
   onToolClick: (view: ViewState) => void;
   isPro: boolean;
 }
 
-const HabitItem = ({ habit, isCompleted, onToggle, onDelete }: { habit: Habit, isCompleted: boolean, onToggle: () => void, onDelete: () => void }) => {
+const HabitItem = ({ 
+  habit, 
+  completedCount, 
+  onIncrement, 
+  onDecrement, 
+  onDelete 
+}: { 
+  habit: Habit, 
+  completedCount: number, 
+  onIncrement: () => void, 
+  onDecrement: () => void, 
+  onDelete: () => void 
+}) => {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
@@ -42,8 +56,10 @@ const HabitItem = ({ habit, isCompleted, onToggle, onDelete }: { habit: Habit, i
     setTouchStartX(null);
   };
 
+  const isCompleted = completedCount > 0;
+
   return (
-    <div className="relative w-full mb-4 rounded-3xl bg-red-500 overflow-hidden">
+    <div className="relative w-full mb-4 rounded-3xl bg-red-500 overflow-hidden select-none">
       <div className="absolute right-0 top-0 bottom-0 w-[80px] flex items-center justify-center text-white">
         <button onClick={onDelete} className="w-full h-full flex flex-col items-center justify-center opacity-80 hover:opacity-100 transition-opacity bg-red-500">
           <Trash2 size={24} />
@@ -51,30 +67,71 @@ const HabitItem = ({ habit, isCompleted, onToggle, onDelete }: { habit: Habit, i
         </button>
       </div>
       
-      <button 
-        onClick={() => {
-          if (swipeOffset < 0) setSwipeOffset(0);
-          else onToggle();
-        }}
+      <div 
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         style={{ transform: `translateX(${swipeOffset}px)` }}
-        className={`w-full h-full relative z-10 text-left border rounded-3xl p-4 flex items-center justify-between transition-transform ${isCompleted ? 'bg-[#1c1c1e] border-brand-500/30 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'bg-[#1c1c1e] border-[#2c2c2e]'}`}
+        className={`w-full h-full relative z-10 text-left border rounded-3xl p-4 flex items-center justify-between transition-all duration-300 ${isCompleted ? 'bg-[#1c1c1e] border-brand-500/30 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'bg-[#1c1c1e] border-[#2c2c2e]'}`}
       >
-        <div className="flex items-center gap-4">
-          <span className="text-2xl">{habit.icon}</span>
+        <div 
+          className="flex items-center gap-4 flex-1 cursor-pointer" 
+          onClick={() => {
+            if (swipeOffset < 0) {
+              setSwipeOffset(0);
+            } else if (completedCount === 0) {
+              onIncrement();
+            }
+          }}
+        >
+          <span className="text-2xl shrink-0">{habit.icon}</span>
           <div>
             <h3 className={`font-semibold transition-colors ${isCompleted ? 'text-brand-400' : 'text-white'}`}>{habit.title}</h3>
-            <p className="text-xs text-zinc-400">Cada día</p>
+            <p className="text-xs text-zinc-400 leading-normal">
+              {completedCount > 0 ? `Realizado ${completedCount} ${completedCount === 1 ? 'vez' : 'veces'} hoy` : 'Cada día'}
+            </p>
           </div>
         </div>
-        <div className="relative">
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isCompleted ? 'bg-brand-500 text-black' : 'bg-[#121212] border border-[#2c2c2e]'}`}>
-            {isCompleted ? <Check size={20} className="stroke-[3]" /> : <Plus size={20} className="text-brand-500/50" />}
-          </div>
+        
+        {/* Counter Controls */}
+        <div className="relative z-20 flex items-center gap-2 shrink-0">
+          {completedCount > 0 ? (
+            <div className="flex items-center bg-[#121212] border border-[#2c2c2e] rounded-full p-1 gap-2 shadow-inner">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDecrement();
+                }}
+                className="w-8 h-8 rounded-full bg-zinc-800 hover:bg-zinc-700 active:scale-90 flex items-center justify-center text-zinc-400 hover:text-white transition-all"
+              >
+                <Minus size={12} strokeWidth={2.5} />
+              </button>
+              <span className="text-xs font-black text-white px-1 shrink-0 select-none">
+                {completedCount}x
+              </span>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onIncrement();
+                }}
+                className="w-8 h-8 rounded-full bg-brand-500 hover:bg-brand-600 active:scale-90 flex items-center justify-center text-white transition-all shadow-[0_0_8px_rgba(16,185,129,0.3)]"
+              >
+                <Plus size={12} strokeWidth={2.5} />
+              </button>
+            </div>
+          ) : (
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onIncrement();
+              }}
+              className="w-10 h-10 rounded-full bg-[#121212] hover:bg-[#202022] border border-[#2c2c2e] flex items-center justify-center text-brand-500/50 hover:text-brand-500 transition-all active:scale-90"
+            >
+              <Plus size={20} className="stroke-[2.5]" />
+            </button>
+          )}
         </div>
-      </button>
+      </div>
     </div>
   );
 };
@@ -123,46 +180,167 @@ const ProToolButton = ({ title, icon, colorName, isPro, onClick }: { title: stri
   );
 };
 
-export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs, onToggleHabit, onAddHabit, onDeleteHabit, onToolClick, isPro }) => {
+export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs, onToggleHabit, onIncrementHabit, onDecrementHabit, onAddHabit, onDeleteHabit, onToolClick, isPro }) => {
   const [showBottomAction, setShowBottomAction] = useState(true);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [menuTab, setMenuTab] = useState<'sort' | 'groups'>('sort');
-  const [filters, setFilters] = useState({
-    hideCompleted: false,
-    hideFailed: false,
-    hideSkipped: false,
-    sortBy: 'custom' as 'custom' | 'name'
+  const [filters, setFilters] = useState(() => {
+    const saved = localStorage.getItem('twh_habit_sort_prefs');
+    return saved ? JSON.parse(saved) : {
+      hideCompleted: false,
+      hideFailed: false,
+      hideSkipped: false,
+      sortBy: 'default'
+    };
   });
+
+  React.useEffect(() => {
+    localStorage.setItem('twh_habit_sort_prefs', JSON.stringify(filters));
+  }, [filters]);
   const [showNewHabitModal, setShowNewHabitModal] = useState(false);
   const [newHabitTitle, setNewHabitTitle] = useState('');
   const [modalCategory, setModalCategory] = useState<'buenos' | 'salud' | 'malos' | 'tareas'>('buenos');
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [modalSearchTerm, setModalSearchTerm] = useState('');
 
-  const popularHabits = {
+  // Estados para el Logro de Día Perfecto
+  const [showPerfectDayModal, setShowPerfectDayModal] = useState(false);
+  const [hasSeenPerfectDay, setHasSeenPerfectDay] = useState<Record<string, boolean>>({});
+
+  const popularHabits: Record<string, { section: string, items: { title: string, icon: string }[] }[]> = {
     buenos: [
-      { title: 'Leer', icon: '📚' },
-      { title: 'Meditar', icon: '🧘' },
-      { title: 'Estirar', icon: '🤸' },
-      { title: 'Agradecer', icon: '🙏' }
+      {
+        section: 'Más populares',
+        items: [
+          { title: 'Haz tu cama', icon: '🛏️' },
+          { title: 'Beber agua', icon: '💧' },
+          { title: 'Tomar una ducha fría', icon: '❄️' },
+          { title: 'Tomar vitaminas', icon: '💊' },
+          { title: 'Despertar a tiempo', icon: '🌞' },
+          { title: 'Come una comida saludable', icon: '🥕' },
+          { title: 'Cepíllate los dientes', icon: '🪥' },
+          { title: 'Leer un libro', icon: '📖' },
+          { title: 'Darse una ducha', icon: '🚿' }
+        ]
+      }
     ],
     salud: [
-      { title: 'Beber agua', icon: '💧' },
-      { title: 'Dormir 8h', icon: '😴' },
-      { title: 'Comer fruta', icon: '🍎' },
-      { title: 'Caminar', icon: '🚶' }
+      {
+        section: 'Actividad',
+        items: [
+          { title: 'Pasos', icon: '🚶‍♂️' },
+          { title: 'Correr', icon: '🏃‍♂️' },
+          { title: 'Bicicleta', icon: '🚲' },
+          { title: 'Nadar', icon: '🏊' },
+          { title: 'Esquiar', icon: '⛷️' },
+          { title: 'Yoga', icon: '🧘‍♂️' },
+          { title: 'Baile', icon: '🕺' },
+          { title: 'Pilates', icon: '🧘‍♀️' },
+          { title: 'Tenis', icon: '🎾' },
+          { title: 'Ejercicios de fuerza con máquinas', icon: '🏋️' },
+          { title: 'Boxeo', icon: '🥊' },
+          { title: 'Subir tramos', icon: '🪜' },
+          { title: 'Quemar calorías', icon: '🔥' },
+          { title: 'De pie', icon: '🧍' },
+          { title: 'Déficit de calorías', icon: '🔥' },
+          { title: 'Ejercicio', icon: '🏋️‍♀️' }
+        ]
+      },
+      {
+        section: 'Medidas corporales',
+        items: [
+          { title: 'Registrar el peso', icon: '⚖️' },
+          { title: 'Registrar la masa corporal magra', icon: '⚖️' },
+          { title: 'Registrar el porcentaje de grasa', icon: '⚖️' },
+          { title: 'Registrar la altura', icon: '🧍' },
+          { title: 'Registrar la glucosa en sangre', icon: '📈' }
+        ]
+      },
+      {
+        section: 'Sueño',
+        items: [
+          { title: 'Dormir', icon: '😴' }
+        ]
+      },
+      {
+        section: 'Corazón',
+        items: [
+          { title: 'Registrar la presión arterial', icon: '🫀' }
+        ]
+      },
+      {
+        section: 'Bienestar mental',
+        items: [
+          { title: 'Sesión de conciencia', icon: '🧘' }
+        ]
+      },
+      {
+        section: 'Nutrición',
+        items: [
+          { title: 'Beber agua', icon: '💧' },
+          { title: 'Limitar el café', icon: '☕' },
+          { title: 'Limitar las bebidas alcohólicas', icon: '🍷' }
+        ]
+      },
+      {
+        section: 'Otros',
+        items: [
+          { title: 'Lavar las manos', icon: '👏' },
+          { title: 'Cepíllate los dientes', icon: '🪥' },
+          { title: 'Tiempo de exposición a la luz diurna', icon: '☀️' },
+          { title: 'Tener sexo', icon: '💘' }
+        ]
+      }
     ],
     malos: [
-      { title: 'No fumar', icon: '🚭' },
-      { title: 'No azúcar', icon: '🚫' },
-      { title: 'No alcohol', icon: '🍺' },
-      { title: 'Sin redes', icon: '📵' }
+      {
+        section: 'Cuerpo',
+        items: [
+          { title: 'No comas', icon: '🥡' },
+          { title: 'No te muerdas las uñas', icon: '💅' },
+          { title: 'No te saques mocos', icon: '👆' },
+          { title: 'Sentarse menos', icon: '🪑' }
+        ]
+      },
+      {
+        section: 'Bienestar mental',
+        items: [
+          { title: 'No jures', icon: '🤬' },
+          { title: 'No te enfades', icon: '😡' },
+          { title: 'No te quejes', icon: '😤' }
+        ]
+      },
+      {
+        section: 'Productividad',
+        items: [
+          { title: 'No te demores', icon: '📺' },
+          { title: 'No juegues a videojuegos', icon: '🎮' },
+          { title: 'Menos redes sociales', icon: '📱' },
+          { title: 'Menos televisión', icon: '📺' }
+        ]
+      }
     ],
     tareas: [
-      { title: 'Hacer la cama', icon: '🛏️' },
-      { title: 'Limpiar', icon: '🧹' },
-      { title: 'Estudiar', icon: '📖' },
-      { title: 'Planear día', icon: '📝' }
+      {
+        section: 'Más populares',
+        items: [
+          { title: 'Presentar impuestos', icon: '🏛️' },
+          { title: 'Renovar pasaporte', icon: '🪪' },
+          { title: 'Planear unas vacaciones', icon: '🏖️' },
+          { title: 'Actualizar contraseñas', icon: '🔑' },
+          { title: 'Imprimir documentos', icon: '🖨️' },
+          { title: 'Comprar un regalo', icon: '🎁' },
+          { title: 'Inscribirse en un gimnasio', icon: '💪' },
+          { title: 'Programar una reunión', icon: '📅' },
+          { title: 'Establecer un presupuesto', icon: '💸' },
+          { title: 'Actualizar currículum', icon: '🪪' },
+          { title: 'Leer un libro', icon: '📖' },
+          { title: 'Renovar licencia de conducir', icon: '🪪' },
+          { title: 'Verificar seguro', icon: '📄' },
+          { title: 'Mantenimiento del coche', icon: '🚗' }
+        ]
+      }
     ]
   };
 
@@ -206,14 +384,33 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
   // Generate 7 days (3 days before, today, 3 days after) based on the center selectedDateObj
   const days = useMemo(() => {
     const list = [];
+    const yesterdayDateObj = new Date(todayDateObj);
+    yesterdayDateObj.setDate(yesterdayDateObj.getDate() - 1);
+    const yesterdayStr = yesterdayDateObj.toISOString().split('T')[0];
+
+    const tomorrowDateObj = new Date(todayDateObj);
+    tomorrowDateObj.setDate(tomorrowDateObj.getDate() + 1);
+    const tomorrowStr = tomorrowDateObj.toISOString().split('T')[0];
+
     for (let i = -3; i <= 3; i++) {
         const d = new Date(selectedDateObj);
         d.setDate(d.getDate() + i);
+        const dateStr = d.toISOString().split('T')[0];
+        
+        let label = d.toLocaleDateString('es-ES', { weekday: 'short' });
+        if (dateStr === todayStr) {
+          label = 'Hoy';
+        } else if (dateStr === yesterdayStr) {
+          label = 'Ayer';
+        } else if (dateStr === tomorrowStr) {
+          label = 'Mañana';
+        }
+
         list.push({
-            date: d.toISOString().split('T')[0],
-            dayName: d.toLocaleDateString('es-ES', { weekday: 'short' }),
+            date: dateStr,
+            dayName: label,
             dayNumber: d.getDate(),
-            isToday: d.toISOString().split('T')[0] === todayStr,
+            isToday: dateStr === todayStr,
             fullDate: d
         });
     }
@@ -262,27 +459,96 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
   const filteredHabits = useMemo(() => {
     let result = [...habits];
     
-    if (filters.sortBy === 'name') {
-      result.sort((a, b) => a.title.localeCompare(b.title));
-    }
-
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(habit => habit.title.toLowerCase().includes(term));
-    }
-    
-    return result.filter(habit => {
-      // Check if the habit is completed on ALL selected dates
+    // Filtrado de estados
+    result = result.filter(habit => {
       const isCompleted = selectedDates.every(date => 
         habitLogs.some(log => log.habitId === habit.id && log.date === date)
       );
       if (filters.hideCompleted && isCompleted) return false;
       return true;
     });
-  }, [habits, filters, habitLogs, selectedDates]);
+
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(habit => habit.title.toLowerCase().includes(term));
+    }
+    
+    // Ordenación
+    if (filters.sortBy === 'name') {
+      result.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (filters.sortBy === 'completed_last') {
+      result.sort((a, b) => {
+        const aComp = selectedDates.every(date => habitLogs.some(log => log.habitId === a.id && log.date === date));
+        const bComp = selectedDates.every(date => habitLogs.some(log => log.habitId === b.id && log.date === date));
+        if (aComp === bComp) return 0;
+        return aComp ? 1 : -1;
+      });
+    } else if (filters.sortBy === 'progress') {
+      result.sort((a, b) => {
+        const aComp = selectedDates.every(date => habitLogs.some(log => log.habitId === a.id && log.date === date));
+        const bComp = selectedDates.every(date => habitLogs.some(log => log.habitId === b.id && log.date === date));
+        if (aComp === bComp) return 0;
+        return aComp ? -1 : 1; // Mayor progreso (completado) arriba
+      });
+    }
+
+    return result;
+  }, [habits, filters, habitLogs, selectedDates, searchTerm]);
+
+  // Lógica para detectar el Día Perfecto
+  const currentDayHabitsCount = habits.length;
+  const currentDayCompletedCount = habitLogs.filter(log => log.date === selectedDateStr).length;
+  const currentDayProgress = currentDayHabitsCount === 0 ? 0 : currentDayCompletedCount / currentDayHabitsCount;
+
+  React.useEffect(() => {
+    if (currentDayProgress === 1 && currentDayHabitsCount > 0 && !hasSeenPerfectDay[selectedDateStr]) {
+      // Pequeño delay para que el usuario vea la animación de completado (check) primero
+      const timer = setTimeout(() => {
+        setShowPerfectDayModal(true);
+        setHasSeenPerfectDay(prev => ({ ...prev, [selectedDateStr]: true }));
+        
+        // Auto ocultar después de 4 segundos
+        setTimeout(() => {
+          setShowPerfectDayModal(false);
+        }, 4000);
+      }, 500);
+      return () => clearTimeout(timer);
+    } else if (currentDayProgress < 1 && hasSeenPerfectDay[selectedDateStr]) {
+      // Si desmarcan un hábito, reseteamos para que puedan volver a ganar el logro
+      setHasSeenPerfectDay(prev => ({ ...prev, [selectedDateStr]: false }));
+      setShowPerfectDayModal(false);
+    }
+  }, [currentDayProgress, currentDayHabitsCount, selectedDateStr, hasSeenPerfectDay]);
 
   return (
     <div className="flex flex-col h-full bg-black text-white relative font-sans">
+      {/* Animación de Logro Desbloqueado Flotante */}
+      {showPerfectDayModal && (
+        <div className="absolute top-12 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-[150] animate-in slide-in-from-top-12 fade-in zoom-in-95 duration-500 ease-out">
+          <div 
+            onClick={() => setShowPerfectDayModal(false)}
+            className="bg-[#1c1c1e] border border-brand-500/50 rounded-full p-2 pr-6 flex items-center gap-4 shadow-[0_20px_50px_rgba(16,185,129,0.3)] relative overflow-hidden cursor-pointer"
+          >
+            {/* Glow background */}
+            <div className="absolute inset-0 bg-brand-500/5"></div>
+            
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shrink-0 relative z-10 shadow-[0_0_20px_rgba(16,185,129,0.6)]">
+              <Trophy size={24} className="text-black animate-[bounce_1s_infinite]" />
+            </div>
+            
+            <div className="relative z-10 flex-1 py-1">
+              <p className="text-brand-500 text-[10px] font-black uppercase tracking-[0.2em] mb-0.5 animate-pulse">Logro Desbloqueado</p>
+              <h3 className="text-white font-bold text-base leading-none italic">Día Perfecto</h3>
+            </div>
+
+            <div className="relative z-10 flex gap-1">
+              <Star size={14} className="text-yellow-500 fill-yellow-500 animate-pulse" />
+              <Sparkles size={18} className="text-brand-400" />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex justify-between items-center px-5 py-4 pt-10 relative">
         {!isSearchVisible ? (
@@ -416,7 +682,22 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
       </div>
 
       {/* Horizontal Calendar */}
-      <div className="flex justify-between items-center px-2 mt-2 mb-6">
+      <div className="relative flex justify-between items-center px-2 mt-2 mb-6 h-[85px]">
+        {/* Sliding Highlight Background */}
+        {(() => {
+          const selectedIdx = days.findIndex(d => d.date === selectedDateStr);
+          if (selectedIdx === -1) return null;
+          return (
+            <div 
+              className="absolute top-1 h-[78px] bg-brand-500 rounded-3xl z-0 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-[0_8px_30px_rgba(16,185,129,0.3)]"
+              style={{ 
+                width: '44px',
+                left: `calc(${selectedIdx * 14.28}% + 7.14% - 22px)`,
+              }}
+            />
+          );
+        })()}
+
         {days.map((d, i) => {
           const isPrimarySelected = d.date === selectedDateStr;
           const isActive = selectedDates.includes(d.date);
@@ -429,17 +710,20 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
           const hasNextStreak = progress > 0 && nextDayCompletedHabits > 0;
 
           return (
-            <div key={i} className="relative flex flex-col items-center justify-start" style={{ width: '14.28%', height: '85px' }}>
+            <div key={i} className="relative flex flex-col items-center justify-start z-10" style={{ width: '14.28%', height: '85px' }}>
               {hasNextStreak && (
                  <div className="absolute top-[52px] left-1/2 w-full h-[3px] bg-brand-500 -translate-y-1/2 z-0" style={{ boxShadow: '0 0 10px rgba(16,185,129,0.3)' }} />
               )}
               
               <button 
                 onClick={() => handleDayClick(d.fullDate, d.date)}
-                className={`flex flex-col items-center justify-center w-[90%] max-w-[48px] transition-transform active:scale-90 ${isPrimarySelected ? 'bg-brand-500 rounded-full pt-3 pb-3 z-20 shadow-[0_4px_20px_rgba(16,185,129,0.4)] scale-110' : 'group z-10 pt-4 pb-2'}`}
+                className={`flex flex-col items-center justify-center w-[90%] max-w-[48px] h-[78px] transition-all duration-300 active:scale-90 rounded-3xl ${isPrimarySelected ? 'z-20 scale-105' : 'group z-10 pt-1 pb-1'}`}
               >
-                <span className={`text-[11px] mb-2 capitalize font-bold transition-colors ${isPrimarySelected ? 'text-white' : isActive ? 'text-white' : 'text-zinc-500 group-hover:text-zinc-300'}`}>
+                <span className={`text-[10px] mb-2.5 capitalize font-bold transition-colors duration-300 flex items-center justify-center gap-0.5 ${isPrimarySelected ? 'text-white' : isActive ? 'text-white' : 'text-zinc-500 group-hover:text-zinc-300'}`}>
                    {d.dayName}
+                   {completedDayHabits > 0 && (
+                     <Flame size={10} className="fill-orange-500 text-orange-500 animate-pulse shrink-0" />
+                   )}
                 </span>
 
                 {isPrimarySelected ? (
@@ -487,7 +771,9 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
       <div className="px-5 flex-1 overflow-y-auto pb-72">
         {filteredHabits.length === 0 ? (
           <div className="text-center mt-10 p-10 flex flex-col items-center">
-            <span className="text-5xl mb-6 opacity-40">😔</span>
+            <div className="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mb-6">
+              <Frown size={40} className="text-red-500 opacity-80 stroke-[1.5]" />
+            </div>
             <p className="text-zinc-400 mb-6 font-medium">Aun no hay hábitos</p>
             <button onClick={() => setShowNewHabitModal(true)} className="w-full sm:w-auto bg-brand-500 text-black font-bold px-8 py-4 rounded-2xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2">
               <Plus size={20} /> Crear un nuevo hábito
@@ -495,18 +781,20 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
           </div>
         ) : (
           filteredHabits.map(habit => {
-            const isCompleted = selectedDates.every(date => 
-              habitLogs.some(log => log.habitId === habit.id && log.date === date)
-            );
+            const completedCount = habitLogs.filter(log => log.habitId === habit.id && log.date === selectedDateStr).length;
             return (
               <HabitItem
                 key={habit.id}
                 habit={habit}
-                isCompleted={isCompleted}
-                onToggle={() => {
-                  // Toggle for all selected dates
+                completedCount={completedCount}
+                onIncrement={() => {
                   selectedDates.forEach((date, idx) => {
-                     setTimeout(() => onToggleHabit(habit.id, date), idx * 2);
+                    setTimeout(() => onIncrementHabit(habit.id, date), idx * 2);
+                  });
+                }}
+                onDecrement={() => {
+                  selectedDates.forEach((date, idx) => {
+                    setTimeout(() => onDecrementHabit(habit.id, date), idx * 2);
                   });
                 }}
                 onDelete={() => onDeleteHabit(habit.id)}
@@ -553,71 +841,119 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
 
       {/* New Habit Flow */}
       {showNewHabitModal && (
-        <div className="absolute inset-0 z-50 bg-black/90 backdrop-blur-xl flex flex-col animate-in fade-in duration-200">
-          <div className="flex-1 overflow-y-auto px-6 pt-16 pb-10">
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="font-black text-white text-3xl tracking-tighter">Nuevo Hábito</h3>
-              <button onClick={() => { setShowNewHabitModal(false); setNewHabitTitle(''); }} className="w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center text-white">
-                <X size={20} />
+        <div className="fixed inset-0 z-50 flex flex-col justify-end">
+          {/* Backdrop */}
+          <div 
+            onClick={() => { setShowNewHabitModal(false); setNewHabitTitle(''); setModalSearchTerm(''); }} 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          />
+          {/* Bottom Sheet */}
+          <div className="relative w-full h-[92vh] bg-[#121214] rounded-t-[2.5rem] border-t border-zinc-800 flex flex-col overflow-hidden shadow-[0_-10px_40px_rgba(0,0,0,0.8)] animate-in slide-in-from-bottom duration-300">
+            {/* Pill Handle */}
+            <div className="mx-auto my-3.5 w-12 h-1.5 bg-zinc-700/60 rounded-full" />
+            
+            {/* Header */}
+            <div className="relative px-4 pb-4 flex items-center justify-center border-b border-zinc-800/50">
+              <button 
+                onClick={() => { setShowNewHabitModal(false); setNewHabitTitle(''); setModalSearchTerm(''); }} 
+                className="absolute left-4 w-9 h-9 bg-[#1c1c1e] rounded-full flex items-center justify-center text-white hover:bg-[#2c2c2e] transition-colors"
+              >
+                <X size={18} strokeWidth={2.5} />
               </button>
+              <h3 className="font-bold text-white text-[17px]">Plantillas</h3>
             </div>
 
-            {/* Category Tabs */}
-            <div className="flex gap-2 mb-8 overflow-x-auto pb-2 no-scrollbar">
-              {(['buenos', 'salud', 'malos', 'tareas'] as const).map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setModalCategory(cat)}
-                  className={`px-6 py-3 rounded-2xl font-bold text-sm capitalize transition-all shrink-0 ${modalCategory === cat ? 'bg-brand-500 text-black scale-105' : 'bg-zinc-900 text-zinc-500 border border-zinc-800'}`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
+            <div className="flex-1 overflow-y-auto px-5 pt-4 pb-32 no-scrollbar">
+              {/* Category Tabs */}
+              <div className="flex justify-between bg-[#1c1c1e] rounded-full p-1 mb-6">
+                {(['buenos', 'salud', 'malos', 'tareas'] as const).map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setModalCategory(cat)}
+                    className={`flex-1 py-2 rounded-full font-semibold text-[13px] capitalize transition-all duration-200 ${modalCategory === cat ? 'bg-[#3a3a3c] text-white shadow-sm' : 'text-zinc-400 hover:text-white'}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
 
-            {/* Popular Habits Grid */}
-            <div className="grid grid-cols-2 gap-4 mb-10">
-              {popularHabits[modalCategory].map((h, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleQuickAdd(h)}
-                  className="bg-zinc-900/50 border border-zinc-800 p-4 rounded-3xl flex flex-col items-center gap-2 hover:bg-zinc-800 transition-all active:scale-95"
-                >
-                  <span className="text-3xl mb-1">{h.icon}</span>
-                  <span className="font-bold text-white text-xs">{h.title}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="h-px bg-zinc-800 w-full mb-10"></div>
-
-            {/* Custom Habit Creation */}
-            <div className="space-y-6">
-              <h4 className="font-black text-zinc-500 text-xs uppercase tracking-widest text-center">O crea uno personalizado</h4>
-              
-              <form onSubmit={handleCreateHabit} className="space-y-4">
-                <div className="relative">
-                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-2xl opacity-50">
-                    {getEmojiForTitle(newHabitTitle)}
-                  </div>
-                  <input 
-                    type="text"
-                    autoFocus
-                    placeholder="Ponle nombre a tu hábito..."
-                    value={newHabitTitle}
-                    onChange={e => setNewHabitTitle(e.target.value)}
-                    className="w-full bg-zinc-900 border-2 border-zinc-800 text-white p-5 pl-16 rounded-[2rem] focus:outline-none focus:border-brand-500 transition-all font-bold text-lg"
-                    maxLength={40}
-                  />
-                </div>
+              {/* Crear personalizado */}
+              {!modalSearchTerm && (
                 <button 
-                  type="submit" 
-                  disabled={!newHabitTitle.trim()} 
-                  className="w-full bg-white text-black font-black py-5 rounded-[2rem] hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-white/5 flex items-center justify-center gap-2 text-lg disabled:opacity-30"
+                  onClick={() => {
+                    const title = prompt(modalCategory === 'tareas' ? 'Ingresa el nombre de tu nueva tarea:' : 'Ingresa el nombre de tu nuevo hábito:');
+                    if (title?.trim()) {
+                      onAddHabit({
+                        id: Date.now().toString(),
+                        title: title.trim(),
+                        frequency: 'daily',
+                        createdAt: new Date().toISOString(),
+                        icon: getEmojiForTitle(title)
+                      });
+                      setShowNewHabitModal(false);
+                      setNewHabitTitle('');
+                    }
+                  }}
+                  className="w-full bg-[#1c1c1e] hover:bg-[#2c2c2e] transition-colors rounded-2xl p-4 flex items-center justify-between mb-8 border border-[#2c2c2e]"
                 >
-                  <Plus size={24} className="stroke-[3]" /> CREAR HÁBITO
+                  <div className="flex items-center gap-3">
+                    {modalCategory === 'buenos' && <BadgeCheck size={22} className="text-green-500" />}
+                    {modalCategory === 'salud' && <Activity size={22} className="text-green-500" />}
+                    {modalCategory === 'malos' && <Ban size={22} className="text-red-500" />}
+                    {modalCategory === 'tareas' && <BadgeCheck size={22} className="text-blue-500" />}
+                    
+                    <span className="text-white font-bold text-[15px]">
+                      {modalCategory === 'tareas' ? 'Crear una tarea personalizada' : 'Crear un hábito personalizado'}
+                    </span>
+                  </div>
+                  <ChevronRight size={20} className="text-zinc-500" />
                 </button>
-              </form>
+              )}
+
+              {/* Popular Habits List */}
+              {popularHabits[modalCategory].map((sectionData, sIdx) => {
+                const filteredItems = sectionData.items.filter(h => h.title.toLowerCase().includes(modalSearchTerm.toLowerCase()));
+                if (filteredItems.length === 0) return null;
+                
+                return (
+                  <div key={sIdx} className="mb-6">
+                    <h4 className="text-zinc-400 font-bold mb-3 ml-1">{sectionData.section}</h4>
+                    <div className="bg-[#1c1c1e] rounded-3xl overflow-hidden">
+                      {filteredItems.map((h, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            handleQuickAdd(h);
+                            setShowNewHabitModal(false);
+                            setModalSearchTerm('');
+                          }}
+                          className="w-full bg-transparent hover:bg-[#2c2c2e] transition-colors p-4 flex items-center justify-between border-b border-zinc-800/50 last:border-0"
+                        >
+                          <div className="flex items-center gap-4">
+                            <span className="text-2xl">{h.icon}</span>
+                            <span className="font-bold text-white text-[15px]">{h.title}</span>
+                          </div>
+                          <ChevronRight size={18} className="text-zinc-500" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Bottom Sticky Search */}
+            <div className="absolute bottom-6 left-5 right-5">
+              <div className="relative">
+                <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <input 
+                  type="text"
+                  placeholder="Buscar"
+                  value={modalSearchTerm}
+                  onChange={e => setModalSearchTerm(e.target.value)}
+                  className="w-full bg-[#2c2c2e] text-white rounded-full py-3.5 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-zinc-600 transition-all font-medium placeholder:text-zinc-500 shadow-xl"
+                />
+              </div>
             </div>
           </div>
         </div>

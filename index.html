@@ -58,7 +58,7 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Inter', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"'],
           },
           keyframes: {
             scroll: {
@@ -122,6 +122,20 @@
       background-color: var(--bg-main);
       color: var(--text-main);
       transition: background-color 0.3s ease, color 0.3s ease;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Estilo de botones Apple (iOS) */
+    button, a {
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Sobrescribir el active:scale-95 global para usar opacidad estilo iOS */
+    .active\:scale-95:active {
+      transform: none !important;
+      opacity: 0.5 !important;
+      transition: opacity 0.1s ease-out !important;
     }
 
     .bg-brand-card {

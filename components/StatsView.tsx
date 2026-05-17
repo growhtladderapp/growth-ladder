@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Flame, Medal, Target, Flag, TrendingUp, Calendar, CheckCircle2, ChevronLeft, ChevronRight, Lock } from 'lucide-react';
+import { Flame, Medal, Target, Flag, TrendingUp, Calendar, CheckCircle2, ChevronLeft, ChevronRight, Unlock } from 'lucide-react';
 import { ViewState, Habit, HabitLog } from '../types';
 
 interface Props {
@@ -29,8 +29,8 @@ const BarChart: React.FC<{ data: { label: string; value: number; max: number }[]
                   background: pct === 100
                     ? 'linear-gradient(to top, #059669, #10b981)'
                     : pct >= 50
-                    ? 'linear-gradient(to top, #0369a1, #38bdf8)'
-                    : 'linear-gradient(to top, #3f3f46, #52525b)',
+                      ? 'linear-gradient(to top, #0369a1, #38bdf8)'
+                      : 'linear-gradient(to top, #3f3f46, #52525b)',
                 }}
               />
             </div>
@@ -68,7 +68,7 @@ const DonutChart: React.FC<{ pct: number; color: string; label: string; value: s
 
 export const StatsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs, isPro, onRequestPro, onActivateTrial }) => {
   const [calendarMonth, setCalendarMonth] = useState(() => new Date());
-  
+
   const trialUsed = localStorage.getItem('gl_free_trial_used') === 'true';
 
   const today = new Date();
@@ -103,7 +103,7 @@ export const StatsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs,
 
     // Success rate
     const firstDate = new Date(datesCompleted[0] + 'T00:00:00');
-    const daysSinceStart = Math.max(1, Math.floor((new Date().setHours(0,0,0,0) - firstDate.getTime()) / 86400000) + 1);
+    const daysSinceStart = Math.max(1, Math.floor((new Date().setHours(0, 0, 0, 0) - firstDate.getTime()) / 86400000) + 1);
     const rate = Math.min(100, Math.round((datesCompleted.length / daysSinceStart) * 100));
 
     // Last 14 days bar chart data
@@ -172,130 +172,114 @@ export const StatsView: React.FC<Props> = ({ setView, uiText, habits, habitLogs,
 
       {habitLogs.length > 0 && (
         <div className="relative flex-1">
-          <div className={!isPro ? "blur-md pointer-events-none select-none opacity-40 transition-all duration-500" : ""}>
-          {/* Donut Row — key metrics */}
-          <div className="flex justify-around bg-[#1c1c1e] rounded-3xl p-5 mb-4">
-            <DonutChart pct={stats.successRate} color="#10b981" label="Tasa de Éxito" value={`${stats.successRate}%`} />
-            <DonutChart pct={habits.length > 0 ? Math.round((stats.completedToday / habits.length) * 100) : 0} color="#f97316" label="Hoy" value={`${stats.completedToday}/${habits.length}`} />
-            <DonutChart pct={Math.min(100, stats.currentStreak * 10)} color="#a855f7" label="Racha" value={`${stats.currentStreak}d`} />
-          </div>
-
-          {/* 4 KPI cards */}
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            {[
-              { icon: <Flame size={18} className="text-orange-500" />, val: stats.currentStreak, label: 'Racha Actual', unit: 'días' },
-              { icon: <Medal size={18} className="text-purple-400" />, val: stats.bestStreak, label: 'Mejor Racha', unit: 'días' },
-              { icon: <Target size={18} className="text-pink-500" />, val: stats.totalCompleted, label: 'Total Completados', unit: '' },
-              { icon: <Flag size={18} className="text-brand-500" />, val: `${stats.successRate}%`, label: 'Consistencia', unit: '' },
-            ].map((kpi, i) => (
-              <div key={i} className="bg-[#1c1c1e] rounded-2xl p-4 flex flex-col gap-2">
-                <div className="flex items-center gap-2">{kpi.icon}<span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{kpi.label}</span></div>
-                <span className="text-2xl font-black text-white">{kpi.val}<span className="text-sm text-zinc-500 font-normal ml-1">{kpi.unit}</span></span>
-              </div>
-            ))}
-          </div>
-
-          {/* Bar chart — last 14 days */}
-          <div className="bg-[#1c1c1e] rounded-3xl p-5 mb-4">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp size={16} className="text-brand-500" />
-              <h3 className="text-sm font-bold text-white">Últimos 14 días</h3>
+          <div className={!isPro ? "pointer-events-none select-none opacity-20 transition-all duration-500" : ""}>
+            {/* Donut Row — key metrics */}
+            <div className="flex justify-around bg-[#1c1c1e] rounded-3xl p-5 mb-4">
+              <DonutChart pct={stats.successRate} color="#10b981" label="Tasa de Éxito" value={`${stats.successRate}%`} />
+              <DonutChart pct={habits.length > 0 ? Math.round((stats.completedToday / habits.length) * 100) : 0} color="#f97316" label="Hoy" value={`${stats.completedToday}/${habits.length}`} />
+              <DonutChart pct={Math.min(100, stats.currentStreak * 10)} color="#a855f7" label="Racha" value={`${stats.currentStreak}d`} />
             </div>
-            <BarChart data={stats.last14} />
-            <div className="flex justify-between mt-2 text-[9px] text-zinc-600 font-bold">
-              <span>Hace 2 semanas</span>
-              <span>Hoy</span>
-            </div>
-          </div>
 
-          {/* Per-habit breakdown */}
-          {stats.perHabit.length > 0 && (
+            {/* 4 KPI cards */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              {[
+                { icon: <Flame size={18} className="text-orange-500" />, val: stats.currentStreak, label: 'Racha Actual', unit: 'días' },
+                { icon: <Medal size={18} className="text-purple-400" />, val: stats.bestStreak, label: 'Mejor Racha', unit: 'días' },
+                { icon: <Target size={18} className="text-pink-500" />, val: stats.totalCompleted, label: 'Total Completados', unit: '' },
+                { icon: <Flag size={18} className="text-brand-500" />, val: `${stats.successRate}%`, label: 'Consistencia', unit: '' },
+              ].map((kpi, i) => (
+                <div key={i} className="bg-[#1c1c1e] rounded-2xl p-4 flex flex-col gap-2">
+                  <div className="flex items-center gap-2">{kpi.icon}<span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{kpi.label}</span></div>
+                  <span className="text-2xl font-black text-white">{kpi.val}<span className="text-sm text-zinc-500 font-normal ml-1">{kpi.unit}</span></span>
+                </div>
+              ))}
+            </div>
+
+            {/* Bar chart — last 14 days */}
             <div className="bg-[#1c1c1e] rounded-3xl p-5 mb-4">
               <div className="flex items-center gap-2 mb-4">
-                <CheckCircle2 size={16} className="text-brand-500" />
-                <h3 className="text-sm font-bold text-white">Por Hábito</h3>
+                <TrendingUp size={16} className="text-brand-500" />
+                <h3 className="text-sm font-bold text-white">Últimos 14 días</h3>
               </div>
-              <div className="space-y-3">
-                {stats.perHabit.slice(0, 8).map(h => (
-                  <div key={h.id}>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-xs text-zinc-300 font-semibold flex items-center gap-2">
-                        <span>{h.icon}</span>{h.title}
-                      </span>
-                      <span className="text-xs font-black text-brand-500">{h.pct}%</span>
+              <BarChart data={stats.last14} />
+              <div className="flex justify-between mt-2 text-[9px] text-zinc-600 font-bold">
+                <span>Hace 2 semanas</span>
+                <span>Hoy</span>
+              </div>
+            </div>
+
+            {/* Per-habit breakdown */}
+            {stats.perHabit.length > 0 && (
+              <div className="bg-[#1c1c1e] rounded-3xl p-5 mb-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <CheckCircle2 size={16} className="text-brand-500" />
+                  <h3 className="text-sm font-bold text-white">Por Hábito</h3>
+                </div>
+                <div className="space-y-3">
+                  {stats.perHabit.slice(0, 8).map(h => (
+                    <div key={h.id}>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs text-zinc-300 font-semibold flex items-center gap-2">
+                          <span>{h.icon}</span>{h.title}
+                        </span>
+                        <span className="text-xs font-black text-brand-500">{h.pct}%</span>
+                      </div>
+                      <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-700"
+                          style={{
+                            width: `${h.pct}%`,
+                            background: h.pct >= 80 ? '#10b981' : h.pct >= 50 ? '#38bdf8' : '#6366f1'
+                          }}
+                        />
+                      </div>
                     </div>
-                    <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-700"
-                        style={{
-                          width: `${h.pct}%`,
-                          background: h.pct >= 80 ? '#10b981' : h.pct >= 50 ? '#38bdf8' : '#6366f1'
-                        }}
-                      />
-                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Calendar heatmap */}
+            <div className="bg-[#1c1c1e] rounded-3xl p-5 mb-4">
+              <div className="flex justify-between items-center mb-4">
+                <button onClick={prevMonth} className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center active:scale-90">
+                  <ChevronLeft size={16} className="text-white" />
+                </button>
+                <div className="flex items-center gap-2">
+                  <Calendar size={14} className="text-brand-500" />
+                  <h3 className="text-sm font-bold text-white capitalize">
+                    {calendarMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
+                  </h3>
+                </div>
+                <button onClick={nextMonth} className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center active:scale-90">
+                  <ChevronRight size={16} className="text-white" />
+                </button>
+              </div>
+              <div className="grid grid-cols-7 gap-1 text-center text-[9px] font-black text-zinc-600 mb-2">
+                {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map(d => <div key={d}>{d}</div>)}
+              </div>
+              <div className="grid grid-cols-7 gap-1">
+                {calendarDays.map((day, i) => (
+                  <div key={i} className={`aspect-square rounded-lg flex items-center justify-center text-xs font-bold transition-all
+                  ${day === null ? '' :
+                      isToday(day) ? 'ring-2 ring-brand-500 text-brand-500 bg-brand-500/10' :
+                        hasLogOnDay(day) ? 'bg-brand-500 text-black' :
+                          'text-zinc-700'}`}>
+                    {day ?? ''}
                   </div>
                 ))}
               </div>
             </div>
-          )}
-
-          {/* Calendar heatmap */}
-          <div className="bg-[#1c1c1e] rounded-3xl p-5 mb-4">
-            <div className="flex justify-between items-center mb-4">
-              <button onClick={prevMonth} className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center active:scale-90">
-                <ChevronLeft size={16} className="text-white" />
-              </button>
-              <div className="flex items-center gap-2">
-                <Calendar size={14} className="text-brand-500" />
-                <h3 className="text-sm font-bold text-white capitalize">
-                  {calendarMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
-                </h3>
-              </div>
-              <button onClick={nextMonth} className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center active:scale-90">
-                <ChevronRight size={16} className="text-white" />
-              </button>
-            </div>
-            <div className="grid grid-cols-7 gap-1 text-center text-[9px] font-black text-zinc-600 mb-2">
-              {['L','M','X','J','V','S','D'].map(d => <div key={d}>{d}</div>)}
-            </div>
-            <div className="grid grid-cols-7 gap-1">
-              {calendarDays.map((day, i) => (
-                <div key={i} className={`aspect-square rounded-lg flex items-center justify-center text-xs font-bold transition-all
-                  ${day === null ? '' :
-                    isToday(day) ? 'ring-2 ring-brand-500 text-brand-500 bg-brand-500/10' :
-                    hasLogOnDay(day) ? 'bg-brand-500 text-black' :
-                    'text-zinc-700'}`}>
-                  {day ?? ''}
-                </div>
-              ))}
-            </div>
-          </div>
           </div>
 
           {!isPro && (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-6 text-center bg-black/20">
-              <div className="w-24 h-24 bg-[#1c1c1e] rounded-full flex items-center justify-center mb-6 shadow-2xl border border-[#2c2c2e]">
-                <Lock size={40} className="text-brand-500" />
-              </div>
-              <h2 className="text-3xl font-black text-white mb-3 tracking-tight">Estadísticas Bloqueadas</h2>
-              <p className="text-zinc-400 text-sm mb-10 px-2 font-medium">
-                Desbloquea el análisis detallado de tus hábitos, descubre tendencias ocultas y mantén el control de tu progreso con TWH Pro.
-              </p>
-              
-              {!trialUsed && (
-                <button 
-                  onClick={onActivateTrial}
-                  className="w-full bg-brand-500 text-black font-black py-4 rounded-2xl mb-4 hover:bg-brand-400 active:scale-95 transition-all shadow-lg shadow-brand-500/20 text-lg uppercase tracking-widest"
-                >
-                  Prueba Gratuita (7 Días)
-                </button>
-              )}
-              
-              <button 
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-6 text-center">
+              <button
                 onClick={onRequestPro}
-                className="w-full bg-[#1c1c1e] text-white font-bold py-4 rounded-2xl hover:bg-[#2c2c2e] active:scale-95 transition-all border border-[#2c2c2e]"
+                className="bg-red-500 text-white font-bold py-3.5 px-6 rounded-full hover:bg-red-400 active:scale-95 transition-all flex items-center gap-2.5 shadow-lg shadow-red-500/20"
               >
-                Ver Planes PRO
+                <Unlock size={18} strokeWidth={2.5} className="text-white" />
+                <span className="text-[15px] tracking-wide">Desbloquear estadísticas</span>
               </button>
             </div>
           )}

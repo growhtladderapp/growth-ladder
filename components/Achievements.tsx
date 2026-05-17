@@ -26,8 +26,19 @@ export const Achievements: React.FC<AchievementsProps> = ({ logs, setView, isPro
     const weekLogs = logs.filter(l => new Date(l.date) >= weekAgo);
     const monthLogs = logs.filter(l => new Date(l.date) >= monthAgo);
 
+    // Revisar si todos los hábitos de hoy están completos (usando localStorage ya que no los recibimos por props)
+    let perfectDay = false;
+    try {
+      const storedHabits = JSON.parse(localStorage.getItem('twh_habits') || '[]');
+      const storedLogs = JSON.parse(localStorage.getItem('twh_habit_logs') || '[]');
+      const todayIsoStr = new Date().toISOString().split('T')[0];
+      const todayHabitLogsCount = storedLogs.filter((l: any) => l.date === todayIsoStr).length;
+      perfectDay = storedHabits.length > 0 && todayHabitLogsCount >= storedHabits.length;
+    } catch(e) {}
+
     return {
       dailyDone: todayLogs.length > 0,
+      perfectDay: perfectDay,
       weeklyCount: new Set(weekLogs.map(l => new Date(l.date).toDateString())).size,
       monthlyCount: new Set(monthLogs.map(l => new Date(l.date).toDateString())).size,
       totalWeightLost: logs.length > 1 ? logs[0].weight - logs[logs.length-1].weight : 0
@@ -40,7 +51,7 @@ export const Achievements: React.FC<AchievementsProps> = ({ logs, setView, isPro
       icon: Star, 
       items: [
         { label: "Primer Paso", desc: "Registra tu actividad de hoy", completed: stats.dailyDone },
-        { label: "Hidratación", desc: "Cumpliste tu meta de agua", completed: true },
+        { label: "Día Perfecto", desc: "Completa todos tus hábitos", completed: stats.perfectDay },
       ]
     },
     { 

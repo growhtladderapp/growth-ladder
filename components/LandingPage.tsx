@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Logo } from './Logo';
-import { Trophy, Zap, Activity, Users, ArrowRight, ShieldCheck, Star, X, Map, Compass, Heart, ActivitySquare, Circle, Link2, CircleDashed, ChevronDown, Brain, Camera, TrendingUp, Flame, Dumbbell, PlaySquare, BookOpen, HelpCircle, Watch, Smartphone, Tablet, Crown, Check, ChefHat } from 'lucide-react';
+import { Trophy, Zap, Activity, Users, ArrowRight, ShieldCheck, Star, X, Map, Compass, Heart, ActivitySquare, Circle, Link2, CircleDashed, ChevronDown, Brain, Camera, TrendingUp, Flame, Dumbbell, PlaySquare, BookOpen, HelpCircle, Watch, Smartphone, Tablet, Crown, Check, ChefHat, Search, MessageSquare, ChevronUp, Phone } from 'lucide-react';
 
 const integrations = [
     { name: "STRAVA", icon: <Map size={24} /> },
@@ -44,7 +44,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     const t = {
         login: isEn ? 'Login' : 'Iniciar Sesión',
         launch: isEn ? 'Register' : 'Registrarse',
-        heroTitle: isEn ? 'Build Good Habits, Break Bad Ones' : 'Crea Buenos Hábitos, Rompe los Malos',
+        heroTitle: isEn ? 'Build Good Habits, Break Bad Ones' : 'Crea Buenos Hábitos, Rompe Los Malos',
         heroSubtitle: isEn ? 'Train smart with adaptive routines, nutrition tracking and a 24/7 coach.' : 'Entrena inteligente con rutinas adaptativas, seguimiento de nutrición y un coach disponible 24/7.',
         terms: isEn ? 'Terms of use' : 'Términos de uso',
         privacy: isEn ? 'Privacy policy' : 'Privacidad',
@@ -63,6 +63,66 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         return localStorage.getItem('gl_cookies_accepted') !== 'true';
     });
     const [showDownloadModal, setShowDownloadModal] = useState(false);
+    const [showHelpModal, setShowHelpModal] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [activeHelpTab, setActiveHelpTab] = useState('all');
+    const [expandedFaq, setExpandedFaq] = useState(null);
+    const [isProActive, setIsProActive] = useState(() => localStorage.getItem('gl_is_pro') === 'true');
+    const [confirmCancel, setConfirmCancel] = useState(false);
+    const [cancelSuccess, setCancelSuccess] = useState(false);
+
+    const openHelpModal = () => {
+        setIsProActive(localStorage.getItem('gl_is_pro') === 'true');
+        setConfirmCancel(false);
+        setCancelSuccess(false);
+        openHelpModal();
+    };
+
+    const faqs = [
+        {
+            id: 1,
+            category: 'workout',
+            question: '¿El Coach IA adapta realmente mis entrenamientos?',
+            answer: 'Sí. El Coach IA de TWH monitorea tu nivel, tu consistencia y tus feedbacks tras cada sesión. Si nota que un ejercicio es muy fácil o muy difícil, recalibra de forma inteligente los pesos, series y repeticiones para la siguiente semana.'
+        },
+        {
+            id: 2,
+            category: 'nutrition',
+            question: '¿Cómo funciona el escáner de comida con IA?',
+            answer: 'Solo debes tomar una foto a tu comida o describirla brevemente. Nuestro modelo de IA identifica los ingredientes, estima las porciones en base a la escala del plato y calcula automáticamente los macronutrientes (proteínas, grasas, carbohidratos) y calorías.'
+        },
+        {
+            id: 3,
+            category: 'premium',
+            question: '¿Cuáles son los beneficios de TWH Premium?',
+            answer: 'La versión Premium desbloquea el Coach de Voz IA de forma ilimitada, elimina el 100% de los anuncios, permite crear categorías y hábitos infinitos, activa el historial avanzado de estadísticas y te brinda acceso al exclusivo Modo Vacaciones.'
+        },
+        {
+            id: 4,
+            category: 'premium',
+            question: '¿Se puede usar la aplicación de por vida de forma gratuita?',
+            answer: 'No, la aplicación solo se puede usar de por vida adquiriendo el Plan de Por Vida por un único pago de 24.99 dólares. Este plan te otorga acceso ilimitado para siempre a todas las funciones premium, herramientas avanzadas y el Coach IA sin cuotas mensuales.'
+        },
+        {
+            id: 5,
+            category: 'workout',
+            question: '¿Qué es el Modo Vacaciones y cómo congela mi racha?',
+            answer: 'Es una funcionalidad premium diseñada para prevenir el burnout. Al activarlo, congela de forma segura todas tus rachas activas en la app. Puedes tomarte un descanso de tus entrenamientos y hábitos diarios sin miedo a perder tu progreso acumulado.'
+        },
+        {
+            id: 6,
+            category: 'premium',
+            question: '¿Cómo puedo cancelar mi suscripción a TWH?',
+            answer: 'TWH Premium es una compra de pago único. En la siguiente sección puedes gestionar tu estado de suscripción.'
+        }
+    ];
+
+    const filteredFaqs = faqs.filter(faq => {
+        const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                              faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesTab = activeHelpTab === 'all' || faq.category === activeHelpTab;
+        return matchesSearch && matchesTab;
+    });
     const [showTranslatePrompt, setShowTranslatePrompt] = useState(false);
     const [activeMockScreen, setActiveMockScreen] = useState(0);
     const [showInstallBanner, setShowInstallBanner] = useState(() => {
@@ -182,7 +242,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                                 <span className="star-line-right"></span>
                             </span>
                         </button>
-                        <button onClick={onSupport} className="nav-star-link hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">
+                        <button onClick={() => openHelpModal()} className="nav-star-link hidden lg:block text-slate-500 hover:text-black text-[10px] font-bold uppercase tracking-wider transition-colors">
                             {t.help}
                             <span className="star-underline">
                                 <span className="star-line-left"></span>
@@ -206,7 +266,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <header className="relative pt-20 pb-10 sm:pt-24 sm:pb-16 px-6 overflow-hidden flex flex-col-reverse lg:flex-row justify-center items-center gap-10 lg:gap-20 bg-white">
                 <div className="max-w-xl text-center lg:text-left z-10">
                     <h1 className="text-4xl sm:text-6xl font-black text-black tracking-tighter mb-6 leading-[1.1]">
-                        Crea <span className="text-emerald-500">Buenos Hábitos</span> Rompe <span className="text-orange-500">los Malos</span> cada día con TrainingWithHabits
+                        Crea <span className="text-emerald-500">Buenos Hábitos</span> Rompe <span className="text-orange-500">Los Malos</span> cada día con TrainingWithHabits
                     </h1>
                 </div>
                 <div className="w-full max-w-md lg:max-w-lg flex flex-col items-center relative z-10">
@@ -231,14 +291,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                                     className="flex h-full w-full transition-transform duration-700 ease-in-out" 
                                     style={{ transform: `translateX(-${activeMockScreen * 100}%)` }}
                                 >
-                                    <div className="w-full h-full shrink-0">
-                                        <img src="/mock-1.png" className="w-full h-full object-cover" alt="Habits Dashboard" />
+                                    <div className="w-full h-full shrink-0 bg-black">
+                                        <img src="/mock-1.png" className="w-full h-full object-contain" alt="Habits Dashboard" />
                                     </div>
-                                    <div className="w-full h-full shrink-0">
-                                        <img src="/mock-2.png" className="w-full h-full object-cover" alt="Statistics View" />
+                                    <div className="w-full h-full shrink-0 bg-black">
+                                        <img src="/mock-2.png" className="w-full h-full object-contain" alt="Statistics View" />
                                     </div>
-                                    <div className="w-full h-full shrink-0">
-                                        <img src="/mock-3.png" className="w-full h-full object-cover" alt="AI Coach Chat" />
+                                    <div className="w-full h-full shrink-0 bg-black">
+                                        <img src="/mock-3.png" className="w-full h-full object-contain" alt="AI Coach Chat" />
                                     </div>
                                 </div>
                                 
@@ -371,7 +431,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <div className="flex justify-center gap-6 text-[10px] uppercase font-bold text-slate-600 tracking-widest">
                     <button onClick={onPrivacy} className="hover:text-white transition-colors">Privacidad</button>
                     <button onClick={onTerms} className="hover:text-white transition-colors">Términos y Condiciones</button>
-                    <button onClick={onSupport} className="hover:text-white transition-colors">Centro de Ayuda</button>
+                    <button onClick={() => openHelpModal()} className="hover:text-white transition-colors">Centro de Ayuda</button>
                 </div>
             </footer>
 
@@ -444,6 +504,200 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                             >
                                 Aceptar
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Help Center Modal */}
+            {showHelpModal && (
+                <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="bg-[#141414] border border-[#2c2c2e] rounded-[2.5rem] w-full max-w-3xl h-[85vh] max-h-[750px] relative shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col overflow-hidden text-left">
+                        
+                        {/* Top Gradient line */}
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-brand-500 to-orange-500" />
+                        
+                        {/* Header */}
+                        <div className="p-8 pb-4 flex justify-between items-center shrink-0">
+                            <div>
+                                <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase flex items-center gap-2">
+                                    <span className="text-emerald-500">Centro</span> de Ayuda
+                                </h2>
+                                <p className="text-zinc-500 text-xs font-semibold uppercase tracking-widest mt-1">Soporte & Preguntas Frecuentes TWH</p>
+                            </div>
+                            <button
+                                onClick={() => { setShowHelpModal(false); setSearchQuery(''); }}
+                                className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Search and Navigation */}
+                        <div className="px-8 pb-4 space-y-4 shrink-0">
+                            {/* Search bar */}
+                            <div className="relative">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
+                                <input
+                                    type="text"
+                                    placeholder="Buscar ayuda o preguntas frecuentes..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full bg-[#1c1c1e] text-white pl-12 pr-4 py-3.5 rounded-2xl border border-[#2c2c2e] placeholder-zinc-500 text-sm focus:outline-none focus:border-brand-500 transition-colors"
+                                />
+                            </div>
+
+                            {/* Navigation Tabs */}
+                            <div className="flex gap-2 border-b border-[#2c2c2e] pb-1">
+                                {[
+                                    { id: 'all', label: 'Ver Todo' },
+                                    { id: 'workout', label: '🏋️‍♂️ Rutinas & IA' },
+                                    { id: 'nutrition', label: '🥗 Nutrición' },
+                                    { id: 'premium', label: '💎 Premium' }
+                                ].map((tab) => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveHelpTab(tab.id)}
+                                        className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl transition-all ${
+                                            activeHelpTab === tab.id 
+                                            ? 'bg-brand-500/10 text-brand-400 border border-brand-500/20' 
+                                            : 'text-zinc-500 hover:text-zinc-300'
+                                        }`}
+                                    >
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Scrollable Content */}
+                        <div className="flex-1 overflow-y-auto px-8 pb-8 space-y-6">
+                            {/* FAQ Items */}
+                            <div className="space-y-3">
+                                {filteredFaqs.length > 0 ? (
+                                    filteredFaqs.map((faq, index) => (
+                                        <div 
+                                            key={faq.id} 
+                                            className="bg-[#1c1c1e] border border-[#2c2c2e]/60 rounded-2xl overflow-hidden transition-all duration-300"
+                                        >
+                                            <button
+                                                onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
+                                                className="w-full px-6 py-4 flex justify-between items-center text-left text-white hover:bg-white/5 transition-colors"
+                                            >
+                                                <span className="font-bold text-sm leading-tight pr-4">{faq.question}</span>
+                                                <ChevronDown 
+                                                    className={`text-zinc-500 shrink-0 transition-transform duration-300 ${expandedFaq === index ? 'rotate-180 text-brand-400' : ''}`} 
+                                                    size={16} 
+                                                />
+                                            </button>
+                                            
+                                            {/* Expandable Answer */}
+                                            <div 
+                                                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                                                    expandedFaq === index ? 'max-h-[350px] border-t border-[#2c2c2e]/40' : 'max-h-0'
+                                                }`}
+                                            >
+                                                {faq.id === 6 ? (
+                                                    <div className="px-6 py-4 space-y-4">
+                                                        <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-medium">
+                                                            Dado que TWH Premium se adquiere mediante un único pago de por vida (<strong>$24.99 USD</strong>), <strong>no tienes cargos recurrentes mensuales ni renovaciones automáticas</strong>. No hay facturación activa de suscripción que cancelar.
+                                                        </p>
+                                                        
+                                                        {isProActive ? (
+                                                            <div className="bg-[#1c1c1e] border border-[#2c2c2e] rounded-2xl p-4 space-y-3">
+                                                                {cancelSuccess ? (
+                                                                    <p className="text-xs sm:text-sm text-emerald-400 font-bold flex items-center gap-2">
+                                                                        <Check size={16} /> Acceso Premium desactivado y cancelado con éxito en este dispositivo.
+                                                                    </p>
+                                                                ) : confirmCancel ? (
+                                                                    <div className="space-y-3">
+                                                                        <p className="text-xs text-orange-400 font-bold">
+                                                                            ¿Confirmas que deseas dar de baja tu acceso Premium de por vida en este dispositivo? Perderás el Coach IA y los hábitos ilimitados de inmediato.
+                                                                        </p>
+                                                                        <div className="flex gap-2">
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    localStorage.removeItem('gl_is_pro');
+                                                                                    setIsProActive(false);
+                                                                                    setCancelSuccess(true);
+                                                                                }}
+                                                                                className="px-4 py-2 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold text-xs rounded-xl transition-all"
+                                                                            >
+                                                                                Sí, dar de baja
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() => setConfirmCancel(false)}
+                                                                                className="px-4 py-2 bg-[#2c2c2e] hover:bg-zinc-700 text-zinc-300 font-bold text-xs rounded-xl transition-all"
+                                                                            >
+                                                                                Cancelar
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                                                        <div>
+                                                                            <p className="text-xs text-white font-bold">Estado: Acceso Premium Activo (Por Vida)</p>
+                                                                            <p className="text-[10px] text-zinc-500 font-medium">Puedes desactivar y revocar el acceso premium localmente aquí.</p>
+                                                                        </div>
+                                                                        <button
+                                                                            onClick={() => setConfirmCancel(true)}
+                                                                            className="px-4 py-2 bg-[#2c2c2e] hover:bg-red-900/40 hover:text-red-400 text-zinc-400 font-bold text-xs rounded-xl transition-all self-start sm:self-center"
+                                                                        >
+                                                                            Desactivar Acceso Premium
+                                                                        </button>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="bg-zinc-900/30 border border-zinc-800/40 rounded-2xl p-4">
+                                                                <p className="text-xs text-zinc-500 font-medium">
+                                                                    No tienes un acceso Premium activo registrado en este navegador.
+                                                                </p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <p className="px-6 py-4 text-xs sm:text-sm text-zinc-400 leading-relaxed font-medium">
+                                                        {faq.answer}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="text-center py-12">
+                                        <HelpCircle className="mx-auto text-zinc-600 mb-3" size={40} />
+                                        <p className="text-zinc-500 text-sm font-bold">No se encontraron resultados para tu búsqueda.</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Premium AI Live Assistant Callout */}
+                            <div className="bg-gradient-to-r from-brand-900/20 to-[#022c22]/20 border border-brand-500/20 rounded-3xl p-6 relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl" />
+                                <div className="text-center sm:text-left relative z-10">
+                                    <h4 className="text-white font-extrabold text-sm uppercase tracking-wider flex items-center justify-center sm:justify-start gap-2">
+                                        <span className="flex h-2 w-2 relative">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                        </span>
+                                        ¿Prefieres Soporte de Voz en Vivo?
+                                    </h4>
+                                    <p className="text-zinc-400 text-xs mt-1 max-w-md font-semibold leading-relaxed">
+                                        Haz una llamada interactiva con nuestro Coach de Inteligencia Artificial para resolver cualquier duda sobre tus entrenamientos o dieta en tiempo real.
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setShowHelpModal(false);
+                                        onSupport(); // Opens the support chat modal instantly
+                                    }}
+                                    className="px-6 py-3 bg-brand-500 hover:bg-brand-600 active:scale-95 text-black font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-brand-500/20 flex items-center gap-2 shrink-0 transition-all"
+                                >
+                                    <Phone size={14} className="fill-black" />
+                                    Llamar Coach IA
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
