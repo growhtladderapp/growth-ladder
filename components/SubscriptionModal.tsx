@@ -12,6 +12,36 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps & { userName?: s
   const [selectedPlan, setSelectedPlan] = useState<'annual' | 'monthly' | 'lifetime'>('annual');
   const [freeTrialActive, setFreeTrialActive] = useState(false);
 
+  const reviews = [
+    {
+      id: 1,
+      title: "¡Un cambio total!",
+      text: "La acabo de descargar y ya me encanta. Es elegante, simple y súper fácil de usar. Encontré todos mis hábitos ya preestablecidos, pero los personalizados son muy fáciles de agregar.",
+      stars: 5
+    },
+    {
+      id: 2,
+      title: "El Coach de Voz es increíble",
+      text: "El coach IA disponible por voz 24/7 es de otro planeta. Me responde al instante con consejos reales de nutrición y me motiva a no romper mi racha.",
+      stars: 5
+    },
+    {
+      id: 3,
+      title: "Recomendado 100%",
+      text: "Llevaba meses intentando ir al gimnasio de forma constante y por fin lo he conseguido con TWH. El Modo Vacaciones me salvó de perder mi racha de 40 días.",
+      stars: 5
+    }
+  ];
+
+  const [activeReviewIdx, setActiveReviewIdx] = useState(0);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveReviewIdx((prev) => (prev + 1) % reviews.length);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleAction = () => {
     if (step === 'plans') {
       setStep('checkout');
@@ -173,23 +203,36 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps & { userName?: s
                 </p>
               </div>
 
-              {/* Review card */}
-              <div className="w-full bg-[#1c1c1e]/60 border border-zinc-800/80 rounded-3xl p-5 mb-4">
-                <div className="flex justify-between items-center mb-2">
-                  <h4 className="text-white font-black text-[14px]">¡Un cambio total!</h4>
-                  <div className="flex text-orange-500">
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <Star key={s} size={11} fill="currentColor" stroke="none" />
-                    ))}
+              {/* Review card Carousel */}
+              <div className="w-full bg-[#1c1c1e]/60 border border-zinc-800/80 rounded-3xl p-5 mb-4 relative overflow-hidden min-h-[142px] flex flex-col justify-between">
+                <div 
+                  className="transition-all duration-500 ease-out flex-1"
+                  key={activeReviewIdx}
+                >
+                  <div className="flex justify-between items-center mb-2 animate-in fade-in duration-300">
+                    <h4 className="text-white font-black text-[14px]">{reviews[activeReviewIdx].title}</h4>
+                    <div className="flex text-orange-500">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star key={s} size={11} fill="currentColor" stroke="none" />
+                      ))}
+                    </div>
                   </div>
+                  <p className="text-zinc-400 text-[12.5px] leading-relaxed font-medium animate-in fade-in slide-in-from-right-4 duration-500">
+                    "{reviews[activeReviewIdx].text}"
+                  </p>
                 </div>
-                <p className="text-zinc-400 text-[12.5px] leading-relaxed font-medium">
-                  La acabo de descargar y ya me encanta. Es elegante, simple y súper fácil de usar. Encontré todos mis hábitos ya preestablecidos, pero los personalizados son muy fáciles de agregar.
-                </p>
-                <div className="flex justify-center gap-1.5 mt-3.5">
-                  <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                  <div className="w-1.5 h-1.5 bg-zinc-800 rounded-full" />
-                  <div className="w-1.5 h-1.5 bg-zinc-800 rounded-full" />
+                
+                {/* Carousel Dots */}
+                <div className="flex justify-center gap-1.5 mt-3.5 relative z-20">
+                  {reviews.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveReviewIdx(idx)}
+                      className={`w-1.5 h-1.5 rounded-full transition-all duration-300 focus:outline-none cursor-pointer ${
+                        activeReviewIdx === idx ? 'bg-brand-500 w-3' : 'bg-zinc-800 hover:bg-zinc-700'
+                      }`}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
