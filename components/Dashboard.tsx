@@ -343,7 +343,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ logs, isPro, togglePro, on
   const sidebarLinks = [
     { icon: Utensils, label: "Chef IA", view: ViewState.RECIPES },
     { icon: User, label: uiText.perfil, view: ViewState.LOG },
-    { icon: Trophy, label: uiText.logros, view: ViewState.ACHIEVEMENTS },
+    { icon: Trophy, label: uiText.logros, view: ViewState.STATS },
     { icon: Users, label: uiText.comunidad, view: ViewState.COMMUNITY },
     { icon: Settings, label: uiText.ajustes, view: ViewState.SETTINGS },
     { icon: HelpCircle, label: uiText.ayuda, view: ViewState.SUPPORT },

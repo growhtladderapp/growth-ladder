@@ -60,7 +60,7 @@ const DEFAULT_UI_TEXT = {
   status_offline: "Watch Offline"
 };
 
-import { Footprints, Sun, Flame, Zap, Route, Flag, CalendarCheck, Crown } from 'lucide-react';
+import { Footprints, Sun, Zap, Route, Flag, CalendarCheck, Crown } from 'lucide-react';
 import { WeeklyGoalOption } from './types';
 
 export const GOAL_OPTIONS: WeeklyGoalOption[] = [

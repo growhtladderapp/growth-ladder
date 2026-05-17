@@ -74,7 +74,7 @@ export const Achievements: React.FC<AchievementsProps> = ({ logs, setView, isPro
 
   return (
     <div className="pb-24 pt-4 animate-fade-in space-y-6">
-      <button onClick={() => setView(ViewState.DASHBOARD)} className="flex items-center gap-2 text-slate-400 font-bold uppercase text-xs tracking-widest"><ChevronLeft size={16}/> Volver</button>
+      <button onClick={() => setView(ViewState.HABITS)} className="flex items-center gap-2 text-slate-400 font-bold uppercase text-xs tracking-widest"><ChevronLeft size={16}/> Volver</button>
       
       <header className="text-center">
          <div className={`w-16 h-16 mx-auto rounded-3xl ${bgAccent} flex items-center justify-center text-white shadow-2xl mb-4 rotate-3`}>

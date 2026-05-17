@@ -887,6 +887,7 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
                         id: Date.now().toString(),
                         title: title.trim(),
                         frequency: 'daily',
+                        color: '#10b981',
                         createdAt: new Date().toISOString(),
                         icon: getEmojiForTitle(title)
                       });

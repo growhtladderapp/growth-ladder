@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Logo } from './Logo';
-import { Trophy, Zap, Activity, Users, ArrowRight, ShieldCheck, Star, X, Map, Compass, Heart, ActivitySquare, Circle, Link2, CircleDashed, ChevronDown, Brain, Camera, TrendingUp, Flame, Dumbbell, PlaySquare, BookOpen, HelpCircle, Watch, Smartphone, Tablet, Crown, Check, ChefHat, Search, MessageSquare, ChevronUp, Phone } from 'lucide-react';
+import { Trophy, Zap, Activity, Users, ArrowRight, ShieldCheck, Star, X, Map, Compass, Heart, ActivitySquare, Circle, Link2, CircleDashed, ChevronDown, Brain, Camera, TrendingUp, Flame, Dumbbell, PlaySquare, BookOpen, HelpCircle, Watch, Smartphone, Tablet, Crown, Check, ChefHat, Search, MessageSquare, ChevronUp, Phone, Sparkles } from 'lucide-react';
 
 const integrations = [
     { name: "STRAVA", icon: <Map size={24} /> },

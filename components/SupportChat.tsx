@@ -47,7 +47,7 @@ export const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => 
       });
 
       // 2. Initialize Speech Recognition
-      const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
         recognition.continuous = false; // Stop on pause
