@@ -25,6 +25,7 @@ import { translateUI } from './services/geminiService';
 import { supabase, DatabaseLogEntry } from './services/supabase';
 import { Loader2, Sparkles, Flame } from 'lucide-react';
 import { useToast } from './components/ToastContext';
+import { sounds } from './utils/sound';
 
 import { DashHabitsView } from './components/DashHabitsView';
 import { StatsView } from './components/StatsView';
@@ -366,12 +367,15 @@ export default function App() {
       localStorage.setItem('twh_habit_logs', JSON.stringify(updated));
 
       if (isFirstOfToday) {
+        sounds.playAchievement();
         setStreakAchievement({
           show: true,
           title: "Racha Iniciada",
           desc: "¡Excelente! Has registrado tu primer hábito del día y asegurado tu racha activa.",
           symbol: "🔥"
         });
+      } else {
+        sounds.playConfirm();
       }
 
       return updated;
@@ -379,6 +383,7 @@ export default function App() {
   };
 
   const decrementHabitDate = (habitId: string, date: string) => {
+    sounds.playTap();
     setHabitLogs(prev => {
       const idx = prev.findIndex(l => l.habitId === habitId && l.date === date);
       if (idx === -1) return prev;

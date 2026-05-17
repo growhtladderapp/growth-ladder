@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 // Added CheckCircle2 to the imports
 import { Trophy, Star, Target, Zap, ChevronLeft, Award, Medal, Crown, CheckCircle2 } from 'lucide-react';
 import { DailyLogEntry, ViewState } from '../types';
+import { sounds } from '../utils/sound';
 
 interface AchievementsProps {
   logs: DailyLogEntry[];
@@ -74,7 +75,15 @@ export const Achievements: React.FC<AchievementsProps> = ({ logs, setView, isPro
 
   return (
     <div className="pb-24 pt-4 animate-fade-in space-y-6">
-      <button onClick={() => setView(ViewState.HABITS)} className="flex items-center gap-2 text-slate-400 font-bold uppercase text-xs tracking-widest"><ChevronLeft size={16}/> Volver</button>
+      <button 
+        onClick={() => {
+          sounds.playTap();
+          setView(ViewState.HABITS);
+        }} 
+        className="flex items-center gap-2 text-slate-400 font-bold uppercase text-xs tracking-widest"
+      >
+        <ChevronLeft size={16}/> Volver
+      </button>
       
       <header className="text-center">
          <div className={`w-16 h-16 mx-auto rounded-3xl ${bgAccent} flex items-center justify-center text-white shadow-2xl mb-4 rotate-3`}>
@@ -92,7 +101,17 @@ export const Achievements: React.FC<AchievementsProps> = ({ logs, setView, isPro
               </h3>
               <div className="space-y-2">
                  {section.items.map((item, i) => (
-                   <div key={i} className={`${cardClass} p-4 rounded-xl border flex items-center justify-between ${item.completed ? 'opacity-100' : 'opacity-40 grayscale'}`}>
+                    <div 
+                      key={i} 
+                      onClick={() => {
+                        if (item.completed) {
+                          sounds.playAchievement();
+                        } else {
+                          sounds.playTap();
+                        }
+                      }}
+                      className={`${cardClass} p-4 rounded-xl border flex items-center justify-between cursor-pointer active:scale-[0.98] transition-transform ${item.completed ? 'opacity-100' : 'opacity-40 grayscale'}`}
+                    >
                       <div className="flex items-center gap-4">
                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${item.completed ? 'bg-yellow-500/20 text-yellow-500' : 'bg-slate-800 text-slate-600'}`}>
                             <Medal size={20} />

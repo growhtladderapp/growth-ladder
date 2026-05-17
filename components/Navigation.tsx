@@ -1,6 +1,7 @@
 import React from 'react';
 import { AlignJustify, BarChart2, Users, Settings } from 'lucide-react';
 import { ViewState } from '../types';
+import { sounds } from '../utils/sound';
 
 interface NavigationProps {
   currentView: ViewState;
@@ -38,7 +39,10 @@ export const Navigation: React.FC<NavigationProps> = ({ currentView, setView }) 
           return (
             <button
               key={item.id}
-              onClick={() => setView(item.id)}
+              onClick={() => {
+                sounds.playTap();
+                setView(item.id);
+              }}
               className="relative z-10 flex flex-col items-center justify-center w-full h-full transition-all duration-300"
             >
               <div className={`transition-all duration-300 transform ${isActive ? 'text-brand-400 scale-110 -translate-y-1' : 'text-zinc-500 hover:text-zinc-300'}`}>

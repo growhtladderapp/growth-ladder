@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Menu, Plus, Check, CloudMoon, ListTodo, X, Dumbbell, ScanLine, Brain, MessageSquare, ChefHat, Users, Lock, ListFilter, ArrowDownWideNarrow, EyeOff, XCircle, CornerUpRight, Trash2, Search, Crown, ChevronRight, ChevronLeft, Trophy, Sparkles, Star, Frown, BadgeCheck, Activity, Ban, Minus, Flame, Archive } from 'lucide-react';
 import { ViewState, Habit, HabitLog } from '../types';
+import { sounds } from '../utils/sound';
 
 interface Props {
   setView: (view: ViewState) => void;
@@ -541,6 +542,7 @@ export const DashHabitsView: React.FC<Props> = ({ setView, uiText, habits, habit
       // Pequeño delay para que el usuario vea la animación de completado (check) primero
       const timer = setTimeout(() => {
         setShowPerfectDayModal(true);
+        sounds.playAchievement();
         setHasSeenPerfectDay(prev => ({ ...prev, [selectedDateStr]: true }));
         
         // Auto ocultar después de 4 segundos
