@@ -112,9 +112,10 @@ const HabitItem = ({
               <button 
                 onClick={(e) => {
                   e.stopPropagation();
-                  onIncrement();
+                  if (completedCount < 10) onIncrement();
                 }}
-                className="w-8 h-8 rounded-full bg-brand-500 hover:bg-brand-600 active:scale-90 flex items-center justify-center text-white transition-all shadow-[0_0_8px_rgba(16,185,129,0.3)]"
+                disabled={completedCount >= 10}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-white transition-all shadow-[0_0_8px_rgba(16,185,129,0.3)] ${completedCount >= 10 ? 'bg-zinc-700 opacity-50 cursor-not-allowed' : 'bg-brand-500 hover:bg-brand-600 active:scale-90'}`}
               >
                 <Plus size={12} strokeWidth={2.5} />
               </button>

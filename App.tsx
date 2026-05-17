@@ -347,6 +347,13 @@ export default function App() {
 
   const incrementHabitDate = (habitId: string, date: string) => {
     setHabitLogs(prev => {
+      // Limit to 10 increments per habit per day for realism
+      const habitTodayLogs = prev.filter(l => l.habitId === habitId && l.date === date);
+      if (habitTodayLogs.length >= 10) {
+        toast("Límite diario alcanzado para este hábito (10x)");
+        return prev;
+      }
+
       const todayLogs = prev.filter(l => l.date === date);
       const isFirstOfToday = todayLogs.length === 0;
 
